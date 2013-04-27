@@ -27,8 +27,8 @@ require.config({
     }
 });
 
-require(['domReady', 'views/map/MapView', 'backstack', 'db'],
-    function (domReady, MapView, Backstack, db) {
+require(['domReady', 'views/map/MapView', 'backstack', 'collections/MarkerCollection', 'db'],
+    function (domReady, MapView, Backstack, MarkerCollection, db) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
             
@@ -49,7 +49,7 @@ require(['domReady', 'views/map/MapView', 'backstack', 'db'],
                     StackNavigator : new Backstack.StackNavigator({el: '#container'})
                 };
 
-                App.StackNavigator.pushView(new MapView());
+                App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
 
 
             }
