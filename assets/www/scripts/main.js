@@ -11,7 +11,7 @@ require.config({
         // jQuery
         jquery:'libs/jquery/jquery-1.9.1',
         //backtack view pusher
-        backstack:'libs/backstack/backstack-min'
+        backstack:'libs/backstack/backstack-min',
     },
     shim:{
         Backbone : {
@@ -27,8 +27,8 @@ require.config({
     }
 });
 
-require(['domReady', 'views/home/HomeView', 'backstack', 'db'],
-    function (domReady, HomeView, Backstack, db) {
+require(['domReady', 'views/map/MapView', 'backstack', 'db'],
+    function (domReady, MapView, Backstack, db) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
             
@@ -49,7 +49,7 @@ require(['domReady', 'views/home/HomeView', 'backstack', 'db'],
                     StackNavigator : new Backstack.StackNavigator({el: '#container'})
                 };
 
-                App.StackNavigator.pushView(new HomeView());
+                App.StackNavigator.pushView(new MapView());
 
 
             }
