@@ -8,10 +8,10 @@ define([],
 			},
 
 			populateDB : function(tx) {
-			     tx.executeSql('DROP TABLE IF EXISTS DEMO');
+
 			     tx.executeSql('CREATE TABLE IF NOT EXISTS DEMO (id unique, data)');
-			     tx.executeSql('INSERT INTO DEMO (id, data) VALUES (1, "First row")');
-			     tx.executeSql('INSERT INTO DEMO (id, data) VALUES (2, "Second row")');
+
+			     tx.executeSql('INSERT INTO DEMO (id, data) VALUES (4, "fourth row")');
 			},
 
 			errorCB : function errorCB(err) {
@@ -21,7 +21,6 @@ define([],
 		    // Transaction success callback
 		    //
 		    successCB : function() {
-		    	this.dbInstantion = window.openDatabase("voetstappen", "1.0", "test", 2000000);
 		        this.dbInstantion.transaction(this.queryDB, this.errorCB)
 		    },	
 
@@ -29,9 +28,8 @@ define([],
 		     	tx.executeSql('SELECT * FROM DEMO', [], db.querySuccess, db.errorCB);
 		    },
 
-		    querySuccess: function(results) {
-		    	console.log(results);
-		    	alert("Returned rows = " + results.rows.length);
+		    querySuccess: function(tx, results) {
+		    	console.log(results.rows.item(3));
 			    // this will be true since it was a select statement and so rowsAffected was 0
 			    if (!results.rowsAffected) {
 			        console.log('No rows affected!');
