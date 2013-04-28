@@ -94,7 +94,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                     console.log('my own location');
                   }
                 });
-
             },
 
             onErrorGettingLocation: function(error) {
