@@ -9,8 +9,14 @@
 define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/MarkerView', 'models/MarkerModel'],
     function (_, Backbone, MapViewTemplate, MarkerView, MarkerModel) {
         var MapView = Backbone.View.extend({
+            initialize: function() {
+                var self = this;
+                $('#logout').on('click', function(){
+                    self.logout();
+                });
+            },
             events:{
-                'click #btnBack':'btnBack_clickHandler'
+                'click #btnBack':'btnBack_clickHandler',
             },
 
             attributes: {
@@ -103,7 +109,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
             btnBack_clickHandler: function (event) {
                
-            }
+            },
+
+            logout: function() {
+                App.dbClass.initLogoutUser();
+            },
 
         });
 

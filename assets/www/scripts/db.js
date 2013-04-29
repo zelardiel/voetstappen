@@ -1,43 +1,103 @@
-define([],
-	function() {
+define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollection'],
+	function(LoginView, MapView, MarkerCollection) {
+		// THIS OBJECT CONTAINS ALL STORAGES WHICH ARE DONE IN THE LOCAL SQLITE DATABASE
 		var db = {
-			dbInstantion : '',
+
+			/***
+			* GENERAL DB FUNCTIONS
+			***/
+
 			initialize: function() {
-				this.dbInstantion = window.openDatabase("voetstappen", "1.0", "test", 2000000);
-				this.dbInstantion.transaction(this.populateDB, this.errorCB, this.successCB.apply(this));
+				// make use of the global databaseinstation
+				App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ console.log('done') });
+				
 			},
 
 			populateDB : function(tx) {
-
-			     tx.executeSql('CREATE TABLE IF NOT EXISTS DEMO (id unique, data)');
-
-			     tx.executeSql('INSERT INTO DEMO (id, data) VALUES (4, "fourth row")');
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS users(user_id INTEGER NOT NULL PRIMARY KEY unique, username, password, active, last_updated )'
+			    );
 			},
 
-			errorCB : function errorCB(err) {
+			errorCB : function(err) {
 		        console.log(err);
 		    },
 
-		    // Transaction success callback
-		    //
-		    successCB : function() {
-		        this.dbInstantion.transaction(this.queryDB, this.errorCB)
-		    },	
+		    /***
+			* USER DB FUNCTIONS
+			***/
+	   
+			//creating user
+			initLocalUserCreating: function() {
+				// make use of the global databaseinstation
+				App.dbInstantion.transaction(this.createUserLocal, this.errorCB, this.creatUserQuerySuccess);
+			},
 
-		    queryDB: function(tx) {
-		     	tx.executeSql('SELECT * FROM DEMO', [], db.querySuccess, db.errorCB);
+		    createUserLocal: function(tx) {
+		    	var user_id = App.userModel.get('user_id');
+		    	var username = App.userModel.get('username'); 
+		    	var password = App.userModel.get('password');
+
+		    	tx.executeSql('INSERT INTO users(user_id, username, password, active) VALUES(?, ?, ?, ?)', [user_id, username, password, 1]);
 		    },
 
-		    querySuccess: function(tx, results) {
-		    	console.log(results.rows.item(3));
-			    // this will be true since it was a select statement and so rowsAffected was 0
-			    if (!results.rowsAffected) {
-			        console.log('No rows affected!');
-			        return false;
+		    creatUserQuerySuccess: function(tx, result) {
+		    	console.log(result);
+		    },
+
+		    initUserChecking: function() {
+		    	App.dbInstantion.transaction(this.checkForActiveUser, this.errorCB);
+		    },
+
+		    //check for active user
+		    checkForActiveUser: function(tx) {
+		     	tx.executeSql('SELECT * FROM users WHERE active = 1', [], db.userCheckingQuerySuccess, db.errorCB);
+		    },
+
+		    userCheckingQuerySuccess: function(tx, results) {
+			    // if there was a result, continue to Mapview
+
+			    //temporarily clean users table to demonstrate login
+			   	// App.dbInstantion.transaction(db.populateDB, db.errorCB, db.successCB);
+			    if(results.rows.length != 0) {
+	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
+	                App.StackNavigator.pushView(new MapView({ collection: new MarkerCollection }));
+	            //else, the app 
+			    } else {
+			    	//set timeout because splashscreen will be too short otherwise
+			    	setTimeout(function(){
+			    		App.StackNavigator.pushView(new LoginView);
+			    	}, 1000);
 			    }
-			    // for an insert statement, this property will return the ID of the last inserted row
-			    console.log("Last inserted row ID = " + results.insertId);
-		    }
+		    },
+
+		    //logout current user
+		    initLogoutUser: function() {
+		    	App.dbInstantion.transaction(this.logoutUser, this.errorCB, this.logoutUserQuerySuccess);	
+		    },
+
+		    logoutUser: function(tx) {
+		    	var user_id = App.userModel.get('user_id');
+
+		    	//set user on active = 0
+		    	tx.executeSql('UPDATE users SET active = 0 WHERE user_id = ?', [user_id]);
+		    },
+
+		    logoutUserQuerySuccess: function() {
+		    	//clear stack so no going back is possible
+		    	App.userModel.set({active: 0});
+		    	App.StackNavigator.pushView(new LoginView);
+
+		    },
+
+		    /***
+			* SYNCHRONIZE DB FUNCTIONS
+			***/
+
+			initSynchronizing: function() {
+
+			}
+
 		};
 		return db;
 	});

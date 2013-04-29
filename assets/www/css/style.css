@@ -1,26 +1,421 @@
-body {
+body, html {
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    width: 100%;
+    height: 100%;
+
+    /*------------*/
+
+    background: url(../img/splashbg.jpg) center center no-repeat;
+    background-size: cover;
+    font-family: "Nilland", serif;
+    overflow: hidden;
+}
+
+section {
+    display: block;
+}
+
+section header {
+    background: white;
+    width: 100%;
+    height: 3em;
+    position: absolute;
+
+    -webkit-box-shadow:  2px 2px 3px 0 #666;
+    box-shadow:  2px 2px 3px 0 #666;
+}
+
+section header h1 {
+    color: #333;
+    font-family: "Nilland", serif;
+    font-size: 1em;
+    font-weight: 900;
+    /*margin-left: 3.5em;
+    position: absolute;*/
+    text-align: center;
+    width: 70%;
+    margin: 0 auto;
+    padding-top: .8em;
+    line-height: 1;
+}
+
+section header a {
+    background: url(../img/button.jpg);
+    background-size: cover;
+    border: none;
+    border-radius: .1em;
+    -webkit-box-shadow:  1px 1px 2px 0px #666;
+    box-shadow:  1px 1px 2px 0px #666;
+    position: absolute;
+    height: 30px;
+    margin: .5em;
+    width: 30px;
+}
+
+section header a:hover {
+    opacity: .8;
+}
+
+section header a:active {
+    box-shadow: none;
+    border-radius: .15em;
+}
+
+section section.content {
+    width: 100%;
+    top: 48px;
+    bottom: 50px;
+    background: #456789;
+    position: absolute;
+}
+
+section section.content article {
+    bottom: 50px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    margin-top: 1em;
+    background: white;
+    border-radius: 1px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: absolute; 
+
+    -webkit-box-shadow:  2px 2px 3px 0 #666;
+    box-shadow:  2px 2px 3px 0 #666;
+}
+
+section section.content article img {
+    width: 20%;
+    float: left;
+    padding: 1em;
+}
+
+section section.content article h1 {
+    font-weight: bold;
+    margin-top: .5em;
+}
+
+section section.content article b {
+    font-weight: bold;
+    color: #0176C2;
+}
+
+section section.content article p {
+    font-size: .8em;
+    padding: 1em;
+}
+
+section section.content article img.qrcode {
+    width: 90%;
+}
+
+section section.content article section {
+    margin: 1em;
+}
+
+section section.content article section a {
+    background: #ccc;
+    background-size: cover;
+    border: none;
+    border-radius: .1em;
+    -webkit-box-shadow:  1px 1px 2px 0px #666;
+    box-shadow:  1px 1px 2px 0px #666;
+    height: 30px;
+    margin: 0 auto;
+    margin-top: .5em;
+    width: 150px;
+    text-decoration: none;
+    color: #666;
+    padding: .2em .5em;
+    margin: 1em .2em;
+}
+
+section section.content article section section {
+    float: right;
     margin: 0;
 }
 
-#container {
+section section.content article section a:hover {
+    opacity: .8;
+}
+
+section section.content article section a:active {
+    box-shadow: none;
+    border-radius: .15em;
+}
+
+/*#map {
+    -webkit-box-shadow:  0px 0px 3px 0px rgba(0, 0, 0, 1);
+    box-shadow:  0px 0px 3px 0px rgba(0, 0, 0, 1);
+    border-radius: 3px;
+    right: 0px;
+    bottom: 50px;
+    top: 50px;
+    left: 0px;
+    overflow: hidden;
+    margin-top: 0;
     position: absolute;
+}
+
+#map a[title] {
+    display: block;
+}*/
+
+section footer {
+    background: white;
+    bottom: 0;
     width: 100%;
-    height: 100%;
-    top: 0;
-    bottom: 0;
+    min-height: 4.2em;
+    position: absolute;
+
+    -webkit-box-shadow:  2px 2px 3px 0 #666;
+    box-shadow:  2px 2px 3px 0 #666;
 }
 
-div[data-role="header"] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+section footer a {
+    background: url(../img/button_status.jpg);
+    background-size: cover;
+    border: none;
+    border-radius: .1em;
+    -webkit-box-shadow:  1px 1px 2px 0px #666;
+    box-shadow:  1px 1px 2px 0px #666;
+    display: block;
+    height: 30px;
+    margin: 0 auto;
+    margin-top: .5em;
+    width: 150px;
 }
 
-div[data-role="content"] {
+section footer a:hover {
+    opacity: .8;
+}
+
+section footer a:active {
+    box-shadow: none;
+    border-radius: .15em;
+}
+
+/*the part above the footer that holds the legenda on swipe up*/
+section footer section {
+    background: white;
+    bottom: 5em;
+    border-bottom: 2px solid #999;
+    height: 1em;
+    margin: 0 auto;
+    margin-bottom: .5em;
+    /*position: absolute;*/
+
+    -webkit-transition: all 500ms ease-in-out;
+        -moz-transition: all 500ms ease-in-out;
+        -ms-transition: all 500ms ease-in-out;
+        -o-transition: all 500ms ease-in-out;
+        transition: all 500ms ease-in-out;
+}
+
+section footer section p {
+    display: none;
+    bottom: 2em;
+    margin: 0 0 1em 1em;
+    padding: .2em 1em;
+    width: 35%;
+    -webkit-transition: all 500ms ease-in-out;
+    -moz-transition: all 500ms ease-in-out;
+    -ms-transition: all 500ms ease-in-out;
+    -o-transition: all 500ms ease-in-out;
+    transition: all 500ms ease-in-out;
+}
+
+section footer section p img {
+    margin: 0 ;
+    width: 30%;
+    display: block;
+}
+
+.legenda-animation {
+    height: 15em;
+    padding-top: 1em;
+    /*bottom: 10em;*/
+}
+
+.legenda-animation p {
+    display: inline-block;
+}
+
+.up {
+    bottom: 14.5em;
+    -moz-transform: scale(1) rotate(180deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -webkit-transform: scale(1) rotate(180deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -o-transform: scale(1) rotate(180deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -ms-transform: scale(1) rotate(180deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    transform: scale(1) rotate(180deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    /*margin-bottom: 10px;*/
+}
+
+/*the part that holds the up arrow*/
+section span {
+    background: white;
+    border-radius: 30px;
+    bottom: 2.7em;
+    font-weight: 900;
+    font-size: 1.2em;
+    height: 28px;
+    margin-left: -12px;
+    left: 50%;
+    /*padding-top: .2em;*/
     position: absolute;
-    top: 41px;
-    bottom: 0;
-    left: 0;
+    width: 28px;
+    text-align: center;
+
+    -webkit-transition: all 500ms ease-in-out;
+        -moz-transition: all 500ms ease-in-out;
+        -ms-transition: all 500ms ease-in-out;
+        -o-transition: all 500ms ease-in-out;
+        transition: all 500ms ease-in-out;
+}
+
+/*the slide menu*/
+#menu{
+    background: #333;
+    width:85%;
+    height:100%;
+    display:block!important;
+    float:left;
+}
+
+#menu h1{
+    background: #ccc;
+    text-align: center;
+    height: 48px;
+    margin: 0;
+}
+
+#menu article {
+    background: white;
+    border-radius: 1px;
+    width: 90%;
+    height: 50%;
+    margin: 0 auto;
+    margin-top: 1em;
+
+    -webkit-box-shadow:  2px 2px 3px 0 #666;
+    box-shadow:  2px 2px 3px 0 #666;
+}
+
+#menu article h1 {
+    background: none;
+    text-align: left;
+    height: auto;
+    padding: 1.5em 0 .5em 1.5em;
+}
+
+#menu article img {
+    width: 20%;
+    float: left;
+    margin: 0em 1em 1em 1em;
+}
+
+#menu article span {
+    margin: 0 0 0 1em;
+    display: block;
+    font-size: 1.5em;
+    font-weight: bolder;
+    color: #0176C2;
+}
+
+#menu article p {
+    color: #888;
+    font-weight: 900;
+    line-height: .3;
+    padding-left: 1em;
+}
+
+#menu article p b {
+    display: block;
+    margin-right: 20px;
+    float: right;
+}
+
+#menu article p b.first {
+    color: #4BBF16;
+}
+
+#menu ul{
+    margin:0;
+    padding:0;
+    width:100%;
+}
+
+#menu ul li{
+    list-style-type:none;
+    margin:0;
+}
+
+#menu ul li a:link,#menu ul li a:visited{
+    border-bottom:solid #333 1px;
+    box-shadow:0 1px 0 #727272;
+    color:#fff;font-size:14px;
+    font-family:arial;
+    text-decoration:none;
+    display:block;
+    padding:10px 0 10px 10px;
+    text-shadow:0 1px 1px #000;
+}
+
+#menu ul li a:hover,#menu ul li a:active{
+    background-color:#716f6f;
+}
+
+.active{
+    color:#fff;
+    background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(30,29,29,1)),color-stop(21%,rgba(56,55,55,1)));
+    text-shadow:0 1px 1px #000;
+}
+
+
+
+
+
+.splash {
+    background: url(../img/splashbg.jpg) center center;
+    background-size: cover;
+}
+
+.splash-title {
+    background: white;
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 20px;  
+
+    -webkit-box-shadow:  2px 2px 3px 0 #666;
+    box-shadow:  2px 2px 3px 0 #666;
+}
+
+.splash-title h1 {
+    line-height: 1;
+    font-size: 2em;
+    font-weight: bolder;
+    padding: 1em;
+    text-align: center;
+}
+
+img.splash-img {
+    position: absolute;
     right: 0;
+    bottom: 10px;
+    width: 45%;
+}
+
+
+
+
+/*-----------------*/
+
+@font-face {
+    font-family: Nilland;
+    src: url(fonts/nilland.ttf);
+    font-weight:400;
 }

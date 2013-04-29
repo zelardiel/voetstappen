@@ -27,8 +27,8 @@ require.config({
     }
 });
 
-require(['domReady', 'views/login/LoginView', 'backstack', 'collections/MarkerCollection', 'db'],
-    function (domReady, LoginView, Backstack, MarkerCollection, DataBase) {
+require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 'backstack', 'db'],
+    function (domReady, SplashScreenView, UserModel, Backstack, db) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
             
@@ -38,23 +38,20 @@ require(['domReady', 'views/login/LoginView', 'backstack', 'collections/MarkerCo
                 if (desktop !== true) {
                     cordova.exec(null, null, 'SplashScreen', 'hide', []);
                 }
-
-                //start the whole db init process 
-                // var database = new db;
-                // console.log(database);    
             
                 //Put all the event functions of backbone inside a Vent object
                 window.App = {
+                    dbInstantion: window.openDatabase("voetstappen", "1.0", "voetstappen", 2000000),
+                    dbClass: db,
                     Vent: _.extend({}, Backbone.Events),
-                    StackNavigator : new Backstack.StackNavigator({el: '#container'})
+                    StackNavigator : new Backstack.StackNavigator({el: '#container'}),
+                    userModel: new UserModel,
                 };
 
-                DataBase.initialize();
-                
-                App.StackNavigator.pushView(new LoginView);
+                App.StackNavigator.pushView(new SplashScreenView);
 
-                //App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
-
+                //init database, who will be repsonsible for rendering the first view
+                App.dbClass.initialize();
 
             }
 

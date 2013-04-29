@@ -11,8 +11,8 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'libs/encr
     		},
 
     		createUser: function(e) {
-    			e.preventDefault();
-
+          e.preventDefault();
+          
     			this.username = $(e.currentTarget).find('input#username');
     			this.password = $(e.currentTarget).find('input#password');
     			this.hashed_password = Sha1.hash(this.password.val());
@@ -21,10 +21,9 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'libs/encr
 
   				$.ajax({
   					type: 'POST',
-  					url: '/api.php',
+  					url: 'http://www.pimmeijer.com/voetstappen/api.php',
   					data: {action: 'signup', username: self.username.val(), password: self.hashed_password },
   					success: function(result) {
-  						console.log('sdsadsadasdadsasddsa');
   						if(result == Sha1.hash('exists')) {
   							alert('exists');
   						} else if(result == Sha1.hash('success')) {
