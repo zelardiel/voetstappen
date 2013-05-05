@@ -31,7 +31,17 @@ require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 
     function (domReady, SplashScreenView, UserModel, Backstack, db) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
-            
+            //Put all the event functions of backbone inside a Vent object
+            window.App = {
+                dbInstantion: window.openDatabase("voetstappen", "1.0", "voetstappen", 2000000),
+                dbClass: db,
+                Vent: _.extend({}, Backbone.Events),
+                StackNavigator: new Backstack.StackNavigator({el: '#container'}),
+                userModel: new UserModel,
+            };
+
+            App.StackNavigator.pushView(new SplashScreenView);
+
             //ondevice ready is cordave(phonegap) function
             function onDeviceReady(desktop) {
                 // Hiding splash screen when app is loaded
@@ -39,16 +49,9 @@ require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 
                     cordova.exec(null, null, 'SplashScreen', 'hide', []);
                 }
             
-                //Put all the event functions of backbone inside a Vent object
-                window.App = {
-                    dbInstantion: window.openDatabase("voetstappen", "1.0", "voetstappen", 2000000),
-                    dbClass: db,
-                    Vent: _.extend({}, Backbone.Events),
-                    StackNavigator : new Backstack.StackNavigator({el: '#container'}),
-                    userModel: new UserModel,
-                };
+           
 
-                App.StackNavigator.pushView(new SplashScreenView);
+               
 
                 //init database, who will be repsonsible for rendering the first view
                 App.dbClass.initialize();

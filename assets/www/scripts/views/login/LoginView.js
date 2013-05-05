@@ -19,22 +19,36 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             loginUser: function(e) {
                 e.preventDefault();
 
-                this.username = $(e.currentTarget).find('input#username');
-                this.password = $(e.currentTarget).find('input#password');
+                this.form = $(e.currentTarget);
+
+                this.username = this.form.find('input#username');
+                this.password = this.form.find('input#password');
+
+                //validate locally
+                if(this.validateUsernameAndPassword(this.username, this.password) == false) {
+                    //check for existing error messages
+                    if(this.form.find('.error').length == 0) {
+                        $(e.currentTarget).append($('<p class=error>Vul een waarde in</p>')); 
+                    } 
+                    return false;
+                } else {
+                    this.form.find('p.error').remove();
+                }
+
                 this.hashed_password = Sha1.hash(this.password.val());
 
                 var self = this;
 
                 $.ajax({
                     type: 'POST',
-                    url: 'http://www.pimmeijer.com/voetstappen/api.php',
+                    url: '/api.php',
                     data: {action: 'login', username: self.username.val(), password: self.hashed_password },
                     success: function(result) {
                         var result = $.parseJSON(result);
 
                         console.log(result);
                         if(result.status == Sha1.hash('notfound')) {
-                            alert('Wrong usenrame or password');
+                            alert('Wrong username or password');
                         } else if(result.status == Sha1.hash('success')) {
                             //alert('logged in');
                             self.username.val('');
@@ -48,6 +62,15 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 });
             },
 
+            validateUsernameAndPassword: function(username_el, password_el) {
+                console.log(username_el.val().length);
+                if(username_el.val().length == 0 || password_el.val().length == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+
             //set a global accesable user model so we can keep track of the user id etc.
             setUserModel: function(user_id, username, password) {
                 App.userModel.set({user_id: user_id, username: username, password: password, active: 1});
@@ -55,7 +78,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             loginSuccess: function() {
-                //db function
+                //create a local user in the local database
                 App.dbClass.initLocalUserCreating();
                 App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
             },

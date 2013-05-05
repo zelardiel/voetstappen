@@ -36,6 +36,7 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'libs/encr
     		},
 
     		previousView: function() {
+          //pop the view from the stack array so the previous one appears
     			App.StackNavigator.popView();
     		}
     	});

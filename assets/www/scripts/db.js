@@ -8,19 +8,60 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			***/
 
 			initialize: function() {
+				var self = this;
 				// make use of the global databaseinstation
-				App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ console.log('done') });
+
+				this.getTimeStamp();
+				App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ self.initUserChecking(); });
 				
 			},
 
 			populateDB : function(tx) {
+				//footstep and user
 			    tx.executeSql(
-			     	'CREATE TABLE IF NOT EXISTS users(user_id INTEGER NOT NULL PRIMARY KEY unique, username, password, active, last_updated )'
+			     	'CREATE TABLE IF NOT EXISTS users(user_id INTEGER NOT NULL PRIMARY KEY unique, username NOT NULL, password NOT NULL, active, updated_at NOT NULL )'
 			    );
+
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS footsteps_users(footsteps_users_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, user_id INTEGER NOT NULL, updated_at NOT NULL )'
+			    );
+
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS footsteps(footstep_id INTEGER NOT NULL PRIMARY KEY unique, title, image_id INTEGER, latitude NOT NULL, longitude NOT NULL, updated_at NOT NULL )'
+			    );
+
+			    //footstep it's content and the user
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS footstep_contents(footstep_content_id INTEGER NOT NULL PRIMARY KEY, image_id INTEGER, footstep_id INTEGER, content, location_id INTEGER NOT NULL, updated_at NOT NULL )'
+			    );
+
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS footstep_contents_users(footstep_contents_users_id INTEGER NOT NULL PRIMARY KEY, user_id INTEGER NOT NULL, footstep_content_id INTEGER NOT NULL, updated_at NOT NULL )'
+			    );
+
+			    //locations
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS locations(location_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, type NOT NULL, location INTEGER NOT NULL id_of_type INTEGER NOT NULL, updated_at NOT NULL )'
+			    );
+
+			    //objectives
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS objectives(objective_id INTEGER NOT NULL PRIMARY KEY, description, footstep_id INTEGER, location_id INTEGER, updated_at NOT NULL )'
+			    );
+
+			    //scores
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS scores(score_id INTEGER NOT NULL PRIMARY KEY unique, points NOT NULL, user_id INTEGER NOT NULL, updated_at NOT NULL )'
+			    );
+
 			},
 
-			errorCB : function(err) {
+			errorCB: function(err) {
 		        console.log(err);
+		    },
+
+		    getTimeStamp: function() {
+				console.log(+new Date);
 		    },
 
 		    /***
@@ -56,9 +97,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		    userCheckingQuerySuccess: function(tx, results) {
 			    // if there was a result, continue to Mapview
-
-			    //temporarily clean users table to demonstrate login
-			   	// App.dbInstantion.transaction(db.populateDB, db.errorCB, db.successCB);
 			    if(results.rows.length != 0) {
 	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
 	                App.StackNavigator.pushView(new MapView({ collection: new MarkerCollection }));
@@ -67,7 +105,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			    	//set timeout because splashscreen will be too short otherwise
 			    	setTimeout(function(){
 			    		App.StackNavigator.pushView(new LoginView);
-			    	}, 1000);
+			    	}, 100);
 			    }
 		    },
 
