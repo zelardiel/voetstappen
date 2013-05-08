@@ -41,7 +41,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			    //locations
 			    tx.executeSql(
-			     	'CREATE TABLE IF NOT EXISTS locations(location_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, type NOT NULL, location INTEGER NOT NULL id_of_type INTEGER NOT NULL, updated_at NOT NULL )'
+			     	'CREATE TABLE IF NOT EXISTS locations(location_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, type NOT NULL, location INTEGER NOT NULL, id_of_type INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
 			    //objectives
@@ -92,6 +92,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		    //check for active user
 		    checkForActiveUser: function(tx) {
+		    	console.log('etwas');
 		     	tx.executeSql('SELECT * FROM users WHERE active = 1', [], db.userCheckingQuerySuccess, db.errorCB);
 		    },
 
