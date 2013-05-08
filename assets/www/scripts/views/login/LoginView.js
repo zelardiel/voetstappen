@@ -79,7 +79,8 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
             loginSuccess: function() {
                 //create a local user in the local database
-                App.dbClass.initLocalUserCreating();
+                App.dbClass.initLocalUserCreating()
+                App.dbClass.initSynchronizing();
                 App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
             },
 

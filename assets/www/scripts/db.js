@@ -11,7 +11,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var self = this;
 				// make use of the global databaseinstation
 
-				this.getTimeStamp();
 				App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ self.initUserChecking(); });
 				
 			},
@@ -41,7 +40,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			    //locations
 			    tx.executeSql(
-			     	'CREATE TABLE IF NOT EXISTS locations(location_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, type NOT NULL, location INTEGER NOT NULL, id_of_type INTEGER NOT NULL, updated_at NOT NULL )'
+			     	'CREATE TABLE IF NOT EXISTS locations(location_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, type NOT NULL, location INTEGER NOT NULL, other_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
 			    //objectives
@@ -54,6 +53,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			     	'CREATE TABLE IF NOT EXISTS scores(score_id INTEGER NOT NULL PRIMARY KEY unique, points NOT NULL, user_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
+			     //update times!
+			    tx.executeSql(
+			     	'CREATE TABLE IF NOT EXISTS synchronized(id INTEGER NOT NULL PRIMARY KEY unique, updated_at NOT NULL )'
+			    );
+
 			},
 
 			errorCB: function(err) {
@@ -61,7 +65,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    getTimeStamp: function() {
-				console.log(+new Date);
+				return +new Date;
 		    },
 
 		    /***
@@ -83,7 +87,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    creatUserQuerySuccess: function(tx, result) {
-		    	console.log(result);
+		    	console.log('');
 		    },
 
 		    initUserChecking: function() {
@@ -92,7 +96,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		    //check for active user
 		    checkForActiveUser: function(tx) {
-		    	console.log('etwas');
 		     	tx.executeSql('SELECT * FROM users WHERE active = 1', [], db.userCheckingQuerySuccess, db.errorCB);
 		    },
 
@@ -100,6 +103,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			    // if there was a result, continue to Mapview
 			    if(results.rows.length != 0) {
 	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
+	                //start synchornizing right now
+	                this.initSynchronizing();
 	                App.StackNavigator.pushView(new MapView({ collection: new MarkerCollection }));
 	            //else, the app 
 			    } else {
@@ -126,7 +131,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    	//clear stack so no going back is possible
 		    	App.userModel.set({active: 0});
 		    	App.StackNavigator.pushView(new LoginView);
-
 		    },
 
 		    /***
@@ -134,8 +138,129 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			***/
 
 			initSynchronizing: function() {
+				var self = this;
 
-			}
+				self.timestamp = self.getTimeStamp();
+
+				//sync each table with remote
+				this.getNewFootstep();
+				// this.getNewFootstepContents();
+				// this.getNewLocations();
+				// this.getNewObjectives();
+				// this.getNewScores();
+			},
+
+			getNewFootstep: function() {
+				var self = this;
+				$.ajax({
+					type: 'POST',
+					url: 'http://www.pimmeijer.com/voetstappen/api.php',
+					data: JSON.stringify({action: 'retrieve_footstep', timestamp: self.timestamp}),
+					success: function(data) {
+						var results = $.parseJSON(data);
+
+						console.log(results);
+
+						$.each(results, function(index, val){
+							console.log(val);
+						});
+
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
+
+					}
+				});
+			},
+
+			getNewFootstepContents: function() {
+				var self = this;
+				$.ajax({
+					dataType: 'application/json',
+					type: 'POST',
+					url: 'http://www.pimmeijer.com/voetstappen/api.php',
+					data: JSON.stringify({action: 'retrieve_footstep_contents', timestamp: self.timestamp}),
+					success: function(data) {
+						var result = $.parseJSON(data);
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
+
+					}
+				});
+			},
+
+			getNewLocations: function() {
+				var self = this;
+
+				$.ajax({
+					dataType: 'application/json',
+					type: 'POST',
+					url: 'http://www.pimmeijer.com/voetstappen/api.php',
+					data: JSON.stringify({action: 'retrieve_locations', timestamp: self.timestamp}),
+					success: function(data) {
+						var result = $.parseJSON(data);
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
+
+					}
+				});
+
+			},
+
+			getNewObjectives: function() {
+				var self = this;
+
+				$.ajax({
+					dataType: 'application/json',
+					type: 'POST',
+					url: 'http://www.pimmeijer.com/voetstappen/api.php',
+					data: JSON.stringify({action: 'retrieve_objectives', timestamp: self.timestamp}),
+					success: function(data) {
+						var result = $.parseJSON(data);
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
+
+					}
+				});
+			},
+
+			syncScores: function() {
+				var self = this;
+
+				$.ajax({
+					dataType: 'application/json',
+					type: 'POST',
+					url: 'http://www.pimmeijer.com/voetstappen/api.php',
+					data: JSON.stringify({action: 'retrieve_score', timestamp: self.timestamp}),
+					success: function(data) {
+						var result = $.parseJSON(data);
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
+
+					}
+				});
+			},
+
+			//ids is array
+			syncTable: function(table, ids) {
+				//App.dbInstantion.transaction(this.logoutUser, this.errorCB, this.logoutUserQuerySuccess);	
+    			//tx.executeSql('UPDATE users SET active = 0 WHERE user_id = ?', [user_id]);
+
+			},
 
 		};
 		return db;
