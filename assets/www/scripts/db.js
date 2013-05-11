@@ -19,42 +19,59 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			populateDB : function(tx) {
 				//footstep and user
-			    tx.executeSql(
+				
+
+				tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS users(user_id INTEGER NOT NULL PRIMARY KEY unique, username NOT NULL, password NOT NULL, active, updated_at NOT NULL )'
 			    );
+
+			    tx.executeSql('DROP TABLE footsteps_users');
 
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS footsteps_users(footsteps_users_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, user_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
+
+			    // tx.executeSql('DROP TABLE footsteps');
+
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS footsteps(footstep_id INTEGER NOT NULL PRIMARY KEY unique, title, image_id INTEGER, latitude NOT NULL, longitude NOT NULL, updated_at NOT NULL )'
 			    );
+
+
+			    tx.executeSql('DROP TABLE footstep_contents');
 
 			    //footstep it's content and the user
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS footstep_contents(footstep_content_id INTEGER NOT NULL PRIMARY KEY, image_id INTEGER, footstep_id INTEGER, content, location_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
+			    tx.executeSql('DROP TABLE footstep_contents_users');
+
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS footstep_contents_users(footstep_contents_users_id INTEGER NOT NULL PRIMARY KEY, user_id INTEGER NOT NULL, footstep_content_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
+
+			    tx.executeSql('DROP TABLE locations');
 
 			    //locations
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS locations(location_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, type NOT NULL, location INTEGER NOT NULL, other_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
+			    tx.executeSql('DROP TABLE objectives');
 			    //objectives
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS objectives(objective_id INTEGER NOT NULL PRIMARY KEY, description, footstep_id INTEGER, location_id INTEGER, updated_at NOT NULL )'
 			    );
 
+			    tx.executeSql('DROP TABLE scores');
 			    //scores
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS scores(score_id INTEGER NOT NULL PRIMARY KEY unique, points NOT NULL, user_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
+			    tx.executeSql('DROP TABLE synchronized');
 			     //update times!
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS synchronized(id INTEGER NOT NULL PRIMARY KEY unique, updated_at NOT NULL )'
@@ -66,6 +83,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		        console.log(err);
 		    },
 
+		    //return timestamp in milliseconds
 		    getTimeStamp: function() {
 				return +new Date;
 		    },
@@ -77,7 +95,9 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			//creating user
 			initLocalUserCreating: function() {
 				// make use of the global databaseinstation
-				App.dbInstantion.transaction(this.createUserLocal, this.errorCB, this.creatUserQuerySuccess);
+				App.dbInstantion.transaction(this.createUserLocal, this.errorCB, function(){
+					console.log('local user created');
+				});
 			},
 
 		    createUserLocal: function(tx) {
@@ -86,11 +106,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    	var password = App.userModel.get('password');
 
 		    	tx.executeSql('INSERT OR IGNORE INTO users(user_id, username, password, active, updated_at) VALUES(?, ?, ?, ?, ?)', [user_id, username, password, 1, db.getTimeStamp()]);
-		    },
-
-		    creatUserQuerySuccess: function(tx, result) {
-		    	console.log(tx);
-		    	console.log('etwas');
 		    },
 
 		    initUserChecking: function() {
@@ -140,30 +155,62 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			initSynchronizing: function() {
 				var self = this;
+				
 
-				self.timestamp = self.getTimeStamp();
+				var transaction = function() {
+					var deferred = $.Deferred();
 
+					App.dbInstantion.transaction(function(tx){
+						tx.executeSql('SELECT updated_at FROM synchronized WHERE id = 1', [] );
+					}, self.errorCB, function(tx, results) { 
+						if(typeof(results) == 'undefined') {
+							self.timestamp = 0;
+							deferred.resolve();
+						}
+					});	
+
+					return deferred.promise();
+				};
+				
 				//sync each table with remote
-				this.getNewFootstep();
-				// this.getNewFootstepContents();
-				// this.getNewLocations();
-				// this.getNewObjectives();
-				// this.getNewScores();
+				transaction().done(function(){
+					self.syncFootsteps();
+					self.syncFootstepContents();
+					self.syncLocations();
+					self.syncObjectives();
+					self.syncScores();
+
+					self.timestamp = self.getTimeStamp();
+
+					//set new global last-updated time in the local database 
+					App.dbInstantion.transaction(function(tx){
+						tx.executeSql('INSERT OR REPLACE INTO synchronized(id, updated_at) VALUES(1, ?)', [self.timestamp] );
+					}, self.errorCB, function(tx, results) { 
+						console.log('UPDATED UPDATE TIME');
+					});	
+				});
 			},
 
-			getNewFootstep: function() {
+			
+
+			syncFootsteps: function() {
 				var self = this;
 				$.ajax({
 					type: 'POST',
 					url: 'http://www.pimmeijer.com/voetstappen/api.php',
-					data: JSON.stringify({action: 'retrieve_footstep', timestamp: self.timestamp}),
+					data: JSON.stringify({action: 'retrieve_footsteps', timestamp: self.timestamp}),
 					success: function(data) {
 						var results = $.parseJSON(data);
 
-						console.log(results);
-
+						//for each retrieved row(object) do a query
 						$.each(results, function(index, val){
-							console.log(val);
+							if(typeof(val) === 'object') {
+								App.dbInstantion.transaction(function(tx){
+									tx.executeSql('INSERT OR REPLACE INTO footsteps(footstep_id, title, image_id, latitude, longitude, updated_at) VALUES(?, ?, ?, ?, ?, ?)', 
+										[val.footstep_id, val.title, val.image_id, val.latitude, val.longitude, val.updated_at]
+									);
+								}, self.errorCB, function(result) { console.log('success'); });
+							} 
 						});
 
 					},
@@ -171,40 +218,56 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						console.log(xhr);
 						console.log(ajaxOptions);
 						console.log(thrownError);
-
 					}
 				});
 			},
 
-			getNewFootstepContents: function() {
+			syncFootstepContents: function() {
 				var self = this;
 				$.ajax({
-					dataType: 'application/json',
 					type: 'POST',
 					url: 'http://www.pimmeijer.com/voetstappen/api.php',
 					data: JSON.stringify({action: 'retrieve_footstep_contents', timestamp: self.timestamp}),
 					success: function(data) {
-						var result = $.parseJSON(data);
+						var results = $.parseJSON(data);
+
+						$.each(results, function(index, val){
+							if(typeof(val) === 'object') {
+								App.dbInstantion.transaction(function(tx){
+									tx.executeSql('INSERT OR REPLACE INTO footstep_contents(footstep_content_id, image_id, footstep_id, content, location_id, updated_at) VALUES(?, ?, ?, ?, ?, ?)', 
+										[val.footstep_content_id, val.image_id, val.footstep_id, val.content, val.location_id, val.updated_at]
+									);
+								}, self.errorCB, function(result){ console.log('success'); });
+							} 
+						});
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log(xhr);
 						console.log(ajaxOptions);
 						console.log(thrownError);
-
 					}
 				});
 			},
 
-			getNewLocations: function() {
+			syncLocations: function() {
 				var self = this;
 
 				$.ajax({
-					dataType: 'application/json',
 					type: 'POST',
 					url: 'http://www.pimmeijer.com/voetstappen/api.php',
 					data: JSON.stringify({action: 'retrieve_locations', timestamp: self.timestamp}),
 					success: function(data) {
-						var result = $.parseJSON(data);
+						var results = $.parseJSON(data);
+
+						$.each(results, function(index, val){
+							if(typeof(val) === 'object') {
+								App.dbInstantion.transaction(function(tx){
+									tx.executeSql('INSERT OR REPLACE INTO locations(location_id, footstep_id, type, location, other_id, updated_at) VALUES(?, ?, ?, ?, ?, ?)', 
+										[val.location_id, val.footstep_id, val.type, val.location, val.other_id, val.updated_at]
+									);
+								}, self.errorCB, function(result){ console.log('success'); });
+							} 
+						});
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log(xhr);
@@ -216,16 +279,25 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			},
 
-			getNewObjectives: function() {
+			syncObjectives: function() {
 				var self = this;
 
 				$.ajax({
-					dataType: 'application/json',
 					type: 'POST',
 					url: 'http://www.pimmeijer.com/voetstappen/api.php',
 					data: JSON.stringify({action: 'retrieve_objectives', timestamp: self.timestamp}),
 					success: function(data) {
-						var result = $.parseJSON(data);
+						var results = $.parseJSON(data);
+
+						$.each(results, function(index, val){
+					       if(typeof(val) === 'object') {
+					        	App.dbInstantion.transaction(function(tx){
+					         		tx.executeSql('INSERT OR REPLACE INTO objectives(objective_id, description, footstep_id, location_id, updated_at) VALUES(?, ?, ?, ?, ?)', 
+					          			[val.objective_id, val.description, val.footstep_id, val.location_id, val.updated_at]
+					         		);
+					        	}, self.errorCB, function(result){ console.log('success'); });
+					       	} 
+					    });
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log(xhr);
@@ -240,12 +312,21 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var self = this;
 
 				$.ajax({
-					dataType: 'application/json',
 					type: 'POST',
 					url: 'http://www.pimmeijer.com/voetstappen/api.php',
 					data: JSON.stringify({action: 'retrieve_score', timestamp: self.timestamp}),
 					success: function(data) {
-						var result = $.parseJSON(data);
+						var results = $.parseJSON(data);
+
+						$.each(results, function(index, val){
+					        if(typeof(val) === 'object') {
+					       		App.dbInstantion.transaction(function(tx){
+					         		tx.executeSql('INSERT OR REPLACE INTO scores(score_id, points, user_id, updated_at) VALUES(?, ?, ?, ?)', 
+					          			[val.score_id, val.points, val.user_id, val.updated_at]
+					         		);
+					        	}, self.errorCB, function(result){ console.log('success'); });
+					        } 
+      					});
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log(xhr);
@@ -254,13 +335,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 					}
 				});
-			},
-
-			//ids is array
-			syncTable: function(table, ids) {
-				//App.dbInstantion.transaction(this.logoutUser, this.errorCB, this.logoutUserQuerySuccess);	
-    			//tx.executeSql('UPDATE users SET active = 0 WHERE user_id = ?', [user_id]);
-
 			},
 
 		};
