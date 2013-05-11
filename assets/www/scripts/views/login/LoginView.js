@@ -41,7 +41,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 $.ajax({
                     type: 'POST',
-                    url: '/api.php',
+                    url: 'http://www.pimmeijer.com/voetstappen/api.php',
                     data: {action: 'login', username: self.username.val(), password: self.hashed_password },
                     success: function(result) {
                         var result = $.parseJSON(result);
@@ -50,7 +50,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                         if(result.status == Sha1.hash('notfound')) {
                             alert('Wrong username or password');
                         } else if(result.status == Sha1.hash('success')) {
-                            //alert('logged in');
+                            //empty out the inputs
                             self.username.val('');
                             self.password.val('');
 
@@ -79,6 +79,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
             loginSuccess: function() {
                 //create a local user in the local database
+                console.log(App.userModel.attributes);
                 App.dbClass.initLocalUserCreating()
                 App.dbClass.initSynchronizing();
                 App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));

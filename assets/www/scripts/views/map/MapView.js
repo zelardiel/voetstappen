@@ -16,7 +16,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                 });
             },
             events:{
-                'click #btnBack':'btnBack_clickHandler',
+                'click #btnBack':'btnBack_clickHandler'
             },
 
             attributes: {
@@ -26,8 +26,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
             render:function () {
                 //dont use a template because we are doing everything with marker adding
-                this.render.$el;
-                
+                this.render.$el;                    
                 //do this after rendering 
                 this.initMap();
 
@@ -35,22 +34,22 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
             },
 
             initMap: function() {
-                var self = this; 
+                var self = this;
 
                 window.map = new GMaps({
                     div: self.el,
                     lat: 52.668055,
                     lng: 5.193787,
-                    zoom: 10,
+                    zoom: 10
                 }); 
 
                 this.getPosition(5000);
 
                 //if collection.length != 0 fill it with database data
-                console.log(this.collection.length);
+                // console.log(this.collection.length);
                 this.fillModelsWithMarkers();
-                console.log(this.collection.length);
-                this.collection.each(this.addMarker, this)
+                // console.log(this.collection.length);
+                this.collection.each(this.addMarker, this);
             },
 
             addMarker: function(model) {
@@ -73,7 +72,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                 //foreach fetched database data
                     //fill a model
 
-                var modelMarker = new MarkerModel;
+                var modelMarker = new MarkerModel();
 
                 modelMarker.set(
                     {
