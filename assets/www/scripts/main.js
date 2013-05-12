@@ -40,17 +40,18 @@ require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 
                     cordova.exec(null, null, 'SplashScreen', 'hide', []);
                 }
 
+                //appending certain namespaces to the window
                 window.App = {
                     dbInstantion: window.openDatabase("voetstappen", "1.0", "voetstappen", 2000000),
                     dbClass: db,
                     Vent: _.extend({}, Backbone.Events),
                     StackNavigator: new Backstack.StackNavigator({el: '#container'}),
-                    userModel: new UserModel,
+                    userModel: new UserModel
                 };
 
                 App.StackNavigator.pushView(new SplashScreenView);
 
-                //init database, who will be repsonsible for rendering the first view
+                //init database, which will be repsonsible for rendering the first view, the map view
                 App.dbClass.initialize();
 
             }

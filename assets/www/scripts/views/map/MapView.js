@@ -1,19 +1,16 @@
-/**
- * Created by Piotr Walczyszyn (outof.me | @pwalczyszyn)
- *
- * User: pwalczys
- * Date: 2/16/12
- * Time: 9:53 AM
- */
-
 define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/MarkerView', 'models/MarkerModel'],
     function (_, Backbone, MapViewTemplate, MarkerView, MarkerModel) {
         var MapView = Backbone.View.extend({
             initialize: function() {
+
                 var self = this;
                 $('#logout').on('click', function(){
                     self.logout();
                 });
+                $('#logout').text('LADEN');
+
+                App.Vent.on('loadingMarkers:done', this.aap, this)
+                
             },
             events:{
                 'click #btnBack':'btnBack_clickHandler'
@@ -21,6 +18,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
             attributes: {
                 id: 'map'
+            },
+
+            aap: function() {
+                $('#logout').text('KLARA');  
+                console.log('exectued');            
             },
 
 
@@ -34,16 +36,17 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
             },
 
             initMap: function() {
+
                 var self = this;
 
-                window.map = new GMaps({
-                    div: self.el,
-                    lat: 52.668055,
-                    lng: 5.193787,
-                    zoom: 10
-                }); 
+                // window.map = new GMaps({
+                //     div: self.el,
+                //     lat: 52.668055,
+                //     lng: 5.193787,
+                //     zoom: 10
+                // }); 
 
-                this.getPosition(5000);
+                // this.getPosition(5000);
 
                 //if collection.length != 0 fill it with database data
                 // console.log(this.collection.length);
@@ -56,13 +59,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                 //instantions are camelcase
                 //var markerView = new MarkerView({ model:  MarkerModel })
 
-                window.map.addMarker({
-                  lat: model.get('lat'),
-                  lng: model.get('lng'),
-                  click : function() {
-                    console.log('a location');
-                  }
-                });
+                // window.map.addMarker({
+                //   lat: model.get('lat'),
+                //   lng: model.get('lng'),
+                //   click : function() {
+                //     console.log('a location');
+                //   }
+                // });
 
                 //this.$el.append(markerView.render().el);
             },
@@ -71,6 +74,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
                 //foreach fetched database data
                     //fill a model
+
+                var footsteps = App.dbClass.initRetrieveLocalFootsteps();
+
+                console.log(footsteps);
 
                 var modelMarker = new MarkerModel();
 
@@ -81,6 +88,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                     });
 
                 this.collection.add(modelMarker);
+
+                App.Vent.trigger('loadingMarkers:done');
                 //end foreach
 
             },
