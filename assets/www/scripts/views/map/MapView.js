@@ -29,7 +29,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //set up map
 
                 //get google maps object for latlng of amsterdam
-                var latlng = new google.maps.LatLng(52.374004, 4.890359);
+                var latlng = new google.maps.LatLng(52.374004, 4.890359),
+                    self = this;
 
                 // options for the map
                 this.mapOptions = {
@@ -41,22 +42,27 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 };
 
                 //use native javascript so google maps can chain native on it
-                if(!$("#map").attr('data-maploaded')) {
-                    this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
+                // do something only the first time the map is loaded
 
-                    $("#map").data('maploaded', true);
+                    if(!$("#map").attr('data-maploaded')) {
+                        this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
 
-                    this.getOwnPosition(5000);
+                        google.maps.event.addListenerOnce(this.map, 'idle', function(){
+                            $("#map").data('maploaded', true);
 
-                    //call function out of the db.js object
-                    App.dbClass.retrieveLocalFootsteps(this.setFootsteps);
-                    //listen for when it's done due to async problems
-                    App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
-                    //models are present from previous load, directly add markers
-                 
-                } else {
-                    console.log('map already present');
-                }
+                            //call function out of the db.js object
+                            App.dbClass.retrieveLocalFootsteps(self.setFootsteps);
+                            //listen for when it's done due to async problems
+                            App.Vent.on('retrievingFootsteps:done', self.afterSettingFootsteps, self);
+                            //models are present from previous load, directly add markers
+
+                            self.getOwnPosition(10000);
+                        });
+                     
+                    } else {
+                        console.log('map already present');
+                    }
+             
                
                 //if collection.length != 0 fill it with database data
          

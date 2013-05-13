@@ -49,6 +49,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                         console.log(result);
                         if(result.status == Sha1.hash('notfound')) {
                             alert('Wrong username or password');
+                            return;
                         } else if(result.status == Sha1.hash('success')) {
                             //empty out the inputs
                             self.username.val('');
@@ -63,12 +64,14 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             validateUsernameAndPassword: function(username_el, password_el) {
-                console.log(username_el.val().length);
+
                 if(username_el.val().length == 0 || password_el.val().length == 0) {
                     return false;
                 } else {
                     return true;
                 }
+
+                return false;
             },
 
             //set a global accesable user model so we can keep track of the user id etc.
@@ -80,7 +83,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             loginSuccess: function() {
                 //create a local user in the local database
                 console.log(App.userModel.attributes);
-                App.dbClass.initLocalUserCreating()
+                App.dbClass.initLocalUserCreating();
                 App.dbClass.initSynchronizing();
                 App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
             },
