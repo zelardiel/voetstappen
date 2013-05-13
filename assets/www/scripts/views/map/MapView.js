@@ -40,16 +40,19 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
                 // this.getPosition(5000);
 
-                App.dbClass.initRetrieveLocalFootsteps(this.setFootsteps);
+                //call function out of the db.js object
+                App.dbClass.retrieveLocalFootsteps(this.setFootsteps);
 
                 //listen for when it's done due to async problems
-                App.Vent.on('loadingMarkers:done', this.afterSettingFootsteps, this);
+                App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
 
                 //if collection.length != 0 fill it with database data
          
 
             },
 
+            //this function get's exectued after triggering backbone custom event for dealing
+            //with async problem
             afterSettingFootsteps: function() {
                 $('#logout').text('KLARA');  
                 console.log('exectued');
@@ -99,6 +102,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                 //end foreach
             },
 
+            //this is the callback of the retrieveLocalFootsteps function
             setFootsteps: function(tx, results) {
                 window.footsteps = [];
 
@@ -106,7 +110,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                     window.footsteps.push(results.rows.item(i));
                 }
 
-                App.Vent.trigger('loadingMarkers:done');
+                //trigger backbone custom event to deal with async problems
+                App.Vent.trigger('retrievingFootsteps:done');
                 
 
             },

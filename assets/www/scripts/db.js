@@ -323,7 +323,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			/***
 			* CONTENT AND MARKER FILLING
 			***/
-
+			retrieveLocalFootsteps: function(callback) {
 				var data = function getData(){
 					var dfd = $.Deferred();
 
@@ -336,6 +336,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		        	return dfd.promise();
 				}
 
+				//return deferred is done(.then) function with the sent callback to this function
 				return data().then(callback);
 			},
 		};
