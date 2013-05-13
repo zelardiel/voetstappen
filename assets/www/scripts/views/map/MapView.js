@@ -9,7 +9,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                 });
                 $('#logout').text('LADEN');
 
-                App.Vent.on('loadingMarkers:done', this.aap, this)
+                App.Vent.on('loadingMarkers:done', this.finishedLoading, this)
                 
             },
             events:{
@@ -20,13 +20,14 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                 id: 'map'
             },
 
-            aap: function() {
+            finishedLoading: function() {
                 $('#logout').text('KLARA');  
-                console.log('exectued');            
+                console.log('exectued');
+                console.log(footsteps)            
             },
 
 
-            render:function () {
+            render: function () {
                 //dont use a template because we are doing everything with marker adding
                 this.render.$el;                    
                 //do this after rendering 
@@ -73,14 +74,16 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
             fillModelsWithMarkers: function() {
 
                 //foreach fetched database data
-                    //fill a model
-
-                var footsteps = App.dbClass.initRetrieveLocalFootsteps();
+                var self = this;
+                //this.footsteps[] will be set - note: setFootsteps is passed as callback to retrieve the result in this view
+                App.dbClass.initRetrieveLocalFootsteps(this.setFootsteps);
+                
 
                 console.log(footsteps);
-
+                //instantiate model
                 var modelMarker = new MarkerModel();
 
+                //fill a model
                 modelMarker.set(
                     {
                         lat: 52.668055, 
@@ -91,6 +94,15 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
                 App.Vent.trigger('loadingMarkers:done');
                 //end foreach
+            },
+
+            setFootsteps: function(tx, results) {
+                var footsteps = [];
+
+                for (var i = 0; i < results.rows.length; i++) {
+                    footsteps.push(results.rows.item(i));
+                }
+                
 
             },
 

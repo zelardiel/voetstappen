@@ -307,7 +307,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					       		App.dbInstantion.transaction(function(tx){
 					         		tx.executeSql('INSERT OR REPLACE INTO scores(score_id, points, user_id, updated_at) VALUES(?, ?, ?, ?)', 
 					          			[val.score_id, val.points, val.user_id, val.updated_at],
-					          			self.syncQuerySuccess,  self.errorCB
+					          			self.syncQuerySuccess, self.errorCB
 					         		);
 					        	}, self.errorCB);
 					        } 
@@ -324,7 +324,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			* CONTENT AND MARKER FILLING
 			***/
 
-			initRetrieveLocalFootsteps: function() {
+			initRetrieveLocalFootsteps: function(callback) {
 				var footsteps = [];
 
 				var data = function getData(){
@@ -339,17 +339,15 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		        	return dfd.promise();
 				}
 
-				data().then(function(tx, results) {
-					console.log(results);
-					for (var i = 0; i < results.rows.length; i++) {
-      					footsteps.push(results.rows.item(i));
-      				}
+				data().then(callback.apply(self));
 
-      				
-				});
+
+					// 
+     //  				return footsteps;
+				
 
 				//does not fucking work - fix required
-				return footsteps;
+				//return footsteps;
 			},
 		};
 		return db;
