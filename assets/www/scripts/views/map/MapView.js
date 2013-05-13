@@ -93,7 +93,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             fillModelsWithMarkers: function() {
                 var self = this;
 
-                if(this.footsteps.length != 0) {
+                if(self.collection.length === 0) {
                    $.each(self.footsteps, function(index, val){
                         //instantiate model which is gonna be pushed into the collection
                         var modelMarker = new MarkerModel();
@@ -111,8 +111,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         self.collection.add(modelMarker);
                     });
 
-                } else {
-                    alert('Geen voestappen gevonden');
                 }
                
             },
@@ -122,7 +120,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
 
                 // make a variable that contains an image
-                var footstep_image = '../../img/voetstap2.png';
+                var footstep_image = './img/voetstap2.png';
                 // voetstapNietGevonden = '../../img/voetstap1.png',
                 // voetstap1position = ;
 
@@ -147,7 +145,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     return;
                 }
 
-                console.log('through');
                 var self = this,
                     circleRadius = 500,
                     latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
