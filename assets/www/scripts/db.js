@@ -324,7 +324,20 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			* CONTENT AND MARKER FILLING
 			***/
 
+				var data = function getData(){
+					var dfd = $.Deferred();
 
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('SELECT * FROM footsteps', [],
+		          			dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				return data().then(callback);
+			},
 		};
 		return db;
 	});

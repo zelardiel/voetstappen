@@ -8,8 +8,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
                     self.logout();
                 });
                 $('#logout').text('LADEN');
-
-                App.Vent.on('loadingMarkers:done', this.finishedLoading, this)
                 
             },
             events:{
@@ -19,13 +17,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
             attributes: {
                 id: 'map'
             },
-
-            finishedLoading: function() {
-                $('#logout').text('KLARA');  
-                console.log('exectued');
-                console.log(footsteps)            
-            },
-
 
             render: function () {
                 //dont use a template because we are doing everything with marker adding
@@ -49,11 +40,26 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
                 // this.getPosition(5000);
 
+                App.dbClass.initRetrieveLocalFootsteps(this.setFootsteps);
+
+                //listen for when it's done due to async problems
+                App.Vent.on('loadingMarkers:done', this.afterSettingFootsteps, this);
+
                 //if collection.length != 0 fill it with database data
-                // console.log(this.collection.length);
+         
+
+            },
+
+            afterSettingFootsteps: function() {
+                $('#logout').text('KLARA');  
+                console.log('exectued');
+
+                //set view's variable
+                this.footsteps = window.footsteps;
+                //clear ugly window variable
+                window.footsteps = null;  
+
                 this.fillModelsWithMarkers();
-                // console.log(this.collection.length);
-                this.collection.each(this.addMarker, this);
             },
 
             addMarker: function(model) {
@@ -72,14 +78,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
             },
 
             fillModelsWithMarkers: function() {
-
-                //foreach fetched database data
                 var self = this;
-                //this.footsteps[] will be set - note: setFootsteps is passed as callback to retrieve the result in this view
-                App.dbClass.initRetrieveLocalFootsteps(this.setFootsteps);
-                
 
-                console.log(footsteps);
+                self.collection.each(this.addMarker, this);
+
                 //instantiate model
                 var modelMarker = new MarkerModel();
 
@@ -92,16 +94,19 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
                 this.collection.add(modelMarker);
 
-                App.Vent.trigger('loadingMarkers:done');
+                console.log(this.collection);
+                
                 //end foreach
             },
 
             setFootsteps: function(tx, results) {
-                var footsteps = [];
+                window.footsteps = [];
 
                 for (var i = 0; i < results.rows.length; i++) {
-                    footsteps.push(results.rows.item(i));
+                    window.footsteps.push(results.rows.item(i));
                 }
+
+                App.Vent.trigger('loadingMarkers:done');
                 
 
             },

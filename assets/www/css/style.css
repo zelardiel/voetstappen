@@ -13,10 +13,12 @@ body, html {
     overflow: hidden;
 }
 
+/*De container*/
 section {
     display: block;
 }
 
+/*De header met de titel en de scoreknop + logout*/
 section header {
     background: white;
     width: 100%;
@@ -54,6 +56,27 @@ section header a {
     width: 30px;
 }
 
+section header a p {
+    top: -.6em;
+    right: 2.5em;
+    position: absolute;
+    text-align: right;
+}
+
+section header a.logout {
+    background: url(../img/button.jpg);
+    background-size: cover;
+    border: none;
+    border-radius: .1em;
+    -webkit-box-shadow:  1px 1px 2px 0px #666;
+    box-shadow:  1px 1px 2px 0px #666;
+    position: absolute;
+    height: 30px;
+    margin: .5em;
+    width: 30px;
+    right: 0;
+}
+
 section header a:hover {
     opacity: .8;
 }
@@ -63,6 +86,60 @@ section header a:active {
     border-radius: .15em;
 }
 
+/*login formulier*/
+section article.login {
+    bottom: 50px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    margin-top: 1em;
+    background: white;
+    border-radius: 1px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    position: absolute; 
+
+    -webkit-box-shadow:  2px 2px 3px 0 #666;
+    box-shadow:  2px 2px 3px 0 #666;
+}
+
+section form#login li {
+    list-style: none;
+}
+
+section form#login label {
+    display: block;
+}
+
+section button#to-signup {
+    margin-left: 3em;
+}
+
+section button, form#login input[type="submit"] {
+    background: #bbb;
+    background-size: cover;
+    border: none;
+    border-radius: .1em;
+    -webkit-box-shadow:  1px 1px 2px 0px #666;
+    box-shadow:  1px 1px 2px 0px #666;
+    color: #666;
+    display: block;
+    height: 30px;
+    margin: .5em;
+    width: 150px;
+}
+
+section button:hover, form#login input[type="submit"]:hover {
+    opacity: .8;
+}
+
+section button:active, form#login input[type="submit"]:active {
+    box-shadow: none;
+    border-radius: .15em;
+}
+/*eind login formulier*/
+
+/*content*/
 section section.content {
     width: 100%;
     top: 48px;
@@ -146,23 +223,35 @@ section section.content article section a:active {
     box-shadow: none;
     border-radius: .15em;
 }
+/*eind content*/
 
-/*#map {
+#map {
     -webkit-box-shadow:  0px 0px 3px 0px rgba(0, 0, 0, 1);
     box-shadow:  0px 0px 3px 0px rgba(0, 0, 0, 1);
     border-radius: 3px;
     right: 0px;
-    bottom: 50px;
+    bottom: 100px;
     top: 50px;
     left: 0px;
     overflow: hidden;
     margin-top: 0;
-    position: absolute;
+    position: relative;
+    z-index: 1;
 }
 
 #map a[title] {
     display: block;
-}*/
+}
+
+div.overlay {
+    width: 100%;
+    height: 500px;
+    background: url(../img/world.jpg);
+}
+
+title {
+    display: none;
+}
 
 section footer {
     background: white;
@@ -173,6 +262,7 @@ section footer {
 
     -webkit-box-shadow:  2px 2px 3px 0 #666;
     box-shadow:  2px 2px 3px 0 #666;
+    z-index: 999
 }
 
 section footer a {
@@ -213,6 +303,9 @@ section footer section {
         -ms-transition: all 500ms ease-in-out;
         -o-transition: all 500ms ease-in-out;
         transition: all 500ms ease-in-out;
+
+    -webkit-box-shadow:  2px -2px 3px 0 #666;
+    box-shadow:  2px -2px 3px 0 #666;
 }
 
 section footer section p {
@@ -274,6 +367,9 @@ section span {
         -ms-transition: all 500ms ease-in-out;
         -o-transition: all 500ms ease-in-out;
         transition: all 500ms ease-in-out;
+
+    -webkit-box-shadow:  0px -2px 3px 0 #666;
+    box-shadow:  0px -2px 3px 0 #666;
 }
 
 /*the slide menu*/
