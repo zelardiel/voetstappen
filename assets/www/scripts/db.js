@@ -101,9 +101,9 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 		    createUserLocal: function(tx) {
-		    	var user_id = App.userModel.get('user_id');
-		    	var username = App.userModel.get('username'); 
-		    	var password = App.userModel.get('password');
+		    	var user_id = App.userModel.get('user_id'),
+		    		username = App.userModel.get('username'),
+		    		password = App.userModel.get('password');
 
 		    	tx.executeSql('INSERT OR IGNORE INTO users(user_id, username, password, active, updated_at) VALUES(?, ?, ?, ?, ?)', [user_id, username, password, 1, db.getTimeStamp()]);
 		    },
@@ -121,7 +121,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			    // if there was a result, continue to Mapview
 			    if(results.rows.length != 0) {
 	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
-	                //start synchornizing right now
+	                
+	                //start synchornizing right now TEMPORARILY COMMENTED OUT
 	                db.initSynchronizing();
 	                App.StackNavigator.pushView(new MapView({ collection: new MarkerCollection }));
 	            //else, the app 

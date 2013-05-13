@@ -1,5 +1,5 @@
-define(['jquery', 'underscore', 'Backbone', 'models/MarkerModel'],
-	function($, _, Backbone, MarkerModel) {
+define(['jquery', 'underscore', 'Backbone'],
+	function($, _, Backbone) {
 		var MarkerCollection = Backbone.Collection.extend({  
 
 		});

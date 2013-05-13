@@ -1,15 +1,12 @@
-define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/MarkerView', 'models/MarkerModel'],
-    function (_, Backbone, MapViewTemplate, MarkerView, MarkerModel) {
+define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel'],
+    function (_, Backbone, MapViewTemplate, MarkerModel) {
         var MapView = Backbone.View.extend({
             initialize: function() {
-
-                var self = this;
-                $('#logout').on('click', function(){
-                    self.logout();
-                });
-                $('#logout').text('LADEN');
-                
+                //listen for if a model is added to the markercollection do this..
+                this.collection.bind('add', this.addMarker, this);  
+                this.collection.bind('add', this.addMarkerRadius, this);                
             },
+
             events:{
                 'click #btnBack':'btnBack_clickHandler'
             },
@@ -19,8 +16,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
             },
 
             render: function () {
-                //dont use a template because we are doing everything with marker adding
-                this.render.$el;                    
+                
+                this.$el.html(_.template(MapViewTemplate));                    
                 //do this after rendering 
                 this.initMap();
 
@@ -29,77 +26,41 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
             initMap: function() {
 
-                var self = this;
+                //set up map
 
-                // window.map = new GMaps({
-                //     div: self.el,
-                //     lat: 52.668055,
-                //     lng: 5.193787,
-                //     zoom: 10
-                // }); 
+                //get google maps object for latlng of amsterdam
+                var latlng = new google.maps.LatLng(52.374004, 4.890359);
 
-                // this.getPosition(5000);
+                // options for the map
+                this.mapOptions = {
+                    zoom: 12,
+                    center: latlng,
+                    mapTypeControl: false,
+                    navigationControl: false,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
 
-                //call function out of the db.js object
-                App.dbClass.retrieveLocalFootsteps(this.setFootsteps);
+                //use native javascript so google maps can chain native on it
+                if(!$("#map").attr('data-maploaded')) {
+                    this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
 
-                //listen for when it's done due to async problems
-                App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
+                    $("#map").data('maploaded', true);
 
+                    this.getOwnPosition(5000);
+
+                    //call function out of the db.js object
+                    App.dbClass.retrieveLocalFootsteps(this.setFootsteps);
+                    //listen for when it's done due to async problems
+                    App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
+                    //models are present from previous load, directly add markers
+                 
+                } else {
+                    console.log('map already present');
+                }
+               
                 //if collection.length != 0 fill it with database data
          
 
-            },
-
-            //this function get's exectued after triggering backbone custom event for dealing
-            //with async problem
-            afterSettingFootsteps: function() {
-                $('#logout').text('KLARA');  
-                console.log('exectued');
-
-                //set view's variable
-                this.footsteps = window.footsteps;
-                //clear ugly window variable
-                window.footsteps = null;  
-
-                this.fillModelsWithMarkers();
-            },
-
-            addMarker: function(model) {
-                //instantions are camelcase
-                //var markerView = new MarkerView({ model:  MarkerModel })
-
-                // window.map.addMarker({
-                //   lat: model.get('lat'),
-                //   lng: model.get('lng'),
-                //   click : function() {
-                //     console.log('a location');
-                //   }
-                // });
-
-                //this.$el.append(markerView.render().el);
-            },
-
-            fillModelsWithMarkers: function() {
-                var self = this;
-
-                self.collection.each(this.addMarker, this);
-
-                //instantiate model
-                var modelMarker = new MarkerModel();
-
-                //fill a model
-                modelMarker.set(
-                    {
-                        lat: 52.668055, 
-                        lng: 5.193787 
-                    });
-
-                this.collection.add(modelMarker);
-
-                console.log(this.collection);
-                
-                //end foreach
             },
 
             //this is the callback of the retrieveLocalFootsteps function
@@ -112,27 +73,142 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'views/map/Marke
 
                 //trigger backbone custom event to deal with async problems
                 App.Vent.trigger('retrievingFootsteps:done');
-                
-
             },
 
-            getPosition : function(timeoutInSeconds) {
-                var options = { timeout: timeoutInSeconds, enableHighAccuracy: true  };
-                navigator.geolocation.watchPosition(this.onSuccesOfGettingLocation, this.onErrorGettingLocation, options);
+            //this function get's exectued after triggering backbone custom event for dealing
+            //with async problem
+            afterSettingFootsteps: function() {
+                //instead of using the window context, put it in the view's context
+                this.footsteps = window.footsteps;
+
+                //clear ugly window variable
+                window.footsteps = null;
+
+                //now we can fill models with markers since the data is available
+                this.fillModelsWithMarkers();
             },
 
-            onSuccesOfGettingLocation: function(position) {
+            //foreach each local data object of the footsteps table fill a backbone model so we
+            //can set markers with the model it's attributes
+            fillModelsWithMarkers: function() {
+                var self = this;
 
-                window.map.addMarker({
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                  click : function() {
-                    console.log('my own location');
-                  }
+                if(this.footsteps.length != 0) {
+                   $.each(self.footsteps, function(index, val){
+                        //instantiate model which is gonna be pushed into the collection
+                        var modelMarker = new MarkerModel();
+
+                        modelMarker.set(
+                        {
+                            footstep_id: val.footstep_id,
+                            title: val.title,
+                            image_id: val.image_id,
+                            latitude: val.latitude,
+                            longitude: val.longitude,
+                            updated_at: val.updated_at
+                        });
+
+                        self.collection.add(modelMarker);
+                    });
+
+                } else {
+                    alert('Geen voestappen gevonden');
+                }
+               
+            },
+
+            addMarker: function(model) {
+                var self = this,
+                    latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
+
+                // make a variable that contains an image
+                var footstep_image = '../../img/voetstap2.png';
+                // voetstapNietGevonden = '../../img/voetstap1.png',
+                // voetstap1position = ;
+
+                // Drop Voetstap1 marker with image from image variable
+                var footsep_marker = new google.maps.Marker({
+                    footstep_id: model.footstep_id,
+                    position: latlng, 
+                    map: self.map, 
+                    title: model.get('title'),
+                    icon: footstep_image
                 });
+
+                google.maps.event.addListener(footsep_marker, 'click', function() { 
+                    alert('FOOTSTEP_ID' + " " + model.get('footstep_id') + " " + "GOTO VIEW" );
+                }); 
+
             },
 
-            onErrorGettingLocation: function(error) {
+            addMarkerRadius: function(model) {
+                 //check for own position, which obviously doesnt need a radius
+                if(model.get('footstep_id') === 0) {
+                    return;
+                }
+
+                console.log('through');
+                var self = this,
+                    circleRadius = 500,
+                    latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
+
+                // Place a circle that will cause the push
+                var circle = new google.maps.Circle({
+                    map: self.map,
+                    radius: circleRadius,
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    center: latlng,
+                    strokeWeight: 3,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35
+                });
+
+
+                // Get the bounds of the circle
+                var bounds = circle.getBounds();
+
+                // Check if our extracted latlng is in this bounds
+                // if (bounds.contains(latlng)){
+                //     //Redirect
+                //     alert('HIT!');
+                // }
+            },
+
+            //OWN POSITION FUNCTIONS
+
+            getOwnPosition : function(timeoutInSeconds) {
+                //magic context swap trick
+                window.collection = this.collection;
+                var options = { timeout: timeoutInSeconds, enableHighAccuracy: true  };
+                navigator.geolocation.watchPosition(this.onSuccesGetOwnPosition, this.onErrorGetPosition, options);
+            },
+
+            onSuccesGetOwnPosition: function(position) {
+                //since window is available in this context use it
+                this.collection = window.collection;
+
+                //create model with our own location..
+                var modelMarker = new MarkerModel();
+
+                modelMarker.set(
+                {
+                    footstep_id: 0, //0 = own position
+                    title: 'Uw locatie',
+                    image_id: 1,
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    updated_at: 0
+                });
+
+                this.collection.add(modelMarker);
+
+                //undo magic swap trick
+                window.collection = null;
+
+            },
+
+            onErrorGetPosition: function(error) {
                alert('code: '    + error.code    + '\n' +
                 'message: ' + error.message + '\n');
             },

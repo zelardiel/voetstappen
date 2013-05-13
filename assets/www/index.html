@@ -9,20 +9,53 @@
     <link rel="stylesheet" type="text/css" href="css/style.css" media="all"/>
 
     <script type="text/javascript" src="scripts/libs/cordova/cordova-2.5.0.js"></script>
-    <script type="text/javascript" src="scripts/libs/barcodescanner/barodescanner.js"></script>
+    <script type="text/javascript" src="scripts/libs/barcodescanner/barcodescanner.js"></script>
 	
 	<!-- maps -->
 	<script type="text/javascript" src="scripts/libs/maps/google_maps_api.js"></script>
-	<script type="text/javascript" src="scripts/libs/maps/gmaps.js"></script> 
 
  	<script data-main="scripts/main" src="scripts/libs/require/require.js"></script>
 
 </head>
 <body>
 	<!-- CONTAINER FOR ALL RENDERED BACKBONE VIEWS -->
-	<div id="container" class="content">
-		<button id="logout">logout</button>
+	<section>
+		<header class="slide">
+			<a href="#" class="showMenu"></a>
+			<h1>Voetstappen in de Gouden Eeuw</h1>
+		</header>
 
-	</div>
+		<section id="container" class="slide content">
+			
+
+		</section>
+
+		<footer class="slide">
+			<section class="legenda" style="display: none;">
+				<p><img src="img/voetstap1.png">Onontdekt</p>
+				<p><img src="img/voetstap2.png">Blaeu</p>
+				<p><img src="img/voetstap3.png">Rood</p>
+				<p><img src="img/voetstap4.png">Groen</p>
+				<p><img src="img/voetstap5.png">Paars</p>
+				<p><img src="img/voetstap6.png">QR-codes</p>
+			</section>
+			<span class="hide"><img src="img/arow.png"></span>
+			<a></a>
+		</footer>
+		</section>
+
+		<div id="menu" style="display: none;">
+			<h1>Score</h1>
+		    <article>
+		    	<h1>Simone v. Velde</h1>
+		    	<img src="img/rank-figure.png">
+		    	<p>Totaal:<b class="first">20pt</b></p>
+		    	<p>Voetstappen:<b>20pt</b></p>
+		    	<p>QR-codes:<b>20pt</b></p>
+		    	<p>Opdrachten:<b>20pt</b></p>
+		    </article>
+		</div>
+
+	</section><!-- end container -->
 </body>
 </html>
