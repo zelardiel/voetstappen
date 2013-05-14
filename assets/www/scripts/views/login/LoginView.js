@@ -85,13 +85,8 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 console.log(App.userModel.attributes);
                 App.dbClass.initLocalUserCreating();
 
-                var syncing = function() {
-                    var dfd = $.Deferred();
-                    App.dbClass.initSynchronizing();
-                    dfd.resolve();
-
-                    return dfd.promise();
-                };
+                App.dbClass.initSynchronizing();
+               
 
                 syncing.done(function(){
                      console.log('much later');
