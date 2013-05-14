@@ -84,10 +84,10 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 App.dbClass.initSynchronizing();
                
 
-                syncing.done(function(){
+                //syncing.done(function(){
                      console.log('much later');
                      App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
-                });
+               // });
                
             },
 

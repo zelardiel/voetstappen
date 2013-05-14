@@ -1,10 +1,15 @@
-define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel'],
-    function (_, Backbone, MapViewTemplate, MarkerModel) {
+define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView'],
+    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView) {
         var MapView = Backbone.View.extend({
             initialize: function() {
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.addMarker, this);  
-                this.collection.bind('add', this.addMarkerRadius, this);                
+                this.collection.bind('add', this.addMarkerRadius, this);
+                $("#scan").click(function() {
+                    console.log('bots');
+                    App.StackNavigator.pushView(new ScannerView);
+                });
+               
             },
 
             events:{
@@ -229,6 +234,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
         });
-
+        
+        
         return MapView;
     });
