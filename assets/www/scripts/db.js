@@ -331,7 +331,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 					App.dbInstantion.transaction(function(tx){
 		         		tx.executeSql('SELECT * FROM footsteps', [],
-		          			function() { dfd.resolve }, self.errorCB
+		          			dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 

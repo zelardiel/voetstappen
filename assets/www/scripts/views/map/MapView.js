@@ -8,7 +8,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             events:{
-                'click #btnBack':'btnBack_clickHandler'
+                'click #btnBack':'btnBack_clickHandler',
+				'click #scan':'scanClickHandler'
             },
 
             attributes: {
@@ -16,8 +17,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             render: function () {
-                
-                this.$el.html(_.template(MapViewTemplate));                    
+                //dont use a template because we are doing everything with marker adding
+                this.$el.html(_.template(MapViewTemplate));
+				
                 //do this after rendering 
                 this.initMap();
 
@@ -115,11 +117,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         });
 
                         self.collection.add(modelMarker);
-                    });
-
-                }
-               
-            },
+			},
 
             addMarker: function(model) {
                 var self = this,
@@ -218,6 +216,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             btnBack_clickHandler: function (event) {
                
+            },
+			
+			scanClickHandler: function (event) {
+			console.log("werk");
+               App.StackNavigator.pushView(new ScannerView);
             },
 
             logout: function() {
