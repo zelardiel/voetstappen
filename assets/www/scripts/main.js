@@ -49,6 +49,11 @@ require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 
                     userModel: new UserModel
                 };
 
+                //set default transition
+                this.fade = new Backstack.FadeEffect();
+
+                App.StackNavigator.defaultPushTransition = this.fade;
+
                 App.StackNavigator.pushView(new SplashScreenView);
 
                 //init database, which will be repsonsible for rendering the first view, the map view

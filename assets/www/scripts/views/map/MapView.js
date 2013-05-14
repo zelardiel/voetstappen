@@ -5,11 +5,14 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.addMarker, this);  
                 this.collection.bind('add', this.addMarkerRadius, this);
+
+                //if view is active start adding map
+                this.on('viewActivate', this.appendMap, this);   
+
                 $("#scan").click(function() {
                     console.log('bots');
                     App.StackNavigator.pushView(new ScannerView);
-                });
-               
+                });        
             },
 
             events:{
@@ -24,20 +27,14 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             render: function () {
                 //dont use a template because we are doing everything with marker adding
                 this.$el.html(_.template(MapViewTemplate));
-				
-                //do this after rendering 
-                this.initMap();
 
                 return this;
             },
 
-            initMap: function() {
+            appendMap: function() {
 
-                //set up map
-
-                //get google maps object for latlng of amsterdam
                 var latlng = new google.maps.LatLng(52.374004, 4.890359),
-                    self = this;
+                self = this;
 
                 // options for the map
                 this.mapOptions = {
@@ -48,28 +45,32 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
 
-                //use native javascript so google maps can chain native on it
-                // do something only the first time the map is loaded
+                
+                if(!$("#map").attr('data-maploaded')) {
+                    // this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
+                    $("#map").data('maploaded', true);
+
+                    this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
+
+                    //after map is loaded start loading markers from database
+                    google.maps.event.addListenerOnce(this.map, 'idle', function(){
+                        self.initGetDatabaseFootsteps();
+                    });
+                 
+                } else {
+                    console.log('map already present');
+                }
+              
+            },
+
+            initGetDatabaseFootsteps: function() {
+                //set up map
+                var self = this;
 
                 //call function out of the db.js object
                 App.dbClass.retrieveLocalFootsteps(self.setFootsteps);
                 //listen for when it's done due to async problems
                 App.Vent.on('retrievingFootsteps:done', self.afterSettingFootsteps, self);
-
-                if(!$("#map").attr('data-maploaded')) {
-                    console.log('here');
-                    this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
-
-                    $("#map").data('maploaded', true);
-
-                    //models are present from previous load, directly add markers
-
-                    self.getOwnPosition(10000);
-                 
-                } else {
-                    console.log('map already present');
-                }
-
             },
 
             //this is the callback of the retrieveLocalFootsteps function
@@ -90,8 +91,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //instead of using the window context, put it in the view's context
                 this.footsteps = window.footsteps;
 
-                //clear ugly window variable
-                // window.footsteps = null;
+                //AFTER GETTING DATABASE MARKERS GET OWN MARKER
+                this.getOwnPosition(10000); 
 
                 //now we can fill models with markers since the data is available
                 this.fillModelsWithMarkers();

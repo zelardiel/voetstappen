@@ -61,7 +61,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
             validateUsernameAndPassword: function(username_el, password_el) {
 
-                if(username_el.val().length == 0 || password_el.val().length == 0) {
+                if(username_el.val().length === 0 || password_el.val().length === 0) {
                     return false;
                 } else {
                     return true;
@@ -79,16 +79,11 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             loginSuccess: function() {
                 //create a local user in the local database
                 console.log(App.userModel.attributes);
+                
                 App.dbClass.initLocalUserCreating();
 
-                App.dbClass.initSynchronizing();
-               
-
-                //syncing.done(function(){
-                     console.log('much later');
-                     App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
-               // });
-               
+                //this also sends it through to the mapview
+                App.dbClass.initUserChecking();   
             },
 
             goToSignup: function() {
