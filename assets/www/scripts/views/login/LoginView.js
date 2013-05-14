@@ -51,10 +51,6 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                             alert('Wrong username or password');
                             return;
                         } else if(result.status == Sha1.hash('success')) {
-                            //empty out the inputs
-                            self.username.val('');
-                            self.password.val('');
-
                             //fill the user model
                             self.setUserModel(result.user_id, result.username, result.password);
                             self.loginSuccess();

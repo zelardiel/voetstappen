@@ -139,6 +139,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 google.maps.event.addListener(footsep_marker, 'click', function() { 
                     alert('FOOTSTEP_ID' + " " + model.get('footstep_id') + " " + "GOTO VIEW" );
                 });
+
+                console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
             },
 
             addMarkerRadius: function(model) {
