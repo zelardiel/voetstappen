@@ -325,12 +325,13 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			* CONTENT AND MARKER FILLING
 			***/
 			retrieveLocalFootsteps: function(callback) {
+				var self = this;
 				var data = function getData(){
 					var dfd = $.Deferred();
 
 					App.dbInstantion.transaction(function(tx){
 		         		tx.executeSql('SELECT * FROM footsteps', [],
-		          			dfd.resolve, self.errorCB
+		          			function() { dfd.resolve }, self.errorCB
 		         		);
 		        	}, self.errorCB);
 

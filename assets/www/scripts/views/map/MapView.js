@@ -207,7 +207,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.collection.add(modelMarker);
 
                 //undo magic swap trick
-                window.collection = null;
+                //window.collection = null;
 
             },
 
