@@ -13,7 +13,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var self = this;
 				// make use of the global databaseinstation
 
-				App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ self.initUserChecking(); });
+				if(window.localStorage.getItem('dbExists') === null) {
+					App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ self.initUserChecking(); window.localStorage.setItem('dbExists', 1) });
+				} else { 
+					console.log('Not creating');
+					self.initUserChecking();
+				}
 				
 			},
 
@@ -337,6 +342,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		        	return dfd.promise();
 				}
+				console.log('happens');
 
 				//return deferred is done(.then) function with the sent callback to this function
 				return data().then(callback);

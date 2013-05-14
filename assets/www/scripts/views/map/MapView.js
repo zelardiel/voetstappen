@@ -36,7 +36,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 // options for the map
                 this.mapOptions = {
-                    zoom: 12,
+                    zoom: 8,
                     center: latlng,
                     mapTypeControl: false,
                     navigationControl: false,
@@ -46,28 +46,24 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //use native javascript so google maps can chain native on it
                 // do something only the first time the map is loaded
 
-                    if(!$("#map").attr('data-maploaded')) {
-                        this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
+                //call function out of the db.js object
+                App.dbClass.retrieveLocalFootsteps(self.setFootsteps);
+                //listen for when it's done due to async problems
+                App.Vent.on('retrievingFootsteps:done', self.afterSettingFootsteps, self);
 
-                        google.maps.event.addListenerOnce(this.map, 'idle', function(){
-                            $("#map").data('maploaded', true);
+                if(!$("#map").attr('data-maploaded')) {
+                    console.log('here');
+                    this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
 
-                            //call function out of the db.js object
-                            App.dbClass.retrieveLocalFootsteps(self.setFootsteps);
-                            //listen for when it's done due to async problems
-                            App.Vent.on('retrievingFootsteps:done', self.afterSettingFootsteps, self);
-                            //models are present from previous load, directly add markers
+                    $("#map").data('maploaded', true);
 
-                            self.getOwnPosition(10000);
-                        });
-                     
-                    } else {
-                        console.log('map already present');
-                    }
-             
-               
-                //if collection.length != 0 fill it with database data
-         
+                    //models are present from previous load, directly add markers
+
+                    self.getOwnPosition(10000);
+                 
+                } else {
+                    console.log('map already present');
+                }
 
             },
 
@@ -90,7 +86,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.footsteps = window.footsteps;
 
                 //clear ugly window variable
-                window.footsteps = null;
+                // window.footsteps = null;
 
                 //now we can fill models with markers since the data is available
                 this.fillModelsWithMarkers();
@@ -101,7 +97,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             fillModelsWithMarkers: function() {
                 var self = this;
 
-                if(self.collection.length === 0) {
+                if(self.collection.length === 0 || self.collection.length === 1) {
                    $.each(self.footsteps, function(index, val){
                         //instantiate model which is gonna be pushed into the collection
                         var modelMarker = new MarkerModel();
@@ -117,7 +113,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         });
 
                         self.collection.add(modelMarker);
+
 			},
+
 
             addMarker: function(model) {
                 var self = this,
@@ -139,8 +137,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 google.maps.event.addListener(footsep_marker, 'click', function() { 
                     alert('FOOTSTEP_ID' + " " + model.get('footstep_id') + " " + "GOTO VIEW" );
-                }); 
-
+                });
             },
 
             addMarkerRadius: function(model) {
@@ -168,6 +165,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 // Get the bounds of the circle
                 var bounds = circle.getBounds();
+        
 
                 // Check if our extracted latlng is in this bounds
                 // if (bounds.contains(latlng)){
@@ -178,7 +176,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             //OWN POSITION FUNCTIONS
 
-            getOwnPosition : function(timeoutInSeconds) {
+            getOwnPosition: function(timeoutInSeconds) {
                 //magic context swap trick
                 window.collection = this.collection;
                 var options = { timeout: timeoutInSeconds, enableHighAccuracy: true  };
@@ -188,7 +186,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             onSuccesGetOwnPosition: function(position) {
                 //since window is available in this context use it
                 this.collection = window.collection;
-
+                console.log(this.collection);
                 //create model with our own location..
                 var modelMarker = new MarkerModel();
 

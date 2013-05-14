@@ -84,8 +84,20 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 //create a local user in the local database
                 console.log(App.userModel.attributes);
                 App.dbClass.initLocalUserCreating();
-                App.dbClass.initSynchronizing();
-                App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
+
+                var syncing = function() {
+                    var dfd = $.Deferred();
+                    App.dbClass.initSynchronizing();
+                    dfd.resolve();
+
+                    return dfd.promise();
+                };
+
+                syncing.done(function(){
+                     console.log('much later');
+                     App.StackNavigator.pushView(new MapView({collection: new MarkerCollection}));
+                });
+               
             },
 
             goToSignup: function() {
