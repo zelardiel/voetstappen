@@ -113,7 +113,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         });
 
                         self.collection.add(modelMarker);
-
+                    });
+                }
 			},
 
 
