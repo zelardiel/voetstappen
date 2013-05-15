@@ -1,5 +1,5 @@
-define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView'],
-    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView) {
+define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentView'],
+    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentView) {
         var MapView = Backbone.View.extend({
             initialize: function() {
                 //listen for if a model is added to the markercollection do this..
@@ -143,7 +143,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 google.maps.event.addListener(footsep_marker, 'click', function() { 
-                    alert('FOOTSTEP_ID' + " " + model.get('footstep_id') + " " + "GOTO VIEW" );
+                    App.StackNavigator.pushView(new FootstepContentView({ footstep_id: model.get('footstep_id') }) );
                 });
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
