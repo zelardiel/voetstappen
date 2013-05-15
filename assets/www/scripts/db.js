@@ -347,6 +347,21 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				//return deferred is done(.then) function with the sent callback to this function
 				return data().then(callback);
 			},
+
+			linkUserToContent: function(footstep_contents_id) {
+				var self = this;
+				App.dbInstantion.transaction(function(tx){
+					tx.executeSql('SELECT * FROM footstep_contents_users WHERE footstep_content_id = ? AND user_id = ?', [footstep_contents_id, App.userModel.get('user_id')],
+						function(tx, results){
+							if(results.rows.length == 0){
+								tx.executeSql('INSERT INTO footstep_contents_users(footstep_content_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_contents_id, App.userModel.get('user_id')] );
+							}
+						}, self.errorCB);
+				
+				}, self.errorCB, function(tx, results) { 
+					console.log('footstep_contents_users added');
+				});	
+			},
 		};
 		return db;
 	});
