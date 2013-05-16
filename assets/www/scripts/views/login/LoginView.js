@@ -17,7 +17,12 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
     		},
 
             loginUser: function(e) {
-                e.preventDefault();
+                e.preventDefault();  
+
+                console.log('PRESSING PRESSING');
+
+                //stop in case there is a dialog active
+                navigator.notification.activityStop();             
 
                 this.form = $(e.currentTarget);
 
@@ -39,22 +44,48 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 var self = this;
 
+                navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
+
                 $.ajax({
                     type: 'POST',
+                    timeout: 8000,
                     url: 'http://www.pimmeijer.com/voetstappen/api.php',
                     data: {action: 'login', username: self.username.val(), password: self.hashed_password },
                     success: function(result) {
                         var result = $.parseJSON(result);
-
-                        console.log(result);
                         if(result.status == Sha1.hash('notfound')) {
-                            alert('Wrong username or password');
+                            //stop the loading notifiacton
+                            navigator.notification.activityStop();
+
+                            navigator.notification.alert(
+                                'Verkeerder gebruikersnaam of wachtwoord',  // message
+                                 function(){},         // callback
+                                'Inloggen mislukt!',            // title
+                                'Probeer opnieuw'                  // buttonName
+                            );
+
                             return;
                         } else if(result.status == Sha1.hash('success')) {
                             //fill the user model
                             self.setUserModel(result.user_id, result.username, result.password);
                             self.loginSuccess();
                         }
+                    }, error: function(xhr, textStatus, errorThrown) {
+                        console.log(xhr);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+
+                        navigator.notification.activityStop();
+
+                        navigator.notification.alert(
+                            'We kunnen je niet inloggen. Check je verbinding en probeer opnieuw.',  // message
+                             function(){},         // callback
+                            'Inloggen mislukt!',            // title
+                            'Probeer opnieuw'                  // buttonName
+                        );
+
+                        navigator.notification.activityStop();
+                        
                     }
                 });
             },
@@ -77,6 +108,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             loginSuccess: function() {
+                navigator.notification.activityStop();
                 //create a local user in the local database
                 console.log(App.userModel.attributes);
                 

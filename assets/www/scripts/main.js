@@ -27,8 +27,8 @@ require.config({
     }
 });
 
-require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 'backstack', 'db'],
-    function (domReady, SplashScreenView, UserModel, Backstack, db) {
+require(['domReady', 'models/UserModel', 'backstack', 'db'],
+    function (domReady, UserModel, Backstack, db) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
             //Put all the event functions of backbone inside a Vent object
@@ -39,6 +39,8 @@ require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 
                 if (desktop !== true) {
                     cordova.exec(null, null, 'SplashScreen', 'hide', []);
                 }
+
+                 
 
                 //appending certain namespaces to the window
                 window.App = {
@@ -53,8 +55,6 @@ require(['domReady', 'views/splashscreen/SplashScreenView', 'models/UserModel', 
                 this.fade = new Backstack.FadeEffect();
 
                 App.StackNavigator.defaultPushTransition = this.fade;
-
-                App.StackNavigator.pushView(new SplashScreenView);
 
                 //init database, which will be repsonsible for rendering the first view, the map view
                 App.dbClass.initialize();

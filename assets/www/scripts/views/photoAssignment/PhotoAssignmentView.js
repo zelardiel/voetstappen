@@ -3,7 +3,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
         var PhotoAssignmentView = Backbone.View.extend({
 
             initialize : function() {
-                var self = this
+                var self = this;
                 document.addEventListener("backbutton", self.previousView, false);
             },
 

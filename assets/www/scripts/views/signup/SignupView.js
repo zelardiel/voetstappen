@@ -12,7 +12,8 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'libs/encr
 
     		createUser: function(e) {
           e.preventDefault();
-          
+          navigator.notification.activityStop();     
+          navigator.notification.activityStart("Aanmaken", "Uw account wordt aangemaakt");
     			this.username = $(e.currentTarget).find('input#username');
     			this.password = $(e.currentTarget).find('input#password');
     			this.hashed_password = Sha1.hash(this.password.val());
@@ -25,13 +26,27 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'libs/encr
   					data: {action: 'signup', username: self.username.val(), password: self.hashed_password },
   					success: function(result) {
   						if(result == Sha1.hash('exists')) {
-  							alert('exists');
+  							navigator.notification.activityStop(); 
   						} else if(result == Sha1.hash('success')) {
-  							alert('saved');
+  							navigator.notification.activityStop(); 
+
+                navigator.notification.alert(
+                    'Registratie succesvol',  // message
+                     self.previousView,         // callback
+                    'Uw account is geregistreerd.',            // title
+                    'Naar het inloggen'                  // buttonName
+                );
   							self.username.val('');
   							self.password.val('');
   						}
-  					}
+  					},
+            error: function(xhr, message, errorThrown) {
+              console.log(xhr);
+              console.log(message);
+              console.log(errorThrown);
+              navigator.notification.activityStop(); 
+              navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
+            }
   				});
     		},
 

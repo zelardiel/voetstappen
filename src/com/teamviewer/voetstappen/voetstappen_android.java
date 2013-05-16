@@ -19,6 +19,7 @@
 
 package com.teamviewer.voetstappen;
 
+import com.teamviewer.voetstappen.R;
 import android.os.Bundle;
 import org.apache.cordova.*;
 
@@ -30,8 +31,8 @@ public class voetstappen_android extends DroidGap
         super.onCreate(savedInstanceState);
         // Set by <content src="index.html" /> in config.xml
         super.setIntegerProperty("loadUrlTimeoutValue", 60000);
-        super.loadUrl(Config.getStartUrl());
-        //super.loadUrl("file:///android_asset/www/index.html")
+        super.setIntegerProperty("splashscreen", R.drawable.splashscreen);
+        super.loadUrl("file:///android_asset/www/index.html", 2000);
     }
 }
 

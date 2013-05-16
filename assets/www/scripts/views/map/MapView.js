@@ -34,7 +34,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             appendMap: function() {
 
                 var latlng = new google.maps.LatLng(52.374004, 4.890359),
-                self = this;
+                    self = this;
 
                 // options for the map
                 this.mapOptions = {
@@ -226,7 +226,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 			
 			scanClickHandler: function (event) {
-			console.log("werk");
+			   console.log("werk");
                App.StackNavigator.pushView(new ScannerView);
             },
 

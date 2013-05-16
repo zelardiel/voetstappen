@@ -3,7 +3,14 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
        var FootstepContentView = Backbone.View.extend({
        		initialize: function(object){
       			console.log(object);
-       		}
+      			var self = this;
+      			document.addEventListener("backbutton", self.previousView, false);
+ 
+       		},
+
+       		previousView : function() {
+                App.StackNavigator.popView();
+            },
        });
 
        return FootstepContentView;
