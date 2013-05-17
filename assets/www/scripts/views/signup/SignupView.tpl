@@ -1,6 +1,6 @@
 <section>
 	<article class="login">
-		<form id="login" action="">
+		<form id="signup" action="">
 			<ul>
 				<li>
 					<label for="username">Gebruikersnaam</label>

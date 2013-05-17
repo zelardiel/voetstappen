@@ -22,7 +22,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 console.log('PRESSING PRESSING');
 
                 //stop in case there is a dialog active
-                navigator.notification.activityStop();             
+                // navigator.notification.activityStop();             
 
                 this.form = $(e.currentTarget);
 
@@ -44,7 +44,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 var self = this;
 
-                navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
+                // navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
 
                 $.ajax({
                     type: 'POST',
@@ -54,15 +54,17 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                     success: function(result) {
                         var result = $.parseJSON(result);
                         if(result.status == Sha1.hash('notfound')) {
-                            //stop the loading notifiacton
-                            navigator.notification.activityStop();
 
-                            navigator.notification.alert(
-                                'Verkeerder gebruikersnaam of wachtwoord',  // message
-                                 function(){},         // callback
-                                'Inloggen mislukt!',            // title
-                                'Probeer opnieuw'                  // buttonName
-                            );
+                            alert('niet gevonden, hier hoort spinner te staan');
+                            //stop the loading notifiacton
+                            // navigator.notification.activityStop();
+
+                            // navigator.notification.alert(
+                                // 'Verkeerder gebruikersnaam of wachtwoord',  // message
+                                //  function(){},         // callback
+                                // 'Inloggen mislukt!',            // title
+                                // 'Probeer opnieuw'                  // buttonName
+                            //);
 
                             return;
                         } else if(result.status == Sha1.hash('success')) {
@@ -75,16 +77,16 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                         console.log(textStatus);
                         console.log(errorThrown);
 
-                        navigator.notification.activityStop();
+                        // navigator.notification.activityStop();
 
-                        navigator.notification.alert(
-                            'We kunnen je niet inloggen. Check je verbinding en probeer opnieuw.',  // message
-                             function(){},         // callback
-                            'Inloggen mislukt!',            // title
-                            'Probeer opnieuw'                  // buttonName
-                        );
+                        // navigator.notification.alert(
+                        //     'We kunnen je niet inloggen. Check je verbinding en probeer opnieuw.',  // message
+                        //      function(){},         // callback
+                        //     'Inloggen mislukt!',            // title
+                        //     'Probeer opnieuw'                  // buttonName
+                        // );
 
-                        navigator.notification.activityStop();
+                        // navigator.notification.activityStop();
                         
                     }
                 });
@@ -108,14 +110,14 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             loginSuccess: function() {
-                navigator.notification.activityStop();
+                // navigator.notification.activityStop();
                 //create a local user in the local database
                 console.log(App.userModel.attributes);
                 
                 App.dbClass.initLocalUserCreating();
 
                 //this also sends it through to the mapview
-                App.dbClass.initUserChecking();   
+                App.dbClass.initUserChecking(); 
             },
 
             goToSignup: function() {

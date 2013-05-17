@@ -57,14 +57,17 @@ section header a {
 }
 
 section header a p {
+    color: #0176C2;
     top: -.6em;
-    right: 2.5em;
+    right: 2.7em;
     position: absolute;
     text-align: right;
+    font-size: .8em;
+    font-family: sans-serif;
 }
 
 section header a.logout {
-    background: url(../img/button.jpg);
+    background: url(../img/logout.jpg);
     background-size: cover;
     border: none;
     border-radius: .1em;
@@ -87,35 +90,56 @@ section header a:active {
 }
 
 /*login formulier*/
-section article.login {
+section.content section article.login {
     bottom: 50px;
     top: 10px;
     left: 10px;
     right: 10px;
     margin-top: 1em;
     background: white;
-    border-radius: 1px;
+    border-radius: 1px;/*
     overflow-y: hidden;
-    overflow-x: hidden;
+    overflow-x: hidden;*/
     position: absolute; 
+    /*min-height: 500px;*/
 
     -webkit-box-shadow:  2px 2px 3px 0 #666;
     box-shadow:  2px 2px 3px 0 #666;
 }
 
-section form#login li {
+section form#login li, section form#signup li {
     list-style: none;
+    margin: 0;
 }
 
-section form#login label {
+section form#login input, section form#signup input {
+    width: 90%;
+    height: 35px;
+    border-radius: 5px;
+    border: 1px solid #999;
+    margin: 0 auto;
+    margin: .5em;
+}
+
+section form#login label, section form#signup label {
+    margin: 0 auto;
+    text-align: center;
+    width: 2em;
+}
+
+section form#login p, section form#signup p  {
     display: block;
+    margin: 0 auto;
+    margin: .5em;
 }
 
 section button#to-signup {
-    margin-left: 3em;
+    margin: 0 auto;
+    margin: .5em;
+    width: 90%;
 }
 
-section button, form#login input[type="submit"] {
+section button, form#login input[type="submit"], form#signup input[type="submit"] {
     background: #bbb;
     background-size: cover;
     border: none;
@@ -124,16 +148,19 @@ section button, form#login input[type="submit"] {
     box-shadow:  1px 1px 2px 0px #666;
     color: #666;
     display: block;
-    height: 30px;
+    font-size: 1.2em;
+    font-family: 'Nilland', sans-serif;
+    height: 45px;
+    margin: 0 auto;
     margin: .5em;
-    width: 150px;
+    width: 90%;
 }
 
-section button:hover, form#login input[type="submit"]:hover {
+section button:hover, form#login input[type="submit"]:hover, form#signup input[type="submit"]:hover {
     opacity: .8;
 }
 
-section button:active, form#login input[type="submit"]:active {
+section button:active, form#login input[type="submit"]:active, form#signup input[type="submit"]:active {
     box-shadow: none;
     border-radius: .15em;
 }
@@ -231,7 +258,7 @@ section section.content article section a:active {
     border-radius: 3px;
     right: 0px;
     bottom: 100px;
-    top: 50px;
+    top: 0px;
     left: 0px;
     overflow: hidden;
     margin-top: 0;
@@ -265,8 +292,8 @@ section footer {
     z-index: 999
 }
 
-section footer a {
-    background: url(../img/button_status.jpg);
+section footer a, #scan {
+    /*background: url(../img/button_status.jpg);
     background-size: cover;
     border: none;
     border-radius: .1em;
@@ -275,8 +302,31 @@ section footer a {
     display: block;
     height: 30px;
     margin: 0 auto;
-    margin-top: .5em;
+    margin-top: 1.2em;
+    width: 150px;*/
+    background: #bbb;
+    background-size: cover;
+    border: none;
+    border-radius: .1em;
+    -webkit-box-shadow:  1px 1px 2px 0px #666;
+    box-shadow:  1px 1px 2px 0px #666;
+    color: #666;
+    display: block;
+    float: left;
+    height: 30px;
+    margin: 1.2em .5em .5em .5em;
     width: 150px;
+    text-align:  center;
+}
+
+#scan {
+    font-family: "Nilland", serif;
+    font-size: 1em;
+}
+
+.button-container {
+    width: 335px;
+    margin: 0 auto;
 }
 
 section footer a:hover {
@@ -287,6 +337,8 @@ section footer a:active {
     box-shadow: none;
     border-radius: .15em;
 }
+
+
 
 /*the part above the footer that holds the legenda on swipe up*/
 section footer section {

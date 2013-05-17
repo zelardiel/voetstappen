@@ -2,6 +2,14 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
     function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentView) {
         var MapView = Backbone.View.extend({
             initialize: function() {
+                var self = this;
+                $('#button-container').fadeIn(300);
+                $('.showMenu').fadeIn(300);
+                $('.logout').fadeIn(300);
+
+                $('.logout').on('click', function(){
+                    self.logout();
+                });
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.addMarker, this);  
                 this.collection.bind('add', this.addMarkerRadius, this);
@@ -10,7 +18,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.on('viewActivate', this.appendMap, this);   
 
                 $("#scan").click(function() {
-                    console.log('bots');
                     App.StackNavigator.pushView(new ScannerView);
                 });        
             },
@@ -129,7 +136,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
 
                 // make a variable that contains an image
-                var footstep_image = './img/voetstap2.png';
+                var footstep_image = './img/voetstap1klein.png';
                 // voetstapNietGevonden = '../../img/voetstap1.png',
                 // voetstap1position = ;
 
