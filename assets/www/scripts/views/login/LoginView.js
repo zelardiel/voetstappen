@@ -1,17 +1,25 @@
 define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views/signup/SignupView', 'views/map/MapView','collections/MarkerCollection', 'libs/encrypter/sha1_encrypter'],
     function (_, Backbone, db, LoginViewTemplate, SignupView, MapView, MarkerCollection, Sha1) {
     	var LoginView = Backbone.View.extend({
-
+            id: 'LoginView',
+            destructionPolicy:'never',
     		events: {
-    			'submit' : 'loginUser',
+    			'submit form#login' : 'loginUser',
                 'click #to-signup' : 'goToSignup'
     		},
 
             initialize: function() {
 
+                console.log('INIT LOGIN');
+
+                $('.button-container').toggle();
+                $('.showMenu').toggle();
+                $('.logout').toggle();
             },
 
+
     		render: function() {
+                console.log('RENDER LOGINVIEW');
     			this.$el.html(_.template(LoginViewTemplate));
                 return this;
     		},
@@ -19,8 +27,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             loginUser: function(e) {
                 e.preventDefault();  
 
-                console.log('PRESSING PRESSING');
-
+                console.log('PRESSING LOGIN');
                 //stop in case there is a dialog active
                 // navigator.notification.activityStop();             
 
@@ -95,6 +102,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             validateUsernameAndPassword: function(username_el, password_el) {
 
                 if(username_el.val().length === 0 || password_el.val().length === 0) {
+                    console.log('break');
                     return false;
                 } else {
                     return true;
@@ -106,12 +114,14 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             //set a global accesable user model so we can keep track of the user id etc.
             setUserModel: function(user_id, username, password) {
                 App.userModel.set({user_id: user_id, username: username, password: password, active: 1});
-                console.log(App.userModel.attributes);
             },
 
             loginSuccess: function() {
                 // navigator.notification.activityStop();
                 //create a local user in the local database
+                this.username.val('');
+                this.password.val('');
+
                 console.log(App.userModel.attributes);
                 
                 App.dbClass.initLocalUserCreating();
@@ -121,7 +131,11 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             goToSignup: function() {
-                App.StackNavigator.pushView(new SignupView);
+                if(App.ViewInstances.SignupView == null) {
+                    App.ViewInstances.SignupView = new SignupView; 
+                }
+
+                App.Helpers.processView('SignupView', App.ViewInstances.SignupView); 
             }
 
 

@@ -1,25 +1,46 @@
 define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentView'],
     function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentView) {
         var MapView = Backbone.View.extend({
+           
+            destructionPolicy: 'never',
             initialize: function() {
                 var self = this;
-                $('#button-container').fadeIn(300);
-                $('.showMenu').fadeIn(300);
-                $('.logout').fadeIn(300);
+
+                //set markers to the window because of context issues
+                window.markers = [];
+
+                //create geolocator watch id
+                this.watchID;
+
+                //show elements which were hidden in the login
+                
 
                 $('.logout').on('click', function(){
                     self.logout();
                 });
+
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.addMarker, this);  
                 this.collection.bind('add', this.addMarkerRadius, this);
 
                 //if view is active start adding map
-                this.on('viewActivate', this.appendMap, this);   
+       
 
                 $("#scan").click(function() {
                     App.StackNavigator.pushView(new ScannerView);
                 });        
+
+                this.on('viewActivate', this.active, this);
+
+                },
+
+            active: function() {
+                $('.button-container').show();
+                $('.showMenu').show();
+                $('.logout').show();
+
+                this.appendMap();
+               
             },
 
             events:{
@@ -27,14 +48,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 				'click #scan':'scanClickHandler'
             },
 
-            attributes: {
-                id: 'map'
-            },
+            id: 'MapView',
 
             render: function () {
                 //dont use a template because we are doing everything with marker adding
                 this.$el.html(_.template(MapViewTemplate));
-
+                console.log(App.StackNavigator.activeView);
+                 
                 return this;
             },
 
@@ -53,11 +73,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 };
 
                 
-                if(!$("#map").attr('data-maploaded')) {
+                if(window.markers.length == 0) {
                     // this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
-                    $("#map").data('maploaded', true);
-
-                    this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
+                    this.map = new google.maps.Map(document.getElementById("MapView"), this.mapOptions);
 
                     //after map is loaded start loading markers from database
                     google.maps.event.addListenerOnce(this.map, 'idle', function(){
@@ -66,6 +84,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                  
                 } else {
                     console.log('map already present');
+                    //get position anyway
+                    this.getOwnPosition(10000); 
                 }
               
             },
@@ -142,7 +162,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 // Drop Voetstap1 marker with image from image variable
                 var footsep_marker = new google.maps.Marker({
-                    footstep_id: model.footstep_id,
+                    footstep_id: model.get('footstep_id'),
                     position: latlng, 
                     map: self.map, 
                     title: model.get('title'),
@@ -152,6 +172,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 google.maps.event.addListener(footsep_marker, 'click', function() { 
                     App.StackNavigator.pushView(new FootstepContentView({ footstep_id: model.get('footstep_id') }) );
                 });
+
+                window.markers.push(footsep_marker);
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
             },
@@ -196,13 +218,21 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //magic context swap trick
                 window.collection = this.collection;
                 var options = { timeout: timeoutInSeconds, enableHighAccuracy: true  };
-                navigator.geolocation.watchPosition(this.onSuccesGetOwnPosition, this.onErrorGetPosition, options);
+                this.watchID = navigator.geolocation.watchPosition(this.onSuccesGetOwnPosition, this.onErrorGetPosition, options);
             },
 
             onSuccesGetOwnPosition: function(position) {
                 //since window is available in this context use it
                 this.collection = window.collection;
-                console.log(this.collection);
+
+                $.each(window.markers, function(index, val){
+                    //if the id is 0 (the id of own position marker)
+                    if(val.footstep_id === 0) {
+                        //delete it so it wont duplicate
+                        val.setMap(null);
+                    }
+                });
+
                 //create model with our own location..
                 var modelMarker = new MarkerModel();
 
@@ -217,10 +247,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 this.collection.add(modelMarker);
-
-                //undo magic swap trick
-                //window.collection = null;
-
             },
 
             onErrorGetPosition: function(error) {
@@ -233,11 +259,19 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 			
 			scanClickHandler: function (event) {
-			   console.log("werk");
                App.StackNavigator.pushView(new ScannerView);
             },
 
             logout: function() {
+                //stop watching for position
+                if(navigator.geolocation.clearWatch(this.watchID)) {
+                    //is not triggered..
+                    console.log('cleared watchid');
+                }
+
+                this.watchID = null;
+
+
                 App.dbClass.initLogoutUser();
             },
 

@@ -1,6 +1,8 @@
-define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'libs/encrypter/sha1_encrypter'],
-    function (_, Backbone, SignupTemplate, Sha1) {
+define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/login/LoginView', 'libs/encrypter/sha1_encrypter'],
+    function (_, Backbone, SignupTemplate, LoginView, Sha1) {
     	var SignupView = Backbone.View.extend({
+        id: 'SignupView',
+        destructionPolicy: 'never',
     		events: {
     			'click #previous-view' : 'previousView',
     			'submit' : 'createUser'
@@ -52,8 +54,12 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'libs/encr
 
     		previousView: function() {
           //pop the view from the stack array so the previous one appears
-    			App.StackNavigator.popView();
-    		}
+    			    if(App.ViewInstances.LoginView == null) {
+                    App.ViewInstances.LoginView = new LoginView; 
+                }
+
+                App.Helpers.processView('LoginView', App.ViewInstances.LoginView); 
+            }
     	});
 
     	return SignupView;

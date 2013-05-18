@@ -112,6 +112,11 @@ section form#login li, section form#signup li {
     margin: 0;
 }
 
+form#login, form#signup {
+    margin: 0;
+    padding: 0;
+}
+
 section form#login input, section form#signup input {
     width: 90%;
     height: 35px;

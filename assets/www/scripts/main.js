@@ -27,8 +27,8 @@ require.config({
     }
 });
 
-require(['domReady', 'models/UserModel', 'backstack', 'db'],
-    function (domReady, UserModel, Backstack, db) {
+require(['domReady', 'models/UserModel', 'backstack', 'db', 'helpers'],
+    function (domReady, UserModel, Backstack, db, Helpers) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
             //Put all the event functions of backbone inside a Vent object
@@ -40,7 +40,7 @@ require(['domReady', 'models/UserModel', 'backstack', 'db'],
                     cordova.exec(null, null, 'SplashScreen', 'hide', []);
                 }
 
-                 
+                
 
                 //appending certain namespaces to the window
                 window.App = {
@@ -48,7 +48,10 @@ require(['domReady', 'models/UserModel', 'backstack', 'db'],
                     dbClass: db,
                     Vent: _.extend({}, Backbone.Events),
                     StackNavigator: new Backstack.StackNavigator({el: '#container'}),
-                    userModel: new UserModel
+                    stackViewIds: {},
+                    ViewInstances: {},
+                    userModel: new UserModel,
+                    Helpers: Helpers,
                 };
 
                 //set default transition

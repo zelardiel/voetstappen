@@ -123,37 +123,50 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    userCheckingQuerySuccess: function(tx, results) {
-		    	console.log(results);
 			    // if there was a result, continue to Mapview
+	
+
 			    if(results.rows.length != 0) {
 	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
 	                
-	                //start synchornizing right now TEMPORARILY COMMENTED OUT
+	                if(App.ViewInstances.MapView == null) {
+	                	App.ViewInstances.MapView = new MapView({ collection: new MarkerCollection });
+	                	
+	                }
+	                
+	                App.Helpers.processView('MapView', App.ViewInstances.MapView);	
+	             
+	             
 	                db.initSynchronizing();
-	                App.StackNavigator.pushView(new MapView({ collection: new MarkerCollection }));
+	               
 	            //else, the app 
 			    } else {
 			    	//set timeout because splashscreen will be too short otherwise
-			    	setTimeout(function(){
-			    		App.StackNavigator.pushView(new LoginView);
-			    	}, 100);
+			    	 if(App.ViewInstances.LoginView == null) {
+	                	App.ViewInstances.LoginView = new LoginView;
+	                	
+	                }
+	                 App.Helpers.processView('LoginView', App.ViewInstances.LoginView);	
 			    }
 		    },
 
 		    //logout current user
 		    initLogoutUser: function() {
-		    	App.dbInstantion.transaction(this.logoutUser, this.errorCB, this.logoutUserQuerySuccess);	
+		    	App.dbInstantion.transaction(this.logoutUser, this.errorCB);	
 		    },
 
 		    logoutUser: function(tx) {
 		    	//set user on active = 0
-		    	tx.executeSql('UPDATE users SET active = 0 WHERE user_id = ?', [App.userModel.get('user_id')]);
+		    	tx.executeSql('UPDATE users SET active = 0 WHERE user_id = ?', [App.userModel.get('user_id')], db.logoutUserQuerySuccess);
 		    },
 
-		    logoutUserQuerySuccess: function() {
-		    	//clear stack so no going back is possible
-		    	App.userModel.set({active: 0});
-		    	App.StackNavigator.pushView(new LoginView);
+		    logoutUserQuerySuccess: function(tx, results) {
+		    	if(App.ViewInstances.LoginView == null) {
+		    		App.ViewInstances.LoginView = new LoginView;
+		    	}
+
+	            App.Helpers.processView('LoginView', App.ViewInstances.LoginView);	
+		    	
 		    },
 
 		    /***
