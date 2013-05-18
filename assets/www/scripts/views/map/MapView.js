@@ -161,7 +161,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 // voetstap1position = ;
 
                 // Drop Voetstap1 marker with image from image variable
-                var footsep_marker = new google.maps.Marker({
+                var footstep_marker = new google.maps.Marker({
                     footstep_id: model.get('footstep_id'),
                     position: latlng, 
                     map: self.map, 
@@ -169,11 +169,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     icon: footstep_image
                 });
 
-                google.maps.event.addListener(footsep_marker, 'click', function() { 
+                google.maps.event.addListener(footstep_marker, 'click', function() { 
                     App.StackNavigator.pushView(new FootstepContentView({ footstep_id: model.get('footstep_id') }) );
                 });
 
-                window.markers.push(footsep_marker);
+                window.markers.push(footstep_marker);
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
             },
