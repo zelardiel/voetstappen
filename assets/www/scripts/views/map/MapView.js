@@ -1,11 +1,11 @@
-define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentView'],
-    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentView) {
+define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentsView'],
+    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentsView) {
         var MapView = Backbone.View.extend({
            
             destructionPolicy: 'never',
             initialize: function() {
                 var self = this;
-
+                console.log('INIT MARKERVIEW');
                 //set markers to the window because of context issues
                 window.markers = [];
 
@@ -32,7 +32,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 this.on('viewActivate', this.active, this);
 
-                },
+            },
 
             active: function() {
                 $('.button-container').show();
@@ -65,7 +65,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 // options for the map
                 this.mapOptions = {
-                    zoom: 8,
+                    zoom: 12,
                     center: latlng,
                     mapTypeControl: false,
                     navigationControl: false,
@@ -170,7 +170,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 google.maps.event.addListener(footstep_marker, 'click', function() { 
-                    App.StackNavigator.pushView(new FootstepContentView({ footstep_id: model.get('footstep_id') }) );
+                    console.log(App.ViewInstances.FootstepContentsView);
+                    if(App.ViewInstances.FootstepContentsView == null) {
+                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({ footstep_id: model.get('footstep_id') }); 
+                    }
+                    console.log(App.ViewInstances.FootstepContentsView);
+                    console.log("Dit is hem");
+                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
                 });
 
                 window.markers.push(footstep_marker);

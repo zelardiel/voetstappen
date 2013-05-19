@@ -365,10 +365,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			retrieveFootstepContents: function(callback, footstep_id) {
 				var self = this;
 				var data = function getData(){
-
+					console.log(footstep_id);
+					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT * FROM footsteps f, footstep_contents c, locations l WHERE f.footstep_id = c.footstep_id AND f.footstep_id = ? AND c.location_id = l.location_id ORDER BY location',
-		         			[self.footstep_id], dfd.resolve, self.errorCB
+		         		tx.executeSql('SELECT c.footstep_content_id, f.title, c.content, l.location FROM footsteps f, footstep_contents c, locations l WHERE f.footstep_id = c.footstep_id AND f.footstep_id = ? AND c.location_id = l.location_id ORDER BY location',
+		         			[footstep_id], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 

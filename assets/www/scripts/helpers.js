@@ -4,11 +4,12 @@ define([],
 		    processView: function (stackViewId, viewInstance) {
 		        if (!App.StackNavigator.activeView || Object(App.StackNavigator.activeView).constructor != viewInstance) {
 		            var subview = App.stackViewIds[stackViewId];
-
+		            
 		            if (subview) {
 		                // Replacing with already constructed view
 		                App.StackNavigator.replaceView(subview);
 		            } else {
+		            	console.log(App.StackNavigator.activeView);
 		                if (App.StackNavigator.activeView) {
 		                	console.log('replacing');
 		                    App.stackViewIds[stackViewId] = App.StackNavigator.replaceView(viewInstance);

@@ -51,7 +51,7 @@ require(['domReady', 'models/UserModel', 'backstack', 'db', 'helpers'],
                     stackViewIds: {},
                     ViewInstances: {},
                     userModel: new UserModel,
-                    Helpers: Helpers,
+                    Helpers: Helpers
                 };
 
                 //set default transition
