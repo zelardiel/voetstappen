@@ -362,6 +362,23 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
+			retrieveFootstepContents: function(callback, footstep_id) {
+				var self = this;
+				var data = function getData(){
+
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('SELECT * FROM footsteps f, footstep_contents c, locations l WHERE f.footstep_id = c.footstep_id AND f.footstep_id = ? AND c.location_id = l.location_id ORDER BY location',
+		         			[self.footstep_id], dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				//return deferred is done(.then) function with the sent callback to this function
+				return data().then(callback);
+			},
+
 			linkUserToContent: function(footstep_contents_id) {
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
