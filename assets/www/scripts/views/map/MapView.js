@@ -195,7 +195,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 google.maps.event.addListener(footstep_marker, 'click', function() { 
                     if(App.ViewInstances.FootstepContentsView == null) {
-                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({ footstep_id: null }, "3"); 
+                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({ footstep_id: model.get('footstep_id') }, "3"); 
                     }
     
                     App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 

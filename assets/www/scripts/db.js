@@ -1,10 +1,9 @@
-define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollection'],
-	function(LoginView, MapView, MarkerCollection) {
+define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollection', 'views/footstepContent/FootstepContentsView'],
+	function(LoginView, MapView, MarkerCollection, FootstepContentsView) {
 		/**************
 		** THIS OBJECT CONTAINS ALL STORAGES WHICH ARE DONE IN THE LOCAL SQLITE DATABASE
 		***************/
 		var db = {
-
 			/***
 			* GENERAL DB FUNCTIONS
 			***/
@@ -398,6 +397,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 			linkUserToContent: function(footstep_contents_id) {
+				footstep_contents_id;
+				this.aap;
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footstep_contents_users WHERE footstep_content_id = ? AND user_id = ?', [footstep_contents_id, App.userModel.get('user_id')],
@@ -409,6 +410,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				
 				}, self.errorCB, function(tx, results) { 
 					console.log('footstep_contents_users added');
+
+					if(App.ViewInstances.FootstepContentsViewFromScanner == null) {
+                        App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({ footstep_id: null }, footstep_contents_id);
+                    }
+
+                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsViewFromScanner); 
 					return;
 				});	
 			},

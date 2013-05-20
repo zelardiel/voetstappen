@@ -20,14 +20,9 @@ define(['jquery', 'underscore', 'Backbone', 'views/footstepContent/FootstepConte
                     alert("the user cancelled the scan");
                 } else {
                     console.log("bam werk " + result.text);
-                    //App.dbClass.linkUserToContent(result.text);
-                    if(App.ViewInstances.FootstepContentsViewFromScanner == null) {
-                        App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({ footstep_id: null }, result.text);
-                    }
-
-                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsViewFromScanner); 
-    
-                    
+                    var start_content_id = result.text;
+                    App.dbClass.linkUserToContent(result.text);
+        
                 }
 
 
