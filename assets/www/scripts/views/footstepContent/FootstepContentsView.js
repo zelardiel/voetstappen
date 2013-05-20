@@ -4,7 +4,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
           id: 'FootstepContentsView',
           destructionPolicy: 'never',
 
-       		initialize: function(object, start_content_id){
+          initialize: function(object, start_content_id){
             var self = this;
             console.log('INIT FOOTSTEPCONTENT');
             window.start_content_id = start_content_id;
@@ -14,10 +14,10 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
             document.addEventListener("backbutton", self.previousView, false);
             
-            this.initGetDatabaseFootstepContents(object.footstep_id);
+            this.initGetDatabaseFootstepContents(object.fsootstep_id);
 
             App.Vent.on('readyToRenderSubiews:done', this.render, this);
-       		},
+          },
 
           render: function() {
             console.log('THIS HAPPENS RENDER INIT OF COLLECITONVIEW');

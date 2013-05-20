@@ -1,54 +1,65 @@
-define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentsView'],
-    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentsView) {
+define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentsView', 'libs/hammer/hammer'],
+    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentsView, hammer) {
         var MapView = Backbone.View.extend({
-           
+            id: 'MapView',
+
+            events:{
+                'click #btnBack':'btnBack_clickHandler',
+                'click #scan':'scanClickHandler'
+            },
+
             destructionPolicy: 'never',
+
             initialize: function() {
-                var self = this;
-                console.log('INIT MARKERVIEW');
                 //set markers to the window because of context issues
                 window.markers = [];
 
                 //create geolocator watch id
                 this.watchID;
 
-                //show elements which were hidden in the login
+                //call jquery events
+                this.jqueryEvents();
+
+                //legenda functionalities
+                this.handleLegenda();
                 
-
-                $('.logout').on('click', function(){
-                    self.logout();
-                });
-
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.addMarker, this);  
                 this.collection.bind('add', this.addMarkerRadius, this);
 
                 //if view is active start adding map
-       
-
-                $("#scan").click(function() {
-                    App.StackNavigator.pushView(new ScannerView);
-                });        
-
-                this.on('viewActivate', this.active, this);
+                this.on('viewActivate', this.viewIsActive, this);
 
             },
 
-            active: function() {
-                $('.button-container').show();
-                $('.showMenu').show();
-                $('.logout').show();
-
+            viewIsActive: function() {
                 this.appendMap();
-               
             },
 
-            events:{
-                'click #btnBack':'btnBack_clickHandler',
-				'click #scan':'scanClickHandler'
+            jqueryEvents: function() {
+                var self = this;
+                $('.logout').on('click', function(){
+                    self.logout();
+                });
+
+                $("#scan").on('click', function() {
+                    //add helper!!!!
+                    App.StackNavigator.pushView(new ScannerView);
+                });
             },
 
-            id: 'MapView',
+            handleLegenda: function() {
+                $('.legenda, .hide').hammer({prevent_default:true}).bind("dragup", function(ev) {
+                    $('.legenda').addClass("legenda-animation");
+                    $('.hide').addClass('up');
+                });
+
+                // once the columns are down, the drag event is triggered on the mask
+                $(".legenda, .hide").hammer({prevent_default:true}).bind("dragdown", function(ev) {
+                    $(".legenda").removeClass("legenda-animation");
+                    $('.hide').removeClass("up");
+                });
+            },
 
             render: function () {
                 //dont use a template because we are doing everything with marker adding

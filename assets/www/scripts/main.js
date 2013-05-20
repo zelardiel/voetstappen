@@ -13,6 +13,7 @@ require.config({
         //backtack view pusher
         backstack:'libs/backstack/backstack-min'
     },
+
     shim:{
         Backbone : {
             deps:['underscore', 'jquery'],
@@ -23,7 +24,7 @@ require.config({
         },
         backstack : {
             deps:['Backbone', 'underscore', 'jquery']
-        }
+        },
     }
 });
 
@@ -31,8 +32,6 @@ require(['domReady', 'models/UserModel', 'backstack', 'db', 'helpers'],
     function (domReady, UserModel, Backstack, db, Helpers) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
-            //Put all the event functions of backbone inside a Vent object
-
             //ondevice ready is cordave(phonegap) function
             function onDeviceReady(desktop) {
                 // Hiding splash screen when app is loaded

@@ -1,7 +1,0 @@
-HTML:
-- In de login view heb ik html toegevoegd
-- In de signup view heb ik html toegevoegd
-- In de index.html heb ik html toegevoegd
-
-CSS:
-- de CSS is aangepast
