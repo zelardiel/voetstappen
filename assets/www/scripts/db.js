@@ -380,6 +380,23 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
+			retrieveFootstepContentsWithContentId: function(callback, footstep_content_id) {
+				var self = this;
+				var data = function getData(){
+					var dfd = $.Deferred();
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('SELECT c.footstep_content_id, f.title, c.content, l.location FROM footsteps f, footstep_contents c, locations l WHERE f.footstep_id = c.footstep_id AND f.footstep_id in (SELECT f.footstep_id FROM footsteps f, footstep_contents c WHERE c.footstep_id = f.footstep_id AND c.footstep_content_id = ?) AND c.location_id = l.location_id ORDER BY location',
+		         			[footstep_content_id], dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				//return deferred is done(.then) function with the sent callback to this function
+				return data().then(callback);
+			},
+
 			linkUserToContent: function(footstep_contents_id) {
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
@@ -392,8 +409,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				
 				}, self.errorCB, function(tx, results) { 
 					console.log('footstep_contents_users added');
+					return;
 				});	
 			},
+
+
 		};
 		return db;
 	});

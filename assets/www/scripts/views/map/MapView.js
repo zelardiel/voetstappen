@@ -29,6 +29,16 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 //if view is active start adding map
                 this.on('viewActivate', this.viewIsActive, this);
+       
+
+                $("#scan").click(function() {
+                    if(App.ViewInstances.ScannerView == null) {
+                        App.ViewInstances.ScannerView = new ScannerView; 
+                        App.Helpers.processView('ScannerView', App.ViewInstances.ScannerView); 
+                    }
+                });        
+
+                this.on('viewActivate', this.active, this);
 
             },
 
@@ -43,8 +53,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 $("#scan").on('click', function() {
-                    //add helper!!!!
-                    App.StackNavigator.pushView(new ScannerView);
+                    if(App.ViewInstances.ScannerView == null) {
+                        App.ViewInstances.ScannerView = new ScannerView; 
+                    }
+
+                    App.Helpers.processView('ScannerView', App.ViewInstances.ScannerView); 
                 });
             },
 
@@ -181,12 +194,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 google.maps.event.addListener(footstep_marker, 'click', function() { 
-                    console.log(App.ViewInstances.FootstepContentsView);
                     if(App.ViewInstances.FootstepContentsView == null) {
-                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({ footstep_id: model.get('footstep_id') }); 
+                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({ footstep_id: null }, "3"); 
                     }
-                    console.log(App.ViewInstances.FootstepContentsView);
-                    console.log("Dit is hem");
+    
                     App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
                 });
 
@@ -276,7 +287,14 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 			
 			scanClickHandler: function (event) {
-               App.StackNavigator.pushView(new ScannerView);
+               
+                $("#scan").click(function() {
+                       if(App.ViewInstances.ScannerView == null) {
+                        App.ViewInstances.ScannerView = new ScannerView; 
+                    }
+    
+                    App.Helpers.processView('ScannerView', App.ViewInstances.ScannerView); 
+                });        
             },
 
             logout: function() {

@@ -1,8 +1,8 @@
-define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentView.tpl', 'collections/FootstepContentCollection', 'models/FootstepContentModel'],
+define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentView.tpl', 'collections/FootstepContentCollection', 'models/FootstepContentModel', 'libs/handlebars/handlebars'],
     function (_, Backbone, FootstepContentViewT, FootstepContentCollection, FootstepContentModel) {
        var FootstepContentsView = Backbone.View.extend({
           id: 'FootstepContentsView',
-          destructionPolicy: 'never',
+          destructionPolicy: 'auto',
 
           initialize: function(object, start_content_id){
             var self = this;
@@ -14,7 +14,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
             document.addEventListener("backbutton", self.previousView, false);
             
-            this.initGetDatabaseFootstepContents(object.fsootstep_id);
+            this.initGetDatabaseFootstepContents(object.footstep_id);
 
             App.Vent.on('readyToRenderSubiews:done', this.render, this);
           },
@@ -33,7 +33,9 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
           },
 
           renderModelView: function(model) {
+            console.log(model.attributes.location + "start_content_id = " + window.start_content_id);
             if(model.attributes.footstep_content_id == window.start_content_id || (window.start_content_id == null && model.attributes.location == 1)){
+              console.log('passing render if statement');
               var footstepContentView = new FootstepContentView({ model: model });
               this.$el.append(footstepContentView.render().el);
             }
@@ -43,7 +45,12 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
           initGetDatabaseFootstepContents: function(footstep_id) {
                 var self = this;
                 //call function out of the db.js object
-                App.dbClass.retrieveFootstepContents(self.setFootstepContents, footstep_id);
+                if(footstep_id == null){
+
+                  App.dbClass.retrieveFootstepContentsWithContentId(self.setFootstepContents, window.start_content_id);
+                }else{
+                  App.dbClass.retrieveFootstepContents(self.setFootstepContents, footstep_id);
+                }
                 //listen for when it's done due to async problems
                 App.Vent.on('retrievingFootstepContents:done', self.afterSettingFootstepContents, self);
           },

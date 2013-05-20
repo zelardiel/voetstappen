@@ -1,5 +1,5 @@
-define(['jquery', 'underscore', 'Backbone', 'text!views/scanner/ScannerView.tpl'],
-    function ($, _, Backbone, PhotoAssignmentView, ScannerViewTemplate) {
+define(['jquery', 'underscore', 'Backbone', 'views/footstepContent/FootstepContentsView'],
+    function ($, _, Backbone, PhotoAssignmentView, FootstepContentsView) {
         var ScannerView = Backbone.View.extend({
 
             initialize: function() {
@@ -19,7 +19,15 @@ define(['jquery', 'underscore', 'Backbone', 'text!views/scanner/ScannerView.tpl'
                 if (result.cancelled) {
                     alert("the user cancelled the scan");
                 } else {
-                    App.dbClass.linkUserToContent(result.text);
+                    console.log("bam werk " + result.text);
+                    //App.dbClass.linkUserToContent(result.text);
+                    if(App.ViewInstances.FootstepContentsViewFromScanner == null) {
+                        App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({ footstep_id: null }, result.text);
+                    }
+
+                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsViewFromScanner); 
+    
+                    
                 }
 
 
@@ -30,7 +38,6 @@ define(['jquery', 'underscore', 'Backbone', 'text!views/scanner/ScannerView.tpl'
             },
 
             render : function() {
-                this.$el.html(_.template(ScannerViewTemplate));
                 return this;
             },
 
