@@ -39,8 +39,6 @@ require(['domReady', 'models/UserModel', 'backstack', 'db', 'helpers'],
                     cordova.exec(null, null, 'SplashScreen', 'hide', []);
                 }
 
-                
-
                 //appending certain namespaces to the window
                 window.App = {
                     dbInstantion: window.openDatabase("voetstappen", "1.0", "voetstappen", 2000000),

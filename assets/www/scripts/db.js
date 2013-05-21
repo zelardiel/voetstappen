@@ -12,7 +12,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var self = this;
 				// make use of the global databaseinstation
 
-				if(window.localStorage.getItem('dbExists') === null) {
+				if(window.localStorage.getItem('dbExists') == null) {
 					App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ self.initUserChecking(); window.localStorage.setItem('dbExists', 1) });
 				} else { 
 					console.log('Not creating');
@@ -23,13 +23,9 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			populateDB : function(tx) {
 				//footstep and user
-				
-
 				tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS users(user_id INTEGER NOT NULL PRIMARY KEY unique, username NOT NULL, password NOT NULL, active, updated_at NOT NULL )'
 			    );
-
-			    // tx.executeSql('DROP TABLE footsteps_users');
 
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS footsteps_users(footsteps_users_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, user_id INTEGER NOT NULL, updated_at NOT NULL )'
@@ -113,6 +109,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    initUserChecking: function() {
+		    	console.log('init user checking');	
 		    	App.dbInstantion.transaction(this.checkForActiveUser, this.errorCB);
 		    },
 
@@ -122,9 +119,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    userCheckingQuerySuccess: function(tx, results) {
+		    	console.log('etwas');	
 			    // if there was a result, continue to Mapview
-	
-
 			    if(results.rows.length != 0) {
 	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
 	                
@@ -132,11 +128,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 	                	App.ViewInstances.MapView = new MapView({ collection: new MarkerCollection });
 	                	
 	                }
-	                
+	                console.log('starting mapview');	
 	                App.Helpers.processView('MapView', App.ViewInstances.MapView);	
 	             
 	             
-	                db.initSynchronizing();
+	                //db.initSynchronizing();
 	               
 	            //else, the app 
 			    } else {
@@ -361,14 +357,14 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
-			retrieveFootstepContents: function(callback, footstep_id) {
+			retrieveFootstepContentWithWithLocationAndFootstepId: function(callback, footstep_id, location) {
 				var self = this;
 				var data = function getData(){
 					console.log(footstep_id);
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT c.footstep_content_id, f.title, c.content, l.location FROM footsteps f, footstep_contents c, locations l WHERE f.footstep_id = c.footstep_id AND f.footstep_id = ? AND c.location_id = l.location_id ORDER BY location',
-		         			[footstep_id], dfd.resolve, self.errorCB
+		         		tx.executeSql('SELECT * FROM footstep_contents WHERE footstep_id = ? AND location_id = ? ORDER BY location_id',
+		         			[footstep_id, location], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 
@@ -411,11 +407,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				}, self.errorCB, function(tx, results) { 
 					console.log('footstep_contents_users added');
 
-					if(App.ViewInstances.FootstepContentsViewFromScanner == null) {
-                        App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({ footstep_id: null }, footstep_contents_id);
+					if(App.ViewInstances.FootstepContentsView == null) {
+                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, footstep_contents_id: footstep_contents_id });
                     }
 
-                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsViewFromScanner); 
+                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
 					return;
 				});	
 			},

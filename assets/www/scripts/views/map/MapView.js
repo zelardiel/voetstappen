@@ -1,5 +1,5 @@
-define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentsView', 'libs/hammer/hammer'],
-    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentsView, hammer) {
+define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentsView', 'collections/FootstepContentCollection', 'libs/hammer/hammer'],
+    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentsView, FootstepContentCollection, hammer) {
         var MapView = Backbone.View.extend({
             id: 'MapView',
 
@@ -194,11 +194,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 google.maps.event.addListener(footstep_marker, 'click', function() { 
-                    if(App.ViewInstances.FootstepContentsView == null) {
-                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({ footstep_id: model.get('footstep_id') }, "3"); 
-                    }
-    
-                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
+                    App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: model.get('footstep_id'), location: 1, start_content_id: null });
+
+                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView);
+
+                    self.stopWatchingForLocation();
                 });
 
                 window.markers.push(footstep_marker);
@@ -297,15 +297,18 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });        
             },
 
-            logout: function() {
-                //stop watching for position
+            stopWatchingForLocation: function() {
                 if(navigator.geolocation.clearWatch(this.watchID)) {
                     //is not triggered..
                     console.log('cleared watchid');
                 }
 
                 this.watchID = null;
+            },
 
+            logout: function() {
+                //stop watching for position
+                this.stopWatchingForLocation();
 
                 App.dbClass.initLogoutUser();
             },
