@@ -9,7 +9,6 @@ define([],
 		                // Replacing with already constructed view
 		                App.StackNavigator.replaceView(subview);
 		            } else {
-		            	console.log(App.StackNavigator.activeView);
 		                if (App.StackNavigator.activeView) {
 		                	console.log('replacing');
 		                    App.stackViewIds[stackViewId] = App.StackNavigator.replaceView(viewInstance);
