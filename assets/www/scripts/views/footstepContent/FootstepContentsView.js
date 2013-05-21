@@ -20,9 +20,9 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
           },
 
           render: function() {
-            console.log('THIS HAPPENS RENDER INIT OF COLLECITONVIEW');
+            
             if(window.footstep_contents.length != 0) {
-              console.log('THIS HAPPENS RENDER OF COLLECITONVIEW');
+               console.log('THIS HAPPENS RENDER INIT OF COLLECITONVIEW');
                 this.collection.each(this.renderModelView, this); 
                 //pass this to set the context as this object, because we're in the _'s .each function function this refers to the window
             } else {
@@ -33,10 +33,8 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
           },
 
           renderModelView: function(model) {
-            console.log(model.attributes.location + "start_content_id = " + window.start_content_id);
             if(model.attributes.footstep_content_id == window.start_content_id || (window.start_content_id == null && model.attributes.location == 1)){
-              console.log('passing render if statement');
-              var footstepContentView = new FootstepContentView({ model: model });
+              App.ViewInstances.footstepContentView = new FootstepContentView({ model: model });
               this.$el.append(footstepContentView.render().el);
             }
             
@@ -71,9 +69,8 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
           afterSettingFootstepContents: function() {
               //instead of using the window context, put it in the view's context
               var self = this;
-              this.footstep_contents = window.footstep_contents;
-
-              $.each(this.footstep_contents, function(index, val){
+              console.log(self.collection.length);
+              $.each(window.footstep_contents, function(index, val){
                 var footstepContentModel = new FootstepContentModel;
 
                 footstepContentModel.set(
@@ -85,10 +82,10 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                 });
 
                 self.collection.add(footstepContentModel);     
-
+                 console.log(self.collection.length);
               });
 
-              App.Vent.trigger('readyToRenderSubiews:done', this.render);
+              App.Vent.trigger('readyToRenderSubiews:done');
           },
 
        		previousView : function() {
@@ -97,17 +94,34 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
        });
 
       var FootstepContentView = Backbone.View.extend({
-        el: 'div',
-        template: Handlebars.compile(FootstepContentViewT),
+         el: 'div',
 
-        render: function() {
-          var json = this.model.toJSON();
-          var html = this.template(json);
+         events: {
+            'click .content-location' : 'navigate',
+         },
 
-          this.$el.html(html);
-          return this;
-        },
+         template: Handlebars.compile(FootstepContentViewT),
+
+         render: function() {
+            var json = this.model.toJSON();
+            var html = this.template(json);
+            this.$el.html(html);
+            return this;
+         },
+
+         navigate: function(e) {
+            e.preventDefault();
+
+            var position = $(e.currentTarget).data('location');
+            console.log($(e.currentTarget));
+            App.ViewInstances.FootstepContentsView = new FootstepContentsView({ footstep_id: this.model.get('footstep_id') }, position); 
+
+            console.log('RENDER COLLCTION FROM MODEL');
+            App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
+            
+         },
+
       });
 
-       return FootstepContentsView;
-    });
+      return FootstepContentsView;
+   });
