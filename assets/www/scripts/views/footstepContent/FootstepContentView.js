@@ -12,15 +12,17 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          template: Handlebars.compile(FootstepContentViewT),
 
          render: function() {
-
+            console.log(this.model.attributes);
             var json = this.model.toJSON();
             var html = this.template(json);
             this.$el.html(html);
 
+            //get the total amount of contents from the model
             //append pagination
-            //this.$el.find('.content-location');
-
-
+            for(var i = 0; i < this.model.get('location_count'); i++) {
+                //this.$el.find('.content-location');
+            }
+           
             return this;
          },
 
@@ -45,7 +47,8 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                footstep_content_id: window.footstep_content.footstep_content_id,
                footstep_title: window.footstep_content.title,
                content: window.footstep_content.content,
-               location: window.footstep_content.location
+               location: window.footstep_content.location,
+               location_count: window.footstep_content.location_count
             });
 
             //render ourselves with the new model
