@@ -119,16 +119,16 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    userCheckingQuerySuccess: function(tx, results) {
-		    	console.log('etwas');	
 			    // if there was a result, continue to Mapview
 			    if(results.rows.length != 0) {
+			    	console.log('User found in local database, to the mapview!');
 	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
 	                
 	                if(App.ViewInstances.MapView == null) {
 	                	App.ViewInstances.MapView = new MapView({ collection: new MarkerCollection });
 	                	
 	                }
-	                console.log('starting mapview');	
+	    	
 	                App.Helpers.processView('MapView', App.ViewInstances.MapView);	
 	             
 	             
@@ -136,6 +136,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 	               
 	            //else, the app 
 			    } else {
+			    	console.log('No local user found');
 			    	//set timeout because splashscreen will be too short otherwise
 			    	 if(App.ViewInstances.LoginView == null) {
 	                	App.ViewInstances.LoginView = new LoginView;
@@ -351,7 +352,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		        	return dfd.promise();
 				}
-				console.log('happens');
 
 				//return deferred is done(.then) function with the sent callback to this function
 				return data().then(callback);
@@ -359,8 +359,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			retrieveFootstepContentWithWithLocationAndFootstepId: function(callback, footstep_id, location) {
 				var self = this;
+
 				var data = function getData(){
-					console.log(footstep_id);
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
 		         		tx.executeSql('SELECT * FROM footstep_contents WHERE footstep_id = ? AND location_id = ? ORDER BY location_id',
@@ -377,6 +377,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			retrieveFootstepContentsWithContentId: function(callback, footstep_content_id) {
 				var self = this;
+
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
@@ -393,9 +394,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 			linkUserToContent: function(footstep_contents_id) {
-				footstep_contents_id;
-				this.aap;
 				var self = this;
+				
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footstep_contents_users WHERE footstep_content_id = ? AND user_id = ?', [footstep_contents_id, App.userModel.get('user_id')],
 						function(tx, results){
