@@ -148,6 +148,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		    //logout current user
 		    initLogoutUser: function() {
+		    	window.circles = [];
+                window.footsteps = [];
 		    	App.dbInstantion.transaction(this.logoutUser, this.errorCB);	
 		    },
 
@@ -160,7 +162,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    	App.ViewInstances = {};
 
 		    	App.ViewInstances.LoginView = new LoginView;
-
+		    	
 
 	            App.Helpers.processView('LoginView', App.ViewInstances.LoginView);
 		    	

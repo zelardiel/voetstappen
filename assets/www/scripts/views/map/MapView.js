@@ -10,9 +10,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             destructionPolicy: 'auto',
 
             initialize: function() {
+                navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
+
+                document.addEventListener("backbutton", this.onBackButton, false);
                 //set markers to the window because of context issues
                 window.markers = [];
                 window.circles = [];
+                window.been_in_circle = [];
 
                 //create geolocator watch id
                 this.watchID;
@@ -25,6 +29,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.initAddMarker, this);  
+                App.Vent.on('getImageForMarker:done', this.placeMarkerOnMap, this);
                 this.collection.bind('add', this.addMarkerRadius, this);
 
                 //if view is active start adding map
@@ -48,11 +53,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 $("#scan").on('click', function() {
+                    document.removeEventListener("backbutton", self.onBackButton, false);
                     App.ViewInstances.ScannerView = new ScannerView; 
+                    this.stopWatchingForLocation();
+                    window.circles = [];
+                    window.footsteps = [];
 
                     App.Helpers.processView('ScannerView', App.ViewInstances.ScannerView); 
-
-                    self.stopWatchingForLocation();
                 });
             },
 
@@ -171,51 +178,51 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             initAddMarker: function(model) {
                 //apend to this for later on
-                this.model = null;
-                this.model = model;
+                var self = this;
+                var ifDone = function(tx, results) {
+                    if(results.rows.item(0).scanned_content_count == 0) {
+                        var footstep_image = './img/voetstap1klein.png';
+                    } else {
+                        var footstep_image = './img/voetstap2klein.png';
+                    }
 
-                App.Vent.on('getImageForMarker:done', this.placeMarkerOnMap, this);
+                     self.placeMarkerOnMap(model, footstep_image);
+                };  
 
-                if(this.model.get('footstep_id') == 0 ) {
-                    window.footstep_image = './img/eigenlocatie.png';
+                if(model.get('footstep_id') == 0 ) {
+                    var footstep_image = './img/eigenlocatie.png';
 
-                    App.Vent.trigger('getImageForMarker:done');
+                    self.placeMarkerOnMap(model, footstep_image);
                 } else {
-                    App.dbClass.getAmountOfScannedEachFootstep(this.setImageForMarker, this.model.get('footstep_id'));
+                    App.dbClass.getAmountOfScannedEachFootstep(ifDone, model.get('footstep_id'));
                     
                 }
-                         
+
+                     
             },
 
             setImageForMarker: function(tx, results) {
-                if(results.rows.item(0).scanned_content_count == 0) {
-                    console.log();
-                    window.footstep_image = './img/voetstap1klein.png';
-                } else {
-                    window.footstep_image = './img/voetstap2klein.png';
-                }
-
+               
                 App.Vent.trigger('getImageForMarker:done');
             },
 
-            placeMarkerOnMap: function() {
+            placeMarkerOnMap: function(model, footstep_image) {
                 
                 var self = this;
-                var latlng = new google.maps.LatLng(this.model.get('latitude'), this.model.get('longitude'));
+                var latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
                 // Drop Voetstap1 marker with image from image variable
                 var footstep_marker = new google.maps.Marker({
-                    footstep_id: this.model.get('footstep_id'),
+                    footstep_id: model.get('footstep_id'),
                     position: latlng, 
                     map: self.map, 
-                    title: this.model.get('title'),
-                    icon: window.footstep_image
+                    title: model.get('title'),
+                    icon: footstep_image
                 });
 
 
                 google.maps.event.addListener(footstep_marker, 'click', function() {
-                    console.log(footstep_marker.footstep_id);
                     if(footstep_marker.footstep_id != 0 ) { 
-                        document.removeEventListener("backbutton", this.onBackButton, false);
+                        document.removeEventListener("backbutton", self.onBackButton, false);
                         App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_marker.footstep_id, location: 1, start_content_id: null });
 
                         App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView);
@@ -231,7 +238,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 this.model = null;
 
-                console.log('ADDING MARKER WITH ID ' + self.model.get('footstep_id'));
+                console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
+                navigator.notification.activityStop(); 
             },
 
 
@@ -299,7 +307,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             
                          if (bounds.contains(latlng)){
                             //Redirect
-                            alert('U bent in de radius van een voetstap!');
+                            if(!$.inArray(val.footstep_id, window.been_in_circle)) {
+                                alert('U bent in de radius van een voetstap!');
+                            }
+                            window.been_in_circle.push(val.footstep_id);
+                         
                         }
                     });
                 }
@@ -334,10 +346,21 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             onBackButton: function (event) {
+                navigator.notification.activityStop(); 
+
+                navigator.notification.confirm(
+                    'Afsluiten',  // message
+                    navigator.app.exitApp,                  // callback to invoke
+                    'Afsluiten?',            // title
+                    'Ok, Annuleren'            // buttonLabels
+                );
+
+                
                 //exit app
             },
 
             logout: function() {
+                navigator.notification.activityStop(); 
                 //stop watching for position
                 this.stopWatchingForLocation();
                 document.removeEventListener("backbutton", this.onBackButton, false);
