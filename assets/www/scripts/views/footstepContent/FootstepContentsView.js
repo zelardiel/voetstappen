@@ -1,7 +1,7 @@
-define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', 'collections/FootstepContentCollection', 'models/FootstepContentModel', 'collections/MarkerCollection'],
-    function (_, Backbone, FootstepContentView, FootstepContentCollection, FootstepContentModel, MarkerCollection) {
+define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', 'collections/FootstepContentCollection', 'models/FootstepContentModel'],
+    function (_, Backbone, FootstepContentView, FootstepContentCollection, FootstepContentModel) {
        var FootstepContentsView = Backbone.View.extend({
-          id: 'FootstepContentView',
+          id: 'FootstepContentsView',
           destructionPolicy: 'never',
 
           initialize: function(){

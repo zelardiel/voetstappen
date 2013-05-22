@@ -24,6 +24,7 @@ define(['views/map/MapView', 'collections/MarkerCollection'],
 		    },
 
 		    renderMapView: function() {
+		    	App.ViewInstances = {}; 
 		    	App.ViewInstances.MapView = new MapView({collection: new MarkerCollection});
 		    	App.Helpers.processView('MapView', App.ViewInstances.MapView);  
 		    },
