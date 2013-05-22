@@ -1,6 +1,9 @@
-define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentView.tpl', 'collections/FootstepContentCollection', 'views/footstepContent/FootstepContentsView'],
-    function (_, Backbone, FootstepContentViewT, FootstepContentCollection, FootstepContentsView) {
+define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentView.tpl'],
+    function (_, Backbone, FootstepContentViewT) {
       var FootstepContentView = Backbone.View.extend({
+         initialize: function() {
+              
+         },
 
          events: {
             'click .content-location' : 'navigate',
@@ -9,9 +12,15 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          template: Handlebars.compile(FootstepContentViewT),
 
          render: function() {
+
             var json = this.model.toJSON();
             var html = this.template(json);
             this.$el.html(html);
+
+            //append pagination
+            //this.$el.find('.content-location');
+
+
             return this;
          },
 
@@ -19,9 +28,28 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
             e.preventDefault();
             var position = $(e.currentTarget).data('location');
 
-            //App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: this.model.get('footstep_id'), location: position }); 
-            //App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
-            
+            App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(this.setFootstepContents, this.model.get('footstep_id'), position);
+
+            App.Vent.on('retrievingFootstepContents:done', this.afterSettingFootstepContents, this);
+         },
+
+         setFootstepContents: function(tx, results) {
+            window.footstep_content = results.rows.item(0);
+
+            App.Vent.trigger('retrievingFootstepContents:done');
+         },
+
+         afterSettingFootstepContents: function() {
+            this.model.set({
+               footstep_id: window.footstep_content.footstep_id,
+               footstep_content_id: window.footstep_content.footstep_content_id,
+               footstep_title: window.footstep_content.title,
+               content: window.footstep_content.content,
+               location: window.footstep_content.location
+            });
+
+            //render ourselves with the new model
+            this.render();
          },
       });
 

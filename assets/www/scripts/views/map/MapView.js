@@ -77,7 +77,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             render: function () {
                 //dont use a template because we are doing everything with marker adding
                 this.$el.html(_.template(MapViewTemplate));
-                console.log(App.StackNavigator.activeView);
                  
                 return this;
             },

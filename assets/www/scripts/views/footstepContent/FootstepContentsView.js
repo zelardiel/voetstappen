@@ -2,7 +2,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
     function (_, Backbone, FootstepContentView, FootstepContentCollection, FootstepContentModel) {
        var FootstepContentsView = Backbone.View.extend({
           id: 'FootstepContentsView',
-          destructionPolicy: 'auto',
+          destructionPolicy: 'never',
 
           initialize: function(){
             var self = this;
@@ -39,7 +39,8 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             //this is the callback of the retrieveLocalFootsteps function
          setFootstepContents: function(tx, results) {
-            window.footstep_content = results.rows.item(0);  
+            window.footstep_content = results.rows.item(0);
+            console.log(window.footstep_content);
             //trigger backbone custom event to deal with async problems
             App.Vent.trigger('retrievingFootstepContents:done');
          },
@@ -51,17 +52,18 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
               this.footstepContentModel.set(
               {
+                  footstep_id: window.footstep_content.footstep_id,
                   footstep_content_id: window.footstep_content.footstep_content_id,
                   footstep_title: window.footstep_content.title,
                   content: window.footstep_content.content,
                   location: window.footstep_content.location
               });
-            
+
             App.Vent.trigger('readyToRenderSubiews:done');
          },
 
    		previousView : function() {
-            App.StackNavigator.popView();
+            //App.StackNavigator.popView();
         },
        });
       return FootstepContentsView;
