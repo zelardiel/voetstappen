@@ -433,6 +433,24 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
+			GetAmountOfScannedEachFootstep: function(callback, footstep_id) {
+				var self = this;
+
+				var data = function getData(){
+					var dfd = $.Deferred();
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('SELECT count(*) as scanned_content_count FROM footstep_contents_users cu, footstep_contents c WHERE cu.footstep_content_id = c.footstep_content_id AND c.footstep_id = ?',
+		         			[footstep_id], dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				//return deferred is done(.then) function with the sent callback to this function
+				return data().then(callback);
+			},
+
 
 
 		};
