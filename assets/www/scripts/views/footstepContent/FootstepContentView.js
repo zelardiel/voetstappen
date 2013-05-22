@@ -1,10 +1,6 @@
 define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentView.tpl'],
     function (_, Backbone, FootstepContentViewT) {
       var FootstepContentView = Backbone.View.extend({
-         initialize: function() {
-              
-         },
-
          events: {
             'click .content-location' : 'navigate',
          },
@@ -12,17 +8,17 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          template: Handlebars.compile(FootstepContentViewT),
 
          render: function() {
-            console.log(this.model.attributes);
             var json = this.model.toJSON();
             var html = this.template(json);
             this.$el.html(html);
 
+            console.log(this.model.get('is_found'));
             //get the total amount of contents from the model
-            //append pagination
-            for(var i = 0; i < this.model.get('location_count'); i++) {
-                //this.$el.find('.content-location');
+            //append pagination dynamically
+            for(var i = 1; i <= this.model.get('location_count'); i++) {
+               this.$el.find('#pagination-content-container').append('<a href="#" data-location="' + i + '" class="content-location">' + i + '</a>');
             }
-           
+                      
             return this;
          },
 
@@ -48,7 +44,8 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                footstep_title: window.footstep_content.title,
                content: window.footstep_content.content,
                location: window.footstep_content.location,
-               location_count: window.footstep_content.location_count
+               location_count: window.footstep_content.location_count,
+               is_found: window.footstep_content.is_found
             });
 
             //render ourselves with the new model

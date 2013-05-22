@@ -39,11 +39,6 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             //this is the callback of the retrieveLocalFootsteps function
          setFootstepContents: function(tx, results) {
-          console.log('--------------------');
-                console.log(results.rows.item(0).title);
-              console.log(results.rows.item(0).footstep_content_id);
-              console.log(results.rows.item(0).footstep_id);
-                console.log('--------------------');
             window.footstep_content = results.rows.item(0);
             //trigger backbone custom event to deal with async problems
             App.Vent.trigger('retrievingFootstepContents:done');
@@ -61,7 +56,8 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
                   footstep_title: window.footstep_content.title,
                   content: window.footstep_content.content,
                   location: window.footstep_content.location,
-                  location_count: window.footstep_content.location_count
+                  location_count: window.footstep_content.location_count,
+                  is_found: window.footstep_content.is_found
               });
 
             App.Vent.trigger('readyToRenderSubiews:done');
