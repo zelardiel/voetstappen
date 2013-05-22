@@ -357,14 +357,14 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
-			retrieveFootstepContentWithWithLocationAndFootstepId: function(callback, footstep_id, location) {
+			retrieveFootstepContentWithWithLocationAndFootstepId: function(callback, footstep_id, location, user_id) {
 				var self = this;
 
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT c.footstep_content_id, f.footstep_id, f.title, c.content, f.image_id, l.location, (SELECT COUNT( * ) FROM locations WHERE footstep_id = ?) AS location_count FROM footsteps f, footstep_contents c, locations l WHERE l.location = ? AND f.footstep_id = ? AND f.footstep_id = c.footstep_id AND l.footstep_id = f.footstep_id AND c.footstep_content_id = l.location',
-		         			[footstep_id, location, footstep_id], dfd.resolve, self.errorCB
+		         		tx.executeSql('SELECT (SELECT count(*) as linked FROM footstep_contents_users WHERE user_id = ? AND footstep_content_id in (SELECT c.footstep_content_id FROM footsteps f, footstep_contents c, locations l WHERE l.location = ? AND f.footstep_id = ? AND f.footstep_id = c.footstep_id AND l.footstep_id = f.footstep_id AND c.footstep_content_id = l.location)) as is_found, c.footstep_content_id, f.footstep_id, f.title, c.content, f.image_id, l.location, (SELECT COUNT( * ) FROM locations WHERE footstep_id = ?) AS location_count FROM footsteps f, footstep_contents c, locations l WHERE l.location = ? AND f.footstep_id = ? AND f.footstep_id = c.footstep_id AND l.footstep_id = f.footstep_id AND c.footstep_content_id = l.location',
+		         			[user_id, location, footstep_id footstep_id, location, footstep_id], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 
