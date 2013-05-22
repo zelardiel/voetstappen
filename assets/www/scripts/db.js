@@ -157,11 +157,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    logoutUserQuerySuccess: function(tx, results) {
-		    	if(App.ViewInstances.LoginView == null) {
-		    		App.ViewInstances.LoginView = new LoginView;
-		    	}
+		    	App.ViewInstances = {};
 
-	            App.Helpers.processView('LoginView', App.ViewInstances.LoginView);	
+		    	App.ViewInstances.LoginView = new LoginView;
+
+
+	            App.Helpers.processView('LoginView', App.ViewInstances.LoginView);
 		    	
 		    },
 
@@ -405,17 +406,20 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				
 				}, self.errorCB, function() { 
 					
+					App.ViewInstances = {}; 
+
 					console.log('footstep_contents_users added');
 
                     App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
-              
 
-                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
+                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView);
+
+
 					return;
 				});	
 			},
 
-			CheckIfContentIsLinkedToUser: function(callback, user_id, footstep_content_id) {
+			checkIfContentIsLinkedToUser: function(callback, user_id, footstep_content_id) {
 				var self = this;
 
 				var data = function getData(){
@@ -433,14 +437,16 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
-			GetAmountOfScannedEachFootstep: function(callback, footstep_id) {
+			getAmountOfScannedEachFootstep: function(callback, footstep_id) {
 				var self = this;
+				console.log(App.userModel.get('user_id'));
+				console.log(footstep_id);
 
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT count(*) as scanned_content_count FROM footstep_contents_users cu, footstep_contents c WHERE cu.footstep_content_id = c.footstep_content_id AND c.footstep_id = ?',
-		         			[footstep_id], dfd.resolve, self.errorCB
+		         		tx.executeSql('SELECT count(*) as scanned_content_count FROM footstep_contents_users cu, footstep_contents c WHERE cu.footstep_content_id = c.footstep_content_id AND c.footstep_id = ? AND cu.user_id = ?',
+		         			[footstep_id, App.userModel.get('user_id')], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 

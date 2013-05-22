@@ -8,11 +8,12 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 'click #scan':'scanClickHandler'
             },
 
-            destructionPolicy: 'never',
+            destructionPolicy: 'auto',
 
             initialize: function() {
                 //set markers to the window because of context issues
                 window.markers = [];
+                window.circles = [];
 
                 //create geolocator watch id
                 this.watchID;
@@ -24,21 +25,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.handleLegenda();
                 
                 //listen for if a model is added to the markercollection do this..
-                this.collection.bind('add', this.addMarker, this);  
+                this.collection.bind('add', this.initAddMarker, this);  
                 this.collection.bind('add', this.addMarkerRadius, this);
 
                 //if view is active start adding map
                 this.on('viewActivate', this.viewIsActive, this);
-       
-
-                $("#scan").click(function() {
-                    if(App.ViewInstances.ScannerView == null) {
-                        App.ViewInstances.ScannerView = new ScannerView; 
-                        App.Helpers.processView('ScannerView', App.ViewInstances.ScannerView); 
-                    }
-                });        
-
-                this.on('viewActivate', this.active, this);
 
             },
 
@@ -48,6 +39,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             jqueryEvents: function() {
                 var self = this;
+
+                $('.button-container').show();
+                $('.showMenu').show();
+                $('.logout').show();
+
                 $('.logout').on('click', function(){
                     self.logout();
                 });
@@ -174,36 +170,68 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 			},
 
 
-            addMarker: function(model) {
-                var self = this,
-                    latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
+            initAddMarker: function(model) {
+                //apend to this for later on
+                this.model = model;
 
-                // make a variable that contains an image
-                var footstep_image = './img/voetstap1klein.png';
-                // voetstapNietGevonden = '../../img/voetstap1.png',
-                // voetstap1position = ;
+                App.Vent.on('getImageForMarker:done', this.placeMarkerOnMap, this);
 
+                if(this.model.get('footstep_id') == 0 ) {
+                    window.footstep_image = './img/eigenlocatie.png';
+
+                    App.Vent.trigger('getImageForMarker:done');
+                } else {
+                    App.dbClass.getAmountOfScannedEachFootstep(this.setImageForMarker, this.model.get('footstep_id'));
+                    
+                }
+                         
+            },
+
+            setImageForMarker: function(tx, results) {
+                if(results.rows.item(0).scanned_content_count == 0) {
+                    console.log();
+                    window.footstep_image = './img/voetstap1klein.png';
+                } else {
+                    window.footstep_image = './img/voetstap2klein.png';
+                }
+
+                App.Vent.trigger('getImageForMarker:done');
+            },
+
+            placeMarkerOnMap: function() {
+                
+                var self = this;
+                var latlng = new google.maps.LatLng(this.model.get('latitude'), this.model.get('longitude'));
                 // Drop Voetstap1 marker with image from image variable
                 var footstep_marker = new google.maps.Marker({
-                    footstep_id: model.get('footstep_id'),
+                    footstep_id: this.model.get('footstep_id'),
                     position: latlng, 
                     map: self.map, 
-                    title: model.get('title'),
-                    icon: footstep_image
+                    title: this.model.get('title'),
+                    icon: window.footstep_image
                 });
 
-                google.maps.event.addListener(footstep_marker, 'click', function() { 
-                    App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: model.get('footstep_id'), location: 1, start_content_id: null });
 
-                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView);
+                google.maps.event.addListener(footstep_marker, 'click', function() {
+                    console.log(footstep_marker.footstep_id);
+                    if(footstep_marker.footstep_id != 0 ) { 
+                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_marker.footstep_id, location: 1, start_content_id: null });
 
-                    self.stopWatchingForLocation();
+                        App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView);
+
+                        self.stopWatchingForLocation();
+
+                    } else if(footstep_marker.footstep_id == 0){
+                        alert('Dit ben jij!');
+                    }
                 });
 
                 window.markers.push(footstep_marker);
 
-                console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
+                console.log('ADDING MARKER WITH ID ' + self.model.get('footstep_id'));
             },
+
+
 
             addMarkerRadius: function(model) {
                  //check for own position, which obviously doesnt need a radius
@@ -212,31 +240,27 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 }
 
                 var self = this,
-                    circleRadius = 500,
+                    circleRadius = 70,
                     latlng = new google.maps.LatLng(model.get('latitude'), model.get('longitude'));
 
                 // Place a circle that will cause the push
                 var circle = new google.maps.Circle({
+                    footstep_id: model.get('footstep_id'),
                     map: self.map,
                     radius: circleRadius,
-                    strokeColor: "#FF0000",
+                    strokeColor: "#0000CC",
                     strokeOpacity: 0.8,
                     center: latlng,
-                    strokeWeight: 3,
-                    fillColor: "#FF0000",
+                    strokeWeight: 2,
+                    fillColor: "#0000DD",
                     fillOpacity: 0.35
                 });
 
 
                 // Get the bounds of the circle
                 var bounds = circle.getBounds();
-        
 
-                // Check if our extracted latlng is in this bounds
-                // if (bounds.contains(latlng)){
-                //     //Redirect
-                //     alert('HIT!');
-                // }
+                window.circles.push(circle);
             },
 
             //OWN POSITION FUNCTIONS
@@ -252,6 +276,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //since window is available in this context use it
                 this.collection = window.collection;
 
+                var lat = position.coords.latitude,
+                    lng = position.coords.longitude;
+
                 $.each(window.markers, function(index, val){
                     //if the id is 0 (the id of own position marker)
                     if(val.footstep_id === 0) {
@@ -260,6 +287,20 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     }
                 });
 
+                //check if current position is in range of footstep, defined here because of fucking context issues-.-
+                if(window.circles != '[]') {
+                    var latlng = new google.maps.LatLng(lat, lng);
+                    $.each(window.circles, function(index, val){
+                        //val is circle
+                        var bounds = val.getBounds();
+            
+                         if (bounds.contains(latlng)){
+                            //Redirect
+                            alert('U bent in de radius van een voetstap!');
+                        }
+                    });
+                }
+               
                 //create model with our own location..
                 var modelMarker = new MarkerModel();
 
@@ -268,8 +309,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     footstep_id: 0, //0 = own position
                     title: 'Uw locatie',
                     image_id: 1,
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
+                    latitude: lat,
+                    longitude: lng,
                     updated_at: 0
                 });
 
@@ -277,22 +318,17 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             onErrorGetPosition: function(error) {
-               alert('code: '    + error.code    + '\n' +
-                'message: ' + error.message + '\n');
+               console.log('code: ' + error.code + 'message: ' + error.message);
             },
 
-            btnBack_clickHandler: function (event) {
-               
-            },
 			
 			scanClickHandler: function (event) {
-               
                 $("#scan").click(function() {
-                       if(App.ViewInstances.ScannerView == null) {
-                        App.ViewInstances.ScannerView = new ScannerView; 
-                    }
+                   if(App.ViewInstances.ScannerView == null) {
+                    App.ViewInstances.ScannerView = new ScannerView; 
+                }
     
-                    App.Helpers.processView('ScannerView', App.ViewInstances.ScannerView); 
+                App.Helpers.processView('ScannerView', App.ViewInstances.ScannerView); 
                 });        
             },
 
@@ -303,6 +339,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 }
 
                 this.watchID = null;
+            },
+
+            onBackButton: function (event) {
+                //exit app
             },
 
             logout: function() {

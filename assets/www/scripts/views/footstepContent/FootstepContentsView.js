@@ -1,7 +1,7 @@
-define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', 'collections/FootstepContentCollection', 'models/FootstepContentModel', 'libs/handlebars/handlebars'],
-    function (_, Backbone, FootstepContentView, FootstepContentCollection, FootstepContentModel) {
+define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', 'collections/FootstepContentCollection', 'models/FootstepContentModel', 'collections/MarkerCollection'],
+    function (_, Backbone, FootstepContentView, FootstepContentCollection, FootstepContentModel, MarkerCollection) {
        var FootstepContentsView = Backbone.View.extend({
-          id: 'FootstepContentsView',
+          id: 'FootstepContentView',
           destructionPolicy: 'never',
 
           initialize: function(){
@@ -10,7 +10,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
             window.footstep_content = null;
             this.footstepContentModel = null;
 
-            document.addEventListener("backbutton", self.previousView, false);
+            document.addEventListener("backbutton", self.onBackButton, false);
             
             this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
        
@@ -63,9 +63,10 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
             App.Vent.trigger('readyToRenderSubiews:done');
          },
 
-   		previousView : function() {
-            //App.StackNavigator.popView();
+   		onBackButton : function() {
+            App.Helpers.renderMapView();
+            
         },
-       });
+      });
       return FootstepContentsView;
    });

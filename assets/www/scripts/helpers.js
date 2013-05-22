@@ -1,5 +1,5 @@
-define([],
-	function() {
+define(['views/map/MapView', 'collections/MarkerCollection'],
+	function(MapView, MarkerCollection) {
 		var Helper = {
 		    processView: function (stackViewId, viewInstance) {
 		        if (!App.StackNavigator.activeView || Object(App.StackNavigator.activeView).constructor != viewInstance) {
@@ -22,6 +22,12 @@ define([],
 		             }
 		        }
 		    },
+
+		    renderMapView: function() {
+		    	App.ViewInstances.MapView = new MapView({collection: new MarkerCollection});
+		    	App.Helpers.processView('MapView', App.ViewInstances.MapView);  
+		    },
+
 		}; //end Helper class
 	return Helper;
 });
