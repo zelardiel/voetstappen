@@ -27,7 +27,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
          },
 
          initGetDatabaseFootstepContents: function(footstep_id, location, start_content_id) {
-          if(start_content_id != null) {
+          if(start_content_id !== null) {
              App.dbClass.retrieveFootstepContentsWithContentId(this.setFootstepContents, start_content_id);
            } else {
              App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(this.setFootstepContents, footstep_id, location);
@@ -39,8 +39,12 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             //this is the callback of the retrieveLocalFootsteps function
          setFootstepContents: function(tx, results) {
+          console.log('--------------------');
+                console.log(results.rows.item(0).title);
+              console.log(results.rows.item(0).footstep_content_id);
+              console.log(results.rows.item(0).footstep_id);
+                console.log('--------------------');
             window.footstep_content = results.rows.item(0);
-            console.log(window.footstep_content);
             //trigger backbone custom event to deal with async problems
             App.Vent.trigger('retrievingFootstepContents:done');
          },
@@ -56,7 +60,8 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
                   footstep_content_id: window.footstep_content.footstep_content_id,
                   footstep_title: window.footstep_content.title,
                   content: window.footstep_content.content,
-                  location: window.footstep_content.location
+                  location: window.footstep_content.location,
+                  location_count: window.footstep_content.location_count
               });
 
             App.Vent.trigger('readyToRenderSubiews:done');

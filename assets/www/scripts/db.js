@@ -1,5 +1,5 @@
-define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollection', 'views/footstepContent/FootstepContentsView'],
-	function(LoginView, MapView, MarkerCollection, FootstepContentsView) {
+define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollection', 'views/footstepContent/FootstepContentsView', 'collections/FootstepContentCollection'],
+	function(LoginView, MapView, MarkerCollection, FootstepContentsView, FootstepContentCollection) {
 		/**************
 		** THIS OBJECT CONTAINS ALL STORAGES WHICH ARE DONE IN THE LOCAL SQLITE DATABASE
 		***************/
@@ -132,7 +132,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 	                App.Helpers.processView('MapView', App.ViewInstances.MapView);	
 	             
 	             
-	                //db.initSynchronizing();
+	                db.initSynchronizing();
 	               
 	            //else, the app 
 			    } else {
@@ -363,8 +363,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT * FROM footstep_contents WHERE footstep_id = ? AND location_id = ? ORDER BY location_id',
-		         			[footstep_id, location], dfd.resolve, self.errorCB
+		         		tx.executeSql('SELECT c.footstep_content_id, f.footstep_id, f.title, c.content, f.image_id, l.location, (SELECT COUNT( * ) FROM locations WHERE footstep_id = ?) AS location_count FROM footsteps f, footstep_contents c, locations l WHERE l.location = ? AND f.footstep_id = ? AND f.footstep_id = c.footstep_id AND l.footstep_id = f.footstep_id AND c.footstep_content_id = l.location',
+		         			[footstep_id, location, footstep_id], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 
@@ -381,8 +381,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT c.footstep_content_id, f.title, c.content, l.location FROM footsteps f, footstep_contents c, locations l WHERE f.footstep_id = c.footstep_id AND f.footstep_id in (SELECT f.footstep_id FROM footsteps f, footstep_contents c WHERE c.footstep_id = f.footstep_id AND c.footstep_content_id = ?) AND c.location_id = l.location_id ORDER BY location',
-		         			[footstep_content_id], dfd.resolve, self.errorCB
+		         		tx.executeSql('SELECT c.footstep_content_id, f.title, c.content, l.location, f.image_id, f.footstep_id, ( SELECT COUNT( * ) FROM locations WHERE footstep_id IN ( SELECT f.footstep_id FROM footsteps f, footstep_contents c WHERE c.footstep_id = f.footstep_id AND c.footstep_content_id =?) ) AS location_count FROM footsteps f, footstep_contents c, locations l WHERE f.footstep_id = c.footstep_id AND c.footstep_content_id = ? AND c.location_id = l.location_id ORDER BY location',
+		         			[footstep_content_id, footstep_content_id], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 
@@ -395,7 +395,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			linkUserToContent: function(footstep_contents_id) {
 				var self = this;
-				
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footstep_contents_users WHERE footstep_content_id = ? AND user_id = ?', [footstep_contents_id, App.userModel.get('user_id')],
 						function(tx, results){
@@ -404,12 +403,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 							}
 						}, self.errorCB);
 				
-				}, self.errorCB, function(tx, results) { 
+				}, self.errorCB, function() { 
+					
 					console.log('footstep_contents_users added');
 
-					if(App.ViewInstances.FootstepContentsView == null) {
-                        App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, footstep_contents_id: footstep_contents_id });
-                    }
+                    App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
+              
 
                     App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView); 
 					return;
