@@ -1,14 +1,16 @@
-define(['jquery', 'underscore', 'Backbone', 'views/footstepContent/FootstepContentsView'],
-    function ($, _, Backbone, PhotoAssignmentView, FootstepContentsView) {
+define(['jquery', 'underscore', 'Backbone'],
+    function ($, _, Backbone) {
         var ScannerView = Backbone.View.extend({
             id: 'ScannerView',
-            destructionPolicy: 'auto',
+            destructionPolicy: 'never',
+
             initialize: function() {
-				window.plugins.barcodeScanner.scan(this.scanningSuccess, this.scanningError);
+				//if view is active start scanstuffs
+                this.on('viewActivate', this.viewIsActive, this);
             },
 
-            events: {
-                'click #btnNextView':'btnNextView_clickHandler'
+            viewIsActive: function() {
+                window.plugins.barcodeScanner.scan(this.scanningSuccess, this.scanningError);
             },
 
             scanningError: function(error) {
@@ -19,7 +21,6 @@ define(['jquery', 'underscore', 'Backbone', 'views/footstepContent/FootstepConte
                 if (result.cancelled) {
                     alert("the user cancelled the scan");
                 } else {
-                    App.ViewInstances = {}; 
                     App.dbClass.linkUserToContent(result.text);
                 }
             },
