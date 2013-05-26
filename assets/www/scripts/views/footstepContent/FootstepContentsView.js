@@ -15,10 +15,11 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
             this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
        
             App.Vent.on('readyToRenderSubiews:done', this.render, this);
-          },
+        },
 
          render: function() {
           if(this.footstepContentModel != null) {
+            console.log('VAAK');
             App.ViewInstances.footstepContentView = new FootstepContentView({ model: this.footstepContentModel });
             this.$el.append(App.ViewInstances.footstepContentView.render().el);
           }
@@ -64,8 +65,8 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
          },
 
    		onBackButton : function() {
-            App.Helpers.renderMapView();
-            
+            console.log('clicked');
+            App.Helpers.renderMapView(); 
         },
       });
       return FootstepContentsView;

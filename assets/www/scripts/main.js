@@ -10,6 +10,7 @@ require.config({
         Backbone:'libs/backbone/backbone',
         // jQuery
         jquery:'libs/jquery/jquery-1.9.1',
+
         //backtack view pusher
         backstack:'libs/backstack/backstack-min'
     },
@@ -28,35 +29,35 @@ require.config({
     }
 });
 
-require(['domReady', 'models/UserModel', 'backstack', 'db', 'helpers'],
+require(['domReady', 'models/UserModel', 'backstack', 'db', 'helpers' ],
     function (domReady, UserModel, Backstack, db, Helpers) {
         // domReady is RequireJS plugin that triggers when DOM is ready
         domReady(function () {
             //ondevice ready is cordave(phonegap) function
             function onDeviceReady(desktop) {
-                var networkState = navigator.network.connection.type;
+                // var networkState = navigator.network.connection.type;
 
-                var states = {};
+                // var states = {};
 
-                states[Connection.UNKNOWN]  = 0;
-                states[Connection.ETHERNET] = 'Ethernet connection';
-                states[Connection.WIFI]     = 'WiFi connection';
-                states[Connection.CELL_2G]  = 'Cell 2G connection';
-                states[Connection.CELL_3G]  = 'Cell 3G connection';
-                states[Connection.CELL_4G]  = 'Cell 4G connection';
-                states[Connection.NONE]     = 0;
+                // states[Connection.UNKNOWN]  = 0;
+                // states[Connection.ETHERNET] = 'Ethernet connection';
+                // states[Connection.WIFI]     = 'WiFi connection';
+                // states[Connection.CELL_2G]  = 'Cell 2G connection';
+                // states[Connection.CELL_3G]  = 'Cell 3G connection';
+                // states[Connection.CELL_4G]  = 'Cell 4G connection';
+                // states[Connection.NONE]     = 0;
 
-                if(states[networkState] == 0) {
-                    navigator.notification.confirm(
-                        'Geen verbinding',  // message
-                        navigator.app.exitApp,                  // callback to invoke
-                        'Je hebt geen verbinding met het internet.',            // title
-                        'Afsluiten'            // buttonLabels
-                    );
+                // if(states[networkState] == 0) {
+                //     navigator.notification.confirm(
+                //         'Geen verbinding',  // message
+                //         navigator.app.exitApp,                  // callback to invoke
+                //         'Je hebt geen verbinding met het internet.',            // title
+                //         'Afsluiten'            // buttonLabels
+                //     );
 
-                    return;
+                //     return;
 
-                }
+                // }
 
                 // Hiding splash screen when app is loaded
                 if (desktop !== true) {
@@ -71,7 +72,6 @@ require(['domReady', 'models/UserModel', 'backstack', 'db', 'helpers'],
                     dbClass: db,
                     Vent: _.extend({}, Backbone.Events),
                     StackNavigator: new Backstack.StackNavigator({el: '#container'}),
-                    stackViewIds: {},
                     ViewInstances: {},
                     userModel: new UserModel,
                     Helpers: Helpers

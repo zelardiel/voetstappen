@@ -8,6 +8,7 @@
 		<b>Informatie {{location}}/5</b>
 		<p>{{content}}</p>
 		{{else}}
+			<b>Informatie {{location}}/5</b>
 			<p>Deze QR-code is nog niet gevonden</p>
 		{{/if}}		
 		<section>

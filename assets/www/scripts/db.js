@@ -123,26 +123,28 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			    if(results.rows.length != 0) {
 			    	console.log('User found in local database, to the mapview!');
 	                App.userModel.set({user_id: results.rows.item(0).user_id, username: results.rows.item(0).username, password: results.rows.item(0).password});
-	                
-	                if(App.ViewInstances.MapView == null) {
-	                	App.ViewInstances.MapView = new MapView({ collection: new MarkerCollection });
-	                	
-	                }
-	    	
-	                App.Helpers.processView('MapView', App.ViewInstances.MapView);	
-	             
-	             
+
+	               	if( App.ViewInstances.MapView == null ) {
+	               		App.ViewInstances.MapView = new MapView({ collection: new MarkerCollection });
+	               		App.Helpers.processView(App.ViewInstances.MapView);	
+	               	} else { 
+	               		App.StackNavigator.replaceView(App.ViewInstances.MapView);
+	               	}
+
 	                db.initSynchronizing();
 	               
 	            //else, the app 
 			    } else {
 			    	console.log('No local user found');
 			    	//set timeout because splashscreen will be too short otherwise
-			    	 if(App.ViewInstances.LoginView == null) {
-	                	App.ViewInstances.LoginView = new LoginView;
-	                	
-	                }
-	                 App.Helpers.processView('LoginView', App.ViewInstances.LoginView);	
+			    	if( App.ViewInstances.LoginView == null ) {
+			    		App.ViewInstances.LoginView = new LoginView;	
+			    		App.Helpers.processView(App.ViewInstances.LoginView);	
+			    	} else {
+			    		App.StackNavigator.replaceView(App.ViewInstances.MapView);
+			    	}
+
+	               
 			    }
 		    },
 
@@ -159,12 +161,16 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    logoutUserQuerySuccess: function(tx, results) {
-		    	App.ViewInstances = {};
 
-		    	App.ViewInstances.LoginView = new LoginView;
-		    	
+		    	if( App.ViewInstances.LoginView == null ) {
+		    		App.ViewInstances.LoginView = new LoginView;
+		    		App.Helpers.processView(App.ViewInstances.LoginView);		
+		    	} else {
+		    		console.log(App.ViewInstances.LoginView);
+		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);
+		    	}
 
-	            App.Helpers.processView('LoginView', App.ViewInstances.LoginView);
+                
 		    	
 		    },
 
@@ -406,16 +412,14 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 							}
 						}, self.errorCB);
 				
-				}, self.errorCB, function() { 
-					
-					App.ViewInstances = {}; 
-
-					console.log('footstep_contents_users added');
-
-                    App.ViewInstances.FootstepContentsView = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
-
-                    App.Helpers.processView('FootstepContentsView', App.ViewInstances.FootstepContentsView);
-
+				}, self.errorCB, function() {
+					if( App.ViewInstances.FootstepContentsViewFromScanner == null ) {
+			    		App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
+			    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewFromScanner);		
+			    	} else {
+			    		App.ViewInstances.FootstepContentsViewFromScanner.options.start_content_id = footstep_contents_id;
+			    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewFromScanner);
+			    	}
 
 					return;
 				});	

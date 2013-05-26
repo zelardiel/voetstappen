@@ -1,6 +1,10 @@
 define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentView.tpl'],
     function (_, Backbone, FootstepContentViewT) {
       var FootstepContentView = Backbone.View.extend({
+         initialize: function() {
+               document.addEventListener('contextmenu', this.onBackButton, false); 
+         },
+
          events: {
             'click .content-location' : 'navigate',
          },
@@ -12,12 +16,12 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
             var html = this.template(json);
             this.$el.html(html);
 
-            console.log(this.model.get('is_found'));
-            //get the total amount of contents from the model
             //append pagination dynamically
             for(var i = 1; i <= this.model.get('location_count'); i++) {
                this.$el.find('#pagination-content-container').append('<a href="#" data-location="' + i + '" class="content-location">' + i + '</a>');
             }
+
+            console.log('render piece of content');
                       
             return this;
          },
@@ -50,6 +54,10 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
             //render ourselves with the new model
             this.render();
+         },
+
+         onBackButton: function() {
+            App.Helpers.renderMapView();
          },
       });
 
