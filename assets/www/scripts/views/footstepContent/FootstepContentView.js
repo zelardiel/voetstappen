@@ -57,6 +57,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          },
 
          onBackButton: function() {
+            window.footstep_content = null;
             App.Helpers.renderMapView();
          },
       });

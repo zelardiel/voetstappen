@@ -11,10 +11,18 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
             this.footstepContentModel = null;
 
             document.addEventListener("backbutton", self.onBackButton, false);
-            
-            this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
+  
        
             App.Vent.on('readyToRenderSubiews:done', this.render, this);
+
+            App.Vent.on('retrievingFootstepContents:done', this.afterSettingFootstepContents, this);
+
+            //if view is active start adding map
+            this.on('viewActivate', this.viewIsActive, this);
+        },
+
+        viewIsActive: function() {
+          this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
         },
 
          render: function() {
@@ -35,7 +43,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
            }
         
             //listen for when it's done due to async problems
-            App.Vent.on('retrievingFootstepContents:done', this.afterSettingFootstepContents, this);
+            
           },
 
             //this is the callback of the retrieveLocalFootsteps function
@@ -66,6 +74,8 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
    		onBackButton : function() {
             console.log('clicked');
+
+            window.footstep_content = null;
             App.Helpers.renderMapView(); 
         },
       });
