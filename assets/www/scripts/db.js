@@ -62,7 +62,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			    //tx.executeSql('DROP TABLE objectives');
 			    //objectives
 			    tx.executeSql(
-			     	'CREATE TABLE IF NOT EXISTS objectives(objective_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER, img_location)'
+			     	'CREATE TABLE IF NOT EXISTS objectives(objective_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER, img_path)'
 			    );
 
 			    // tx.executeSql('DROP TABLE scores');

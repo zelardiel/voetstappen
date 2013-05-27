@@ -535,3 +535,38 @@ section span {
     src: url(fonts/nilland.ttf);
     font-weight:400;
 }
+
+/* photo blocks **/
+
+div#photo-container {
+    margin: 0 20px;
+    min-height: 80%;
+}
+
+img.assignment-image {
+    width: 100% !important;
+    padding: 0 !important;
+    height: 100% !important;
+}
+div.image-block {
+    float: left;
+    background-color: red;
+    width: 49%;
+    height: 120px;
+    border: 1px solid;
+}
+div#block-tr {
+
+}
+
+div#block-tl {
+
+}
+
+div#block-bl {
+
+}
+
+div#block-br {
+
+}

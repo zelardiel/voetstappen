@@ -1,5 +1,5 @@
-define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentsView', 'collections/FootstepContentCollection', 'libs/hammer/hammer'],
-    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentsView, FootstepContentCollection, hammer) {
+define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerModel', 'views/scanner/ScannerView', 'views/footstepContent/FootstepContentsView', 'collections/FootstepContentCollection', 'views/photoAssignment/PhotoAssignmentView', 'libs/hammer/hammer'],
+    function (_, Backbone, MapViewTemplate, MarkerModel, ScannerView, FootstepContentsView, FootstepContentCollection, PhotoAssignmentView, hammer) {
         var MapView = Backbone.View.extend({
             id: 'MapView',
 
@@ -13,7 +13,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
 
                 document.addEventListener("backbutton", this.onBackButton, false);
-
 
                 //set markers to the window because of context issues
                 window.markers = [];
@@ -37,14 +36,16 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 //if view is active start adding map
                 this.on('viewActivate', this.viewIsActive, this);
-
-
             },
 
 
             viewIsActive: function() {
+                /*******BECAUSE VIEW ONLY GETS INITIALIZED ONCE ADD CODE HERE ******/
                 //decide if map is loaded from a early instantion
                 if(this.map != null) {
+                    //fix for gray area 
+                    google.maps.event.trigger(this.map, 'resize')
+
                     console.log('Existing map, get new footsteps');
 
                     window.markers = [];
@@ -85,6 +86,24 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 $('.logout').on('click', function(){
                     self.logout();
                 });
+
+                $('#assignment').on('click', function() {
+                   document.removeEventListener("backbutton", self.onBackButton, false);
+
+                    self.stopWatchingForLocation();
+
+                    window.markers = [];
+                    window.circles = [];
+                    window.been_in_circle = [];
+
+                    if(App.ViewInstances.PhotoAssignmentView == null ) {
+                        App.ViewInstances.PhotoAssignmentView = new PhotoAssignmentView; 
+                        App.Helpers.processView(App.ViewInstances.PhotoAssignmentView);       
+                    } else {
+                        App.StackNavigator.replaceView(App.ViewInstances.PhotoAssignmentView);
+                    }
+                });
+
 
                 $("#scan").on('click', function() {
                     document.removeEventListener("backbutton", self.onBackButton, false);
@@ -150,10 +169,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         self.getOwnPosition(10000); 
                     });
                  
-                } else {
-
                 }
-              
             },
 
             initGetDatabaseFootsteps: function() {
@@ -387,7 +403,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 navigator.notification.confirm(
                     'Afsluiten',
                     function(button) {
-                        if(button === 0) {
+                        if(button == 0) {
                              navigator.app.exitApp();
                         }
                     },

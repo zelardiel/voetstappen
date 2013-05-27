@@ -1,15 +1,13 @@
 define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentView.tpl'],
     function (_, Backbone, PhotoAssignmentTemplate) {
         var PhotoAssignmentView = Backbone.View.extend({
-
             initialize : function() {
                 var self = this;
-                document.addEventListener("backbutton", self.previousView, false);
+                document.addEventListener("backbutton", self.onBackButton, false);
             },
 
             events : {
-                'click #take_photo' : 'initCamera',
-                'click #btnBack' : 'previousView'
+                'click #block-tl' : 'initCamera',
             },
 
             render : function () {
@@ -21,6 +19,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 e.preventDefault();
                 var destinationType = navigator.camera.DestinationType;
 
+                console.log(destinationType.DATA_URL);    
                 navigator.camera.getPicture(this.onPhotoDataSuccess, this.onFail, 
                     { 
                         quality: 50, 
@@ -33,10 +32,9 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 // console.log(imageData);
 
                 // Get image handle
-                var smallImage = document.getElementById('smallImage');
+                var smallImage = document.getElementById('block-tl-img');
 
                 // Unhide image elements
-                smallImage.style.display = 'block';
 
                 // Show the captured photo
                 // The inline CSS rules are used to resize the image
@@ -48,10 +46,13 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             },
 
             //pop the last actice view from the stack array and show the previous one
-            previousView : function() {
-                App.StackNavigator.popView();
-            },
 
+            onBackButton : function() {
+
+                App.Helpers.renderMapView(); 
+
+                document.removeEventListener("backbutton", this.onBackButton, false);
+            },
         });
 
         return PhotoAssignmentView;
