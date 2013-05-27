@@ -12,8 +12,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             initialize: function() {
                 //navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
 
-                document.addEventListener("backbutton", this.onBackButton, false);
-
                 //set markers to the window because of context issues
                 window.markers = [];
                 window.circles = [];
@@ -36,15 +34,37 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 //if view is active start adding map
                 this.on('viewActivate', this.viewIsActive, this);
+                this.on('viewDeactivate', this.viewDeactivated, this);
+            },
+
+            viewDeactivated: function() {
+                document.removeEventListener("backbutton", this.onBackButton, false);
+
+                window.footstep_content = null;
+
+                window.markers = [];
+                window.circles = [];
+                window.been_in_circle = [];
+
+                this.stopWatchingForLocation();
+
+                this.collection.reset();
+
+                //stop potentially running notifications
+                //navigator.notification.activityStop(); 
+
             },
 
 
             viewIsActive: function() {
+                document.addEventListener("backbutton", this.onBackButton, false);
                 /*******BECAUSE VIEW ONLY GETS INITIALIZED ONCE ADD CODE HERE ******/
                 //decide if map is loaded from a early instantion
                 if(this.map != null) {
                     //fix for gray area 
-                    google.maps.event.trigger(this.map, 'resize')
+                    google.maps.event.trigger(this.map, 'resize');
+
+                    document.addEventListener("backbutton", this.onBackButton, false);
 
                     console.log('Existing map, get new footsteps');
 
@@ -87,15 +107,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     self.logout();
                 });
 
-                $('#assignment').on('click', function() {
-                   document.removeEventListener("backbutton", self.onBackButton, false);
+                $('#assignment').on('click', function(e) {
+                    e.preventDefault();
 
-                    self.stopWatchingForLocation();
-
-                    window.markers = [];
-                    window.circles = [];
-                    window.been_in_circle = [];
-
+                    if(App.StackNavigator.activeView.id === 'PhotoAssignmentView') {
+                        return;
+                    }
+                   
                     if(App.ViewInstances.PhotoAssignmentView == null ) {
                         App.ViewInstances.PhotoAssignmentView = new PhotoAssignmentView; 
                         App.Helpers.processView(App.ViewInstances.PhotoAssignmentView);       
@@ -106,13 +124,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
 
                 $("#scan").on('click', function() {
-                    document.removeEventListener("backbutton", self.onBackButton, false);
-
-                    self.stopWatchingForLocation();
-
-                    window.markers = [];
-                    window.circles = [];
-                    window.been_in_circle = [];
+                    //TODO ADD LOADER TO PREVENT MULTIUPLE CLICKS!!
 
                     if(App.ViewInstances.ScannerView == null ) {
                         App.ViewInstances.ScannerView = new ScannerView; 
@@ -268,22 +280,15 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
 
                 google.maps.event.addListener(footstep_marker, 'click', function() {
-                    if(footstep_marker.footstep_id != 0 ) { 
-                        document.removeEventListener("backbutton", self.onBackButton, false);
 
-                        window.markers = [];
-                        window.circles = [];
-                        window.been_in_circle = [];
+                    if(footstep_marker.footstep_id != 0 ) { 
                         
                         if( App.ViewInstances.FootstepContentsViewFromMap == null ) {
                             App.ViewInstances.FootstepContentsViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_marker.footstep_id, location: 1, start_content_id: null });
                             App.Helpers.processView(App.ViewInstances.FootstepContentsViewFromMap);       
                         } else {
-                            console.log(App.ViewInstances.FootstepContentsViewFromMap);
                             App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewFromMap);
                         }
-
-                        self.stopWatchingForLocation();
 
                     } else if(footstep_marker.footstep_id == 0){
                         alert('Dit ben jij!');
@@ -294,7 +299,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
 
-                //navigator.notification.activityStop(); 
             },
 
 
@@ -418,10 +422,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             logout: function() {
                 //navigator.notification.activityStop(); 
                 //stop watching for position
-                this.stopWatchingForLocation();
 
-                this.collection.reset();
-                document.removeEventListener("backbutton", this.onBackButton, false);
                 App.dbClass.initLogoutUser();
             },
 

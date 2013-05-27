@@ -9,9 +9,6 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             window.footstep_content = null;
             this.footstepContentModel = null;
-
-            document.addEventListener("backbutton", self.onBackButton, false);
-  
        
             App.Vent.on('readyToRenderSubiews:done', this.render, this);
 
@@ -19,15 +16,29 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             //if view is active start adding map
             this.on('viewActivate', this.viewIsActive, this);
+
+            this.on('viewDeactivate', this.viewDeactivated, this);
+
         },
 
         viewIsActive: function() {
+          window.footstep_content = null;
+          this.footstepContentModel = null;
+
           this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
+
+          document.addEventListener("backbutton", this.onBackButton, false);
+          document.addEventListener('contextmenu', this.onBackButton, false); 
+        },
+
+        viewDeactivated: function() {
+            document.removeEventListener("backbutton", this.onBackButton, false);
+            document.removeEventListener("contextmenu", this.onBackButton, false);
+            window.footstep_content = null;
         },
 
          render: function() {
           if(this.footstepContentModel != null) {
-            console.log('VAAK');
             App.ViewInstances.footstepContentView = new FootstepContentView({ model: this.footstepContentModel });
             this.$el.append(App.ViewInstances.footstepContentView.render().el);
           }
@@ -72,12 +83,9 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
             App.Vent.trigger('readyToRenderSubiews:done');
          },
 
-   		onBackButton : function() {
-            console.log('clicked');
-
-            window.footstep_content = null;
-            App.Helpers.renderMapView(); 
-        },
+        onBackButton: function(e) {
+            App.Helpers.renderMapView();
+         },
       });
       return FootstepContentsView;
    });

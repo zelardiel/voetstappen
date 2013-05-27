@@ -2,7 +2,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
     function (_, Backbone, FootstepContentViewT) {
       var FootstepContentView = Backbone.View.extend({
          initialize: function() {
-               document.addEventListener('contextmenu', this.onBackButton, false); 
+            App.Vent.on('retrievingFootstepContents:done', this.afterSettingFootstepContents, this);
          },
 
          events: {
@@ -27,17 +27,17 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          },
 
          navigate: function(e) {
+            console.log('NAVIGATING');
             e.preventDefault();
             var position = $(e.currentTarget).data('location');
 
-            App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(this.setFootstepContents, this.model.get('footstep_id'), position);
-
-            App.Vent.on('retrievingFootstepContents:done', this.afterSettingFootstepContents, this);
+            App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(this.setFootstepContents, this.model.get('footstep_id'), position);   
          },
 
          setFootstepContents: function(tx, results) {
             window.footstep_content = results.rows.item(0);
 
+            console.log('setfootstepcontents');
             App.Vent.trigger('retrievingFootstepContents:done');
          },
 
@@ -52,13 +52,9 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                is_found: window.footstep_content.is_found
             });
 
+            console.log('setfootstepcontents');
             //render ourselves with the new model
             this.render();
-         },
-
-         onBackButton: function() {
-            window.footstep_content = null;
-            App.Helpers.renderMapView();
          },
       });
 

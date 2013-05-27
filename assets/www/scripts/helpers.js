@@ -17,10 +17,11 @@ define(['views/map/MapView', 'collections/MarkerCollection'],
 		    },
 
 		    renderMapView: function() {
-	    		if( App.ViewInstances.MapView == null ) {
+	    		if(App.ViewInstances.MapView == null) {
                		App.ViewInstances.MapView = new MapView({ collection: new MarkerCollection });
                		App.Helpers.processView(App.ViewInstances.MapView);	
                	} else { 
+               		console.log('REPLACING WITH MAPVIEW');
                		App.StackNavigator.replaceView(App.ViewInstances.MapView);
                	}
 		    	

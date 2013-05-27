@@ -143,7 +143,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			    		App.ViewInstances.LoginView = new LoginView;	
 			    		App.Helpers.processView(App.ViewInstances.LoginView);	
 			    	} else {
-			    		App.StackNavigator.replaceView(App.ViewInstances.MapView);
+			    		App.StackNavigator.replaceView(App.ViewInstances.LoginView);
 			    	}
 
 	               
@@ -168,11 +168,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    		App.ViewInstances.LoginView = new LoginView;
 		    		App.Helpers.processView(App.ViewInstances.LoginView);		
 		    	} else {
-		    		console.log(App.ViewInstances.LoginView);
 		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);
 		    	}
-
-                
 		    	
 		    },
 
@@ -462,8 +459,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			getAmountOfScannedEachFootstep: function(callback, footstep_id) {
 				var self = this;
-				console.log(App.userModel.get('user_id'));
-				console.log(footstep_id);
 
 				var data = function getData(){
 					var dfd = $.Deferred();

@@ -1,9 +1,26 @@
 define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentView.tpl'],
     function (_, Backbone, PhotoAssignmentTemplate) {
         var PhotoAssignmentView = Backbone.View.extend({
+            id: 'PhotoAssignmentView',
+
+            destructionPolicy: 'never',
+
             initialize : function() {
-                var self = this;
-                document.addEventListener("backbutton", self.onBackButton, false);
+
+                this.on('viewActivate', this.viewIsActive, this);
+                this.on('viewDeactivate', this.viewDeactivated, this);
+            },
+
+
+            viewIsActive: function() {
+                document.addEventListener("backbutton", this.onBackButton, false);
+                document.addEventListener('contextmenu', this.onBackButton, false); 
+            },
+
+            viewDeactivated: function() {
+                this.on('viewDeactivate', this.viewDeactivated, this);
+                document.removeEventListener("backbutton", this.onBackButton, false);
+                document.removeEventListener("contextmenu", this.onBackButton, false);
             },
 
             events : {
@@ -47,11 +64,8 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
             //pop the last actice view from the stack array and show the previous one
 
-            onBackButton : function() {
-
+            onBackButton : function(e) {
                 App.Helpers.renderMapView(); 
-
-                document.removeEventListener("backbutton", this.onBackButton, false);
             },
         });
 
