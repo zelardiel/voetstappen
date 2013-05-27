@@ -14,12 +14,13 @@ define(['jquery', 'underscore', 'Backbone'],
             },
 
             scanningError: function(error) {
-                alert("scanning failed: " + error);
+                alert('Scannen mislukt!');
+                console.log(error);
             },
 
             scanningSuccess: function(result) {
                 if (result.cancelled) {
-                    alert("the user cancelled the scan");
+                    App.Helpers.renderMapView(); 
                 } else {
                     App.dbClass.linkUserToContent(result.text);
                 }

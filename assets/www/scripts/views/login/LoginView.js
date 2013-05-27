@@ -57,7 +57,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 $.ajax({
                     type: 'POST',
-                    timeout: 8000,
+                    timeout: 15000,
                     url: 'http://www.pimmeijer.com/voetstappen/api.php',
                     data: {action: 'login', username: self.username.val(), password: self.hashed_password },
                     success: function(result) {

@@ -65,8 +65,8 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             //pop the last actice view from the stack array and show the previous one
 
             onBackButton : function(e) {
-                App.Helpers.renderMapView(); 
-            },
+                App.Helpers.renderMapView();
+            }
         });
 
         return PhotoAssignmentView;

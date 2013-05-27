@@ -21,7 +21,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.watchID = 0;
 
                 //call jquery events
-                this.jqueryEvents();
+                this.jqueryEvents(false);
 
                 //legenda functionalities
                 this.handleLegenda();
@@ -58,13 +58,12 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             viewIsActive: function() {
                 document.addEventListener("backbutton", this.onBackButton, false);
+
                 /*******BECAUSE VIEW ONLY GETS INITIALIZED ONCE ADD CODE HERE ******/
                 //decide if map is loaded from a early instantion
                 if(this.map != null) {
                     //fix for gray area 
                     google.maps.event.trigger(this.map, 'resize');
-
-                    document.addEventListener("backbutton", this.onBackButton, false);
 
                     console.log('Existing map, get new footsteps');
 
@@ -102,6 +101,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                     return;
                 }
+
+                $('.button-container').show();
+                $('.showMenu').show();
+                $('.logout').show(); 
 
                 $('.logout').on('click', function(){
                     self.logout();
@@ -367,6 +370,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                             //Redirect
                             if(!$.inArray(val.footstep_id, window.been_in_circle)) {
                                 alert('U bent in de radius van een voetstap!');
+                                window.in_radius = val.footstep_id;
                             }
                             window.been_in_circle.push(val.footstep_id);
                         }
@@ -386,7 +390,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     updated_at: 0
                 });
 
-                console.log('adding marker');
                 App.ViewInstances.MapView.collection.add(modelMarker);
             },
 
@@ -407,6 +410,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 navigator.notification.confirm(
                     'Afsluiten',
                     function(button) {
+                        console.log('LOGGING OUT');
                         if(button == 0) {
                              navigator.app.exitApp();
                         }

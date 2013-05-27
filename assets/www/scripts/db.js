@@ -166,7 +166,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		    	if( App.ViewInstances.LoginView == null ) {
 		    		App.ViewInstances.LoginView = new LoginView;
-		    		App.Helpers.processView(App.ViewInstances.LoginView);		
+		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);		
 		    	} else {
 		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);
 		    	}
