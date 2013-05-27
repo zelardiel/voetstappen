@@ -17,6 +17,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 window.circles = [];
                 window.been_in_circle = [];
 
+                //TEMPORARILY FOR TESTING. THIS SHOULD ONLY BE FILLED IF USER IS IN RANGE OF FOOTSTEP
+                window.in_radius = 4;
+
                 //create geolocator watch id
                 this.watchID = 0;
 

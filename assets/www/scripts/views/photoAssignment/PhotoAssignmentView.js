@@ -24,7 +24,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             },
 
             events : {
-                'click #block-tl' : 'initCamera',
+                'click .image-block' : 'initCamera',
             },
 
             render : function () {
@@ -32,8 +32,13 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 return this;
             },
 
+            // http://stackoverflow.com/questions/9926152/phonegap-android-how-to-save-the-capture-image-from-camera-in-the-sd-card
             initCamera : function(e) {
                 e.preventDefault();
+                var position = $(e.currentTarget).data('position');
+                console.log('position: ' + position + ' footstep_id_in_range ' + window.in_radius);
+                return;
+
                 var destinationType = navigator.camera.DestinationType;
 
                 console.log(destinationType.DATA_URL);    

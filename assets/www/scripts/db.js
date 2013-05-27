@@ -214,11 +214,13 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					self.syncFootstepContents();
 					self.syncLocations();
 					self.syncScores();
-					console.log('etwas');
+
+					//set 4 empty objectives
 					App.dbInstantion.transaction(self.setObjectives, self.errorCB, 
 						function(tx, results) { 
 							console.log('UPDATed objectives TIME');
 					});	
+
 					self.timestamp = self.getTimeStamp();
 
 					//set new global last-updated time in the local database 
@@ -398,7 +400,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
-			setobjectivePathAndFootstep: function(callback, objective_id, img_path, footstep_id) {
+			setObjectivePathAndFootstep: function(callback, objective_id, img_path, footstep_id) {
 				var self = this;
 
 				var data = function getData(){
