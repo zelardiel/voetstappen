@@ -59,10 +59,10 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			     	'CREATE TABLE IF NOT EXISTS locations(location_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER NOT NULL, type NOT NULL, location INTEGER NOT NULL, other_id INTEGER NOT NULL, updated_at NOT NULL )'
 			    );
 
-			    // tx.executeSql('DROP TABLE objectives');
+			    //tx.executeSql('DROP TABLE objectives');
 			    //objectives
 			    tx.executeSql(
-			     	'CREATE TABLE IF NOT EXISTS objectives(objective_id INTEGER NOT NULL PRIMARY KEY, description, footstep_id INTEGER, location_id INTEGER, updated_at NOT NULL )'
+			     	'CREATE TABLE IF NOT EXISTS objectives(objective_id INTEGER NOT NULL PRIMARY KEY, footstep_id INTEGER, img_location)'
 			    );
 
 			    // tx.executeSql('DROP TABLE scores');
@@ -76,6 +76,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			    tx.executeSql(
 			     	'CREATE TABLE IF NOT EXISTS synchronized(id INTEGER NOT NULL PRIMARY KEY unique, updated_at NOT NULL )'
 			    );
+
+			    //
 
 			},
 
@@ -214,9 +216,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					self.syncFootsteps();
 					self.syncFootstepContents();
 					self.syncLocations();
-					self.syncObjectives();
 					self.syncScores();
-
+					console.log('etwas');
+					App.dbInstantion.transaction(self.setObjectives, self.errorCB, 
+						function(tx, results) { 
+							console.log('UPDATed objectives TIME');
+					});	
 					self.timestamp = self.getTimeStamp();
 
 					//set new global last-updated time in the local database 
@@ -297,26 +302,20 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			},
 
-			syncObjectives: function() {
-				var self = this;
+			setObjectives: function(tx) {
+				tx.executeSql(
+			     	'INSERT OR IGNORE INTO objectives(objective_id) VALUES(1)'
+			    );
+			    tx.executeSql(
+			     	'INSERT OR IGNORE INTO objectives(objective_id) VALUES(2)'
+			    );
+			    tx.executeSql(
+			     	'INSERT OR IGNORE INTO objectives(objective_id) VALUES(3)'
+			    );
+			    tx.executeSql(
+			     	'INSERT OR IGNORE INTO objectives(objective_id) VALUES(4)'
+			    );
 
-				$.ajax({
-					data: JSON.stringify({action: 'retrieve_objectives', timestamp: self.timestamp}),
-					success: function(data) {
-						var results = $.parseJSON(data);
-
-						$.each(results, function(index, val){
-					       if(typeof(val) === 'object') {
-					        	App.dbInstantion.transaction(function(tx){
-					         		tx.executeSql('INSERT OR REPLACE INTO objectives(objective_id, description, footstep_id, location_id, updated_at) VALUES(?, ?, ?, ?, ?)', 
-					          			[val.objective_id, val.description, val.footstep_id, val.location_id, val.updated_at],
-					          			self.syncQuerySuccess, self.errorCB
-					         		);
-					        	}, self.errorCB);
-					       	} 
-					    });
-					},
-				});
 			},
 
 			syncScores: function() {
