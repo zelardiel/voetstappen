@@ -495,7 +495,23 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
+			getUserScore: function(callback, user_id) {
+				var self = this;
 
+				var data = function getData(){
+					var dfd = $.Deferred();
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('SELECT * FROM scores WHERE user_id = ?',
+		         			[user_id], dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				//return deferred is done(.then) function with the sent callback to this function
+				return data().then(callback);
+			},
 
 		};
 		return db;
