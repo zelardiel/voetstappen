@@ -3,6 +3,8 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
       var FootstepContentView = Backbone.View.extend({
          initialize: function() {
             App.Vent.on('retrievingFootstepContents:done', this.afterSettingFootstepContents, this);
+
+            this.swipeContent();
          },
 
          events: {
@@ -24,6 +26,20 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
             console.log('render piece of content');
                       
             return this;
+         },
+
+         swipeContent: function() {
+            var self = this;
+            $('.slide, .content').hammer({prevent_default:true}).bind("swipeleft", function(ev) {
+               var position = $(this).find('article.piece-of-content').data('location');  
+               console.log(self.model.attributes);  
+               App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);
+            });
+
+            $('.slide, .content').hammer({prevent_default:true}).bind("swiperight", function(ev) {
+               var position = $(this).find('article.piece-of-content').data('location');
+               App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
+            });
          },
 
          navigate: function(e) {
@@ -52,7 +68,6 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                is_found: window.footstep_content.is_found
             });
 
-            console.log('setfootstepcontents');
             //render ourselves with the new model
             this.render();
          },

@@ -28,7 +28,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
           this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
 
           document.addEventListener("backbutton", this.onBackButton, false);
-          document.addEventListener('contextmenu', this.onBackButton, false); 
+          //document.addEventListener('contextmenu', this.onBackButton, false); 
         },
 
         viewDeactivated: function() {

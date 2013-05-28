@@ -1,5 +1,5 @@
-<section class="slide content">
-	<article>
+<section class="slide content" >
+	<article class="piece-of-content" data-location="{{location}}">
 		{{#if is_found}}
 		<img src="img/blaeu.jpg">
 		
