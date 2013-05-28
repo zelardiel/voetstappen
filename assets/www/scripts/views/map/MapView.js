@@ -29,7 +29,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //legenda functionalities
                 this.handleLegenda();
 
-                App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
+                //score menu
+                this.handleScoreMenu();
+
+                 App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
                 
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.initAddMarker, this);  
@@ -105,60 +108,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     return;
                 }
 
-                $(document).bind("mobileinit", function(){
-                  //apply overrides here
-                  $.mobile.defaultPageTransition = flip;
-                });
-
-
-                $(function(){
-                    var menuStatus;
-                 
-                    $("a.showMenu").click(function(){
-                        if(menuStatus != true){
-                        $(".slide").animate({
-                            marginLeft: "85%",
-                          }, 100, function(){menuStatus = true});
-                          return false;
-                          } else {
-                            $(".slide").animate({
-                            marginLeft: "0px",
-                          }, 100, function(){menuStatus = false});
-                            return false;
-                          }
-                    });
-                 
-                    // $('#menu').on("swipeleft", function(){
-                    //     if (menuStatus){
-                    //     $(".slide").animate({
-                    //         marginLeft: "0px",
-                    //       }, 100, function(){menuStatus = false});
-                    //       }
-                    // });
-                 
-                    // $('#menu').on("swiperight", function(){
-                    //     if (!menuStatus){
-                    //     $(".slide").animate({
-                    //         marginLeft: "165px",
-                    //       }, 100, function(){menuStatus = true});
-                    //       }
-                    // });
-                 
-                    $("#menu li a").click(function(){
-                        var p = $(this).parent();
-                        if($(p).hasClass('active')){
-                            $("#menu li").removeClass('active');
-                        } else {
-                            $("#menu li").removeClass('active');
-                            $(p).addClass('active');
-                        }
-                    });
-                 
-                });
 
                 $('.button-container').show();
                 $('.showMenu').show();
-                $('.logout').show(); 
+                $('.logout').show();
 
                 $('.logout').on('click', function(){
                     self.logout();
@@ -192,7 +145,64 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
             },
 
+            handleScoreMenu: function() {
+                $(document).bind("mobileinit", function(){
+                  //apply overrides here
+                  $.mobile.defaultPageTransition = flip;
+                });
+
+
+                var menuStatus;
+             
+                $("a.showMenu").click(function(){
+                    if(menuStatus != true){
+                        $(".slide").animate({
+                            marginLeft: "85%",
+                        }, 100, function(){menuStatus = true});
+
+                        return false;
+                      } else {
+                        $(".slide").animate({
+                            marginLeft: "0px",
+                        }, 100, function(){menuStatus = false});
+                        
+                        return false;
+                    }
+                });
+
+                // $('#menu').on("swipeleft", function(){
+                //     if (menuStatus){
+                //     $(".slide").animate({
+                //         marginLeft: "0px",
+                //       }, 100, function(){menuStatus = false});
+                //       }
+                // });
+             
+                // $('#menu').on("swiperight", function(){
+                //     if (!menuStatus){
+                //     $(".slide").animate({
+                //         marginLeft: "165px",
+                //       }, 100, function(){menuStatus = true});
+                //       }
+                // });
+             
+                $("#menu li a").click(function(){
+                    var p = $(this).parent();
+                    if($(p).hasClass('active')){
+                        $("#menu li").removeClass('active');
+                    } else {
+                        $("#menu li").removeClass('active');
+                        $(p).addClass('active');
+                    }
+                });
+            },
+
             handleLegenda: function() {
+                $('.legenda, .hide').hammer({prevent_default:true}).on("tap", function(ev) {
+                    $('.legenda').addClass("legenda-animation");
+                    $('.hide').addClass('up');
+                });
+
                 $('.legenda, .hide').hammer({prevent_default:true}).bind("dragup", function(ev) {
                     $('.legenda').addClass("legenda-animation");
                     $('.hide').addClass('up');
