@@ -3,20 +3,20 @@
 		<div>
 		</div><br>
 		<div id="photo-container">
-			<div id="block-tl" class="image-block" data-objectiveid="1">
+			<div id="block-tl" class="image-block" data-objectiveid="1" data-footstepid="0">
 				<img src="" id="block-tl-img" class="assignment-image" alt="">
 			</div>
 
-			<div id="block-tr" class="image-block" data-objectiveid="2">
-				
+			<div id="block-tr" class="image-block" data-objectiveid="2" data-footstepid="0">
+				<img src="" id="block-tl-img" class="assignment-image" alt="">			
 			</div>
 
-			<div id="block-bl" class="image-block" data-objectiveid="3">
-			
+			<div id="block-bl" class="image-block" data-objectiveid="3" data-footstepid="0">
+				<img src="" id="block-tl-img" class="assignment-image" alt="">
 			</div>
 
-			<div id="block-br" class="image-block" data-objectiveid="4">
-				
+			<div id="block-br" class="image-block" data-objectiveid="4" data-footstepid="0">
+				<img src="" id="block-tl-img" class="assignment-image" alt="">
 			</div>
 		</div>
 	</article>

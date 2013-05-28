@@ -6,7 +6,6 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             destructionPolicy: 'never',
 
             initialize : function() {
-
                 this.on('viewActivate', this.viewIsActive, this);
                 this.on('viewDeactivate', this.viewDeactivated, this);
             },
@@ -15,6 +14,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             viewIsActive: function() {
                 document.addEventListener("backbutton", this.onBackButton, false);
                 document.addEventListener('contextmenu', this.onBackButton, false); 
+                //App.dbClass.getImagePathForObjective();
             },
 
             viewDeactivated: function() {
@@ -43,50 +43,43 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
  
                 navigator.camera.getPicture(this.onPhotoDataSuccess, this.onFailTakingPicture, 
                     {
-                        quality: 50,
-                        destinationType: destinationType.DATA_URL
+                        quality: 80,
+                        destinationType: destinationType.FILE_URI,
+                        encodingType: Camera.EncodingType.JPEG,
+                        targetWidth: 200,
+                        targetHeight: 200,
                     });
             },
 
-            onPhotoDataSuccess : function(imageData) {
-                // Uncomment to view the base64 encoded image data
-                // console.log(imageData);
+            onPhotoDataSuccess : function(imageURI) {
+                var thumb = $('#photo-container')
+                                    .find("[data-objectiveid='" + App.ViewInstances.PhotoAssignmentView.objectiveid + "']")
+                                    .children('.assignment-image');
 
-                // Get image handle
-                var smallImage = document.getElementById('block-tl-img');
-
-                // Unhide image elements
-
-                // Show the captured photo
-                // The inline CSS rules are used to resize the image
-                smallImage.src = "data:image/jpeg;base64," + imageData;
+                thumb.attr('src', imageURI);
+                App.ViewInstances.PhotoAssignmentView.imageURI = imageURI;
 
                 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, App.ViewInstances.PhotoAssignmentView.gotFileSystem, App.ViewInstances.PhotoAssignmentView.failFileSystem);
+
             },
 
-
             gotFileSystem: function(fileSystem) {
-                console.log('GOT FILE SYSTEM');
                 fileSystem.root.getDirectory("voetstappen_opdrachten", {create: true, exclusive: false}, App.ViewInstances.PhotoAssignmentView.gotDirEntry, App.ViewInstances.PhotoAssignmentView.failFileSystem) 
             },
 
             gotDirEntry: function (dirEntry) {
-                console.log('GOT DIR ENTRY');
-                dirEntry.getFile("objective" + App.ViewInstances.PhotoAssignmentView.objectiveid + "footstep" + window.in_radius + ".jpg", {create: true, exclusive: false}, App.ViewInstances.PhotoAssignmentView.gotFileEntry, App.ViewInstances.PhotoAssignmentView.failFileSystem);
+                App.ViewInstances.PhotoAssignmentView.dirEntry = dirEntry;
+                window.resolveLocalFileSystemURI(App.ViewInstances.PhotoAssignmentView.imageURI, App.ViewInstances.PhotoAssignmentView.gotFileEntry, App.ViewInstances.PhotoAssignmentView.failFileSystem);
             },
 
             gotFileEntry: function(fileEntry) {
-                 fileEntry.createWriter(App.ViewInstances.PhotoAssignmentView.gotFileWriter, App.ViewInstances.PhotoAssignmentView.failFileSystem);   
-            },
-
-            gotFileWriter: function (writer) {
-                var photo = document.getElementById("block-tl-img");
+                fileEntry.moveTo(App.ViewInstances.PhotoAssignmentView.dirEntry, "objective" + App.ViewInstances.PhotoAssignmentView.objectiveid + ".jpg");
                 
-                writer.write(atob(photo.src));
+                var settingObjectiveImageDone = function() {
+                    console.log('DONE SAVING OBJETIVEIMAGE TO DB');
+                };
 
-                console.log(atob(photo.src));
-
-                writer.close(); 
+                App.dbClass.setImagePathForObjective(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid);
             },
 
             failFileSystem: function(error) {
