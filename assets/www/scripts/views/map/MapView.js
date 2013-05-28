@@ -105,6 +105,57 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     return;
                 }
 
+                $(document).bind("mobileinit", function(){
+                  //apply overrides here
+                  $.mobile.defaultPageTransition = flip;
+                });
+
+
+                $(function(){
+                    var menuStatus;
+                 
+                    $("a.showMenu").click(function(){
+                        if(menuStatus != true){
+                        $(".slide").animate({
+                            marginLeft: "85%",
+                          }, 100, function(){menuStatus = true});
+                          return false;
+                          } else {
+                            $(".slide").animate({
+                            marginLeft: "0px",
+                          }, 100, function(){menuStatus = false});
+                            return false;
+                          }
+                    });
+                 
+                    // $('#menu').on("swipeleft", function(){
+                    //     if (menuStatus){
+                    //     $(".slide").animate({
+                    //         marginLeft: "0px",
+                    //       }, 100, function(){menuStatus = false});
+                    //       }
+                    // });
+                 
+                    // $('#menu').on("swiperight", function(){
+                    //     if (!menuStatus){
+                    //     $(".slide").animate({
+                    //         marginLeft: "165px",
+                    //       }, 100, function(){menuStatus = true});
+                    //       }
+                    // });
+                 
+                    $("#menu li a").click(function(){
+                        var p = $(this).parent();
+                        if($(p).hasClass('active')){
+                            $("#menu li").removeClass('active');
+                        } else {
+                            $("#menu li").removeClass('active');
+                            $(p).addClass('active');
+                        }
+                    });
+                 
+                });
+
                 $('.button-container').show();
                 $('.showMenu').show();
                 $('.logout').show(); 

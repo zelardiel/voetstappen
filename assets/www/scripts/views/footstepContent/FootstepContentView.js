@@ -14,6 +14,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          template: Handlebars.compile(FootstepContentViewT),
 
          render: function() {
+            console.log('render');
             var json = this.model.toJSON();
             var html = this.template(json);
             this.$el.html(html);
@@ -30,15 +31,16 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
          swipeContent: function() {
             var self = this;
-            $('.slide, .content').hammer({prevent_default:true}).bind("swipeleft", function(ev) {
-               var position = $(this).find('article.piece-of-content').data('location');  
-               console.log(self.model.attributes);  
-               App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);
+            console.log('swipecontent');
+            $('.slide, .content').hammer({prevent_default:true}).bind("dragleft", function(ev) {
+               //var position = $(this).find('article.piece-of-content').data('location');  
+               //App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);
             });
 
-            $('.slide, .content').hammer({prevent_default:true}).bind("swiperight", function(ev) {
-               var position = $(this).find('article.piece-of-content').data('location');
-               App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
+            $('.slide, .content').hammer({prevent_default:true}).bind("dragright", function(ev) {
+               // var position = $(this).find('article.piece-of-content').data('location');
+               // console.log('SWIPE');
+               // App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
             });
          },
 
