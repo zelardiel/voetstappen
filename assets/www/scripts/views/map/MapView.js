@@ -32,7 +32,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //score menu
                 this.handleScoreMenu();
 
-                 App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
+                App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
                 
                 //listen for if a model is added to the markercollection do this..
                 this.collection.bind('add', this.initAddMarker, this);  
@@ -199,8 +199,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             handleLegenda: function() {
                 $('.legenda, .hide').hammer({prevent_default:true}).on("tap", function(ev) {
-                    $('.legenda').addClass("legenda-animation");
-                    $('.hide').addClass('up');
+                    if($('.up').length == 0) {
+                       $('.legenda').addClass("legenda-animation");
+                       $('.hide').addClass('up');  
+                    } else {
+                        $(".legenda").removeClass("legenda-animation");
+                        $('.hide').removeClass("up");
+                    } 
                 });
 
                 $('.legenda, .hide').hammer({prevent_default:true}).bind("dragup", function(ev) {
