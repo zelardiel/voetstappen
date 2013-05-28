@@ -418,6 +418,24 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
+			getImagePathForObjective: function(callback, objective_id) {
+				var self = this;
+
+				var data = function getData(){
+					var dfd = $.Deferred();
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('SELECT img_path FROM objectives WHERE objective_id = ?',
+		         			[objective_id], dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				//return deferred is done(.then) function with the sent callback to this function
+				return data().then(callback);
+			},
+
 			linkUserToContent: function(footstep_contents_id) {
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
