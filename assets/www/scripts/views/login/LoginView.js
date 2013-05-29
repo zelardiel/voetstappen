@@ -16,6 +16,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 $('.button-container').toggle();
                 $('.showMenu').toggle();
                 $('.logout').toggle();
+                $('.hide').toggle();
   
             },
 

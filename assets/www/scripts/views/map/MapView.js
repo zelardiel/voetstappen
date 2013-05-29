@@ -104,6 +104,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     $('.button-container').show();
                     $('.showMenu').show();
                     $('.logout').show(); 
+                    $('.hide').show();
 
                     return;
                 }
@@ -112,6 +113,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 $('.button-container').show();
                 $('.showMenu').show();
                 $('.logout').show();
+                $('.hide').show();
 
                 $('.logout').on('click', function(){
                     self.logout();
