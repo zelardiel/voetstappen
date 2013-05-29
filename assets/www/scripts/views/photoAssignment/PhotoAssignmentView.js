@@ -74,7 +74,15 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             initCamera : function(e) {
                 e.preventDefault();
                 this.objectiveid = $(e.currentTarget).data('objectiveid');
- 
+                
+                var not_allowed = $('#photo-container').find("[data-footstepid='" + window.in_radius + "']");
+                                   
+
+                if(not_allowed.lenght != null ) {
+                    alert('Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap');
+                    return;
+                }
+
                 console.log('objectiveid: ' + this.objectiveid + ' footstep_id_in_range ' + window.in_radius);
 
                 var destinationType = navigator.camera.DestinationType;
@@ -113,11 +121,9 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             gotFileEntry: function(fileEntry) {
                 var settingObjectiveImageDone = function() {
                     console.log('inserted thumb');
-                    console.log(App.ViewInstances.PhotoAssignmentView.fullPath);
-                    console.log(App.ViewInstances.PhotoAssignmentView.thumb.attr('src'));
-                    console.log(App.ViewInstances.PhotoAssignmentView.thumb.length);
+
                     App.ViewInstances.PhotoAssignmentView.thumb.attr('src', App.ViewInstances.PhotoAssignmentView.fullPath);
-                    console.log(App.ViewInstances.PhotoAssignmentView.thumb.attr('src'));
+
                 };
 
                 fileEntry.moveTo(App.ViewInstances.PhotoAssignmentView.dirEntry, "objective" + App.ViewInstances.PhotoAssignmentView.objectiveid + ".jpg", function(fileEntry){

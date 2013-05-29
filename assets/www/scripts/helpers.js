@@ -24,8 +24,16 @@ define(['views/map/MapView', 'collections/MarkerCollection'],
                		console.log('REPLACING WITH MAPVIEW');
                		App.StackNavigator.replaceView(App.ViewInstances.MapView);
                	}
+		    },
+
+		    setUserScore: function() {
+		    	var gotUserScore = function(tx, results) {
+		    		console.log(results);
+		    		$('.total-score').html(""+ results.rows.item(0).points +"pt");
+		    	};
 		    	
-		    	
+
+		    	App.dbClass.getUserScore(gotUserScore);
 		    },
 
 		}; //end Helper class

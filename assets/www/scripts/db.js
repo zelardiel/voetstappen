@@ -166,8 +166,9 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 		    	if( App.ViewInstances.LoginView == null ) {
 		    		App.ViewInstances.LoginView = new LoginView;
-		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);		
-		    	} else {
+
+		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);	
+		    	} else {	
 		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);
 		    	}
 		    	
@@ -496,14 +497,14 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
-			getUserScore: function(callback, user_id) {
+			getUserScore: function(callback) {
 				var self = this;
 
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
 		         		tx.executeSql('SELECT * FROM scores WHERE user_id = ?',
-		         			[user_id], dfd.resolve, self.errorCB
+		         			[App.userModel.get('user_id')], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 

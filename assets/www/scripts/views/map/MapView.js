@@ -29,6 +29,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //legenda functionalities
                 this.handleLegenda();
 
+                this.setUserScore();
+
                 //score menu
                 this.handleScoreMenu();
 
@@ -94,6 +96,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                     this.appendMap();
                 }
+            },
+
+            setUserScore: function() {
+                App.Helpers.setUserScore();
             },
 
             jqueryEvents: function(renderedBefore) {

@@ -16,8 +16,6 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          template: Handlebars.compile(FootstepContentViewT),
 
          render: function() {
-            console.log(this.id);
-
             var json = this.model.toJSON();
             var html = this.template(json);
             this.$el.html(html);
@@ -34,7 +32,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
          swipeContent: function() {
             var self = this;
-            $('.slide, .content').hammer({prevent_default:true}).bind("dragright", function(ev) {
+            $('#FootstepContentsView').hammer({prevent_default:true}).bind("dragright", function(ev) {
                ev.gesture.stopDetect();
 
                var position = $(this).find('article.piece-of-content').data('location');  
@@ -49,7 +47,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);
             });
 
-            $('.slide, .content').hammer({prevent_default:true}).bind("dragleft", function(ev) {
+            $('#FootstepContentsView').hammer({prevent_default:true}).bind("dragleft", function(ev) {
                ev.gesture.stopDetect();
 
                var position = $(this).find('article.piece-of-content').data('location');

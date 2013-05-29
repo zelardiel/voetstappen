@@ -28,27 +28,31 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
           this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
 
           document.addEventListener("backbutton", this.onBackButton, false);
-          //document.addEventListener('contextmenu', this.onBackButton, false); 
+          document.addEventListener('contextmenu', this.onBackButton, false); 
         },
 
         viewDeactivated: function() {
             document.removeEventListener("backbutton", this.onBackButton, false);
             document.removeEventListener("contextmenu", this.onBackButton, false);
             window.footstep_content = null;
+
+            $('#FootstepContentsView').hammer().off("dragright");
+            $('#FootstepContentsView').hammer().off("dragleft");
+
+            delete App.ViewInstances.footstepContentView;
+
         },
 
          render: function() {
-     
-
           if(this.footstepContentModel != null) {
-                  if(App.ViewInstances.footstepContentView == null ) {
+              if(App.ViewInstances.footstepContentView == null ) {
               console.log('etwas');
               App.ViewInstances.footstepContentView = new FootstepContentView({ model: this.footstepContentModel });
-          } else {
-            App.ViewInstances.footstepContentView.model = this.footstepContentModel;
-          }
+              } else {
+                App.ViewInstances.footstepContentView.model = this.footstepContentModel;
+              }
             
-            this.$el.append(App.ViewInstances.footstepContentView.render().el);
+              this.$el.append(App.ViewInstances.footstepContentView.render().el);
           }
           
           return this;

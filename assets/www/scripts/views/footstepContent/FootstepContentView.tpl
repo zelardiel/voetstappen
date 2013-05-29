@@ -1,4 +1,4 @@
-<section class="slide content" data-location="{{location}}">
+<section class="slide content footstep-content" data-location="{{location}}">
 	<article class="piece-of-content voetstapcontent" data-location="{{location}}">
 		<img src="img/blaeu.jpg">
 
