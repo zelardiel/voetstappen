@@ -513,6 +513,24 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
+			setPointsForScore: function(callback, points) {
+				var self = this;
+
+				var data = function getData(){
+					var dfd = $.Deferred();
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('UPDATE scores SET points=points + ? WHERE user_id=?',
+		         			[points, App.userModel.get('user_id')], dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				//return deferred is done(.then) function with the sent callback to this function
+				return data().then(callback);
+			},
+
 		};
 		return db;
 	});
