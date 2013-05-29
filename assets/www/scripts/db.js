@@ -443,6 +443,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						function(tx, results){
 							if(results.rows.length == 0){
 								tx.executeSql('INSERT INTO footstep_contents_users(footstep_content_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_contents_id, App.userModel.get('user_id')] );
+								App.dbClass.setPointsForScore(2);
 							}
 						}, self.errorCB);
 				
@@ -513,22 +514,13 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
-			setPointsForScore: function(callback, points) {
+			setPointsForScore: function(points) {
 				var self = this;
-
-				var data = function getData(){
-					var dfd = $.Deferred();
-					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('UPDATE scores SET points=points + ? WHERE user_id=?',
-		         			[points, App.userModel.get('user_id')], dfd.resolve, self.errorCB
-		         		);
-		        	}, self.errorCB);
-
-		        	return dfd.promise();
-				}
-
-				//return deferred is done(.then) function with the sent callback to this function
-				return data().then(callback);
+				App.dbInstantion.transaction(function(tx){
+	         		tx.executeSql('UPDATE scores SET points=points + ? WHERE user_id=?',
+	         			[points, App.userModel.get('user_id')], function(){console.log("Bots updated" + points + ", user " + App.userModel.get('user_id'))}
+	         			, self.errorCB);
+	        	}, self.errorCB);
 			},
 
 		};
