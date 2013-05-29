@@ -172,21 +172,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     }
                 });
 
-                // $('#menu').on("swipeleft", function(){
-                //     if (menuStatus){
-                //     $(".slide").animate({
-                //         marginLeft: "0px",
-                //       }, 100, function(){menuStatus = false});
-                //       }
-                // });
-             
-                // $('#menu').on("swiperight", function(){
-                //     if (!menuStatus){
-                //     $(".slide").animate({
-                //         marginLeft: "165px",
-                //       }, 100, function(){menuStatus = true});
-                //       }
-                // });
              
                 $("#menu li a").click(function(){
                     var p = $(this).parent();
@@ -200,7 +185,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             handleLegenda: function() {
-                $('.legenda, .hide').hammer({prevent_default:true}).on("tap", function(ev) {
+                $('.legenda, .hide').hammer({prevent_default:true, swipe_max_touches: 1}).on("tap", function(ev) {
                     if($('.up').length == 0) {
                        $('.legenda').addClass("legenda-animation");
                        $('.hide').addClass('up');  
@@ -210,13 +195,14 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     } 
                 });
 
-                $('.legenda, .hide').hammer({prevent_default:true}).bind("dragup", function(ev) {
+                $('.legenda, .hide').hammer({prevent_default:true, swipe_max_touches: 1}).bind("dragup", function(ev) {
+                    console.log('hello');
                     $('.legenda').addClass("legenda-animation");
                     $('.hide').addClass('up');
                 });
 
                 // once the columns are down, the drag event is triggered on the mask
-                $(".legenda, .hide").hammer({prevent_default:true}).bind("dragdown", function(ev) {
+                $(".legenda, .hide").hammer({prevent_default:true, swipe_max_touches: 1}).bind("dragdown", function(ev) {
                     $(".legenda").removeClass("legenda-animation");
                     $('.hide').removeClass("up");
                 });
@@ -242,18 +228,58 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     navigationControl: false,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
-
                 
                 if(window.markers.length == 0) {
+
                     // this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
                     this.map = new google.maps.Map(document.getElementById("MapView"), this.mapOptions);
+
+
+                    var styles = [
+                      {
+                        "featureType": "road",
+                        "stylers": [
+                          { "color": "#e4d7c5" }
+                        ]
+                      },{
+                        "featureType": "landscape.man_made",
+                        "stylers": [
+                          { "color": "#efefef" }
+                        ]
+                      },{
+                        "featureType": "water",
+                        "stylers": [
+                          { "color": "#2c718a" },
+                          { "lightness": 41 },
+                          { "saturation": -69 }
+                        ]
+                      },{
+                      },{
+                        "featureType": "poi",
+                        "stylers": [
+                          { "color": "#472b0c" },
+                          { "lightness": 69 },
+                          { "saturation": -66 },
+                          { "gamma": 1.33 }
+                        ]
+                      },{
+                      }
+                    ];
+
+                    // Create a new StyledMapType object, passing it the array of styles,
+                    // as well as the name to be displayed on the map type control.
+                    var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});
+
+                    //Associate the styled map with the MapTypeId and set it to display.
+                    self.map.mapTypes.set('map_style', styledMap);
+                    self.map.setMapTypeId('map_style');
 
                     //after map is loaded start loading markers from database
                     google.maps.event.addListenerOnce(this.map, 'idle', function(){
                         self.initGetDatabaseFootsteps();
 
                         self.getOwnPosition(10000); 
-                    });
+                });
                  
                 }
             },
@@ -374,8 +400,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
 
             },
-
-
 
             addMarkerRadius: function(model) {
                  //check for own position, which obviously doesnt need a radius

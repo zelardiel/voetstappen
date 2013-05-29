@@ -39,7 +39,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
             $('.slide, .content').hammer({prevent_default:true}).bind("dragright", function(ev) {
                // var position = $(this).find('article.piece-of-content').data('location');
-               // console.log('SWIPE');
+                console.log('SWIPE');
                // App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
             });
          },
@@ -48,7 +48,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
             console.log('NAVIGATING');
             e.preventDefault();
             var position = $(e.currentTarget).data('location');
-
+   
             App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(this.setFootstepContents, this.model.get('footstep_id'), position);   
          },
 

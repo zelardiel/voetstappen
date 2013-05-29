@@ -305,7 +305,7 @@ section footer {
     z-index: 999
 }
 
-section footer a, #scan {
+section footer a, #scan, #map {
     /*background: url(../img/button_status.jpg);
     background-size: cover;
     border: none;
@@ -326,10 +326,11 @@ section footer a, #scan {
     color: #666;
     display: block;
     float: left;
+    font-size: 1em;
     height: 30px;
     line-height: 2;
-    margin: 1.2em .5em .5em .5em;
-    width: 140px;
+    margin: 1.2em 0 .5em 1%;
+    width: 32%;
     text-align:  center;
     text-decoration: none;
 }
@@ -340,7 +341,7 @@ section footer a, #scan {
 }
 
 .button-container {
-    width: 335px;
+    width: 90%;
     margin: 0 auto;
 }
 
@@ -359,7 +360,6 @@ section footer a:active {
 section footer section {
     background: white;
     bottom: 5em;
-    border-bottom: 2px solid #999;
     height: 1em;
     margin: 0 auto;
     margin-bottom: .5em;
@@ -457,6 +457,7 @@ footer span img {
     height:100%;
     display:block!important;
     float:left;
+    overflow: hidden;
 }
 
 #menu h1{
@@ -476,6 +477,7 @@ footer span img {
 
     -webkit-box-shadow:  2px 2px 3px 0 #666;
     box-shadow:  2px 2px 3px 0 #666;
+    overflow: hidden;
 }
 
 #menu article h1 {
@@ -560,8 +562,10 @@ footer span img {
 /* photo blocks **/
 
 div#photo-container {
-    margin: 0 20px;
-    min-height: 80%;
+    margin: 0 auto;
+    /*min-height: 300px;*/
+    height: 80%;
+    width: 80%;
 }
 
 img.assignment-image {
@@ -573,11 +577,13 @@ div.image-block {
     float: left;
     background-color: red;
     width: 49%;
-    height: 120px;
-    border: 1px solid;
+    height: 0;
+    padding-bottom: 49%;
+    position: relative;
+    border: 1% solid #333;
 }
 div#block-tr {
-
+    
 }
 
 div#block-tl {

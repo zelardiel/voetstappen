@@ -14,6 +14,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             viewIsActive: function() {
                 document.addEventListener("backbutton", this.onBackButton, false);
                 document.addEventListener('contextmenu', this.onBackButton, false); 
+
                 //App.dbClass.getImagePathForObjective();
             },
 
@@ -46,17 +47,17 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                         quality: 80,
                         destinationType: destinationType.FILE_URI,
                         encodingType: Camera.EncodingType.JPEG,
-                        targetWidth: 200,
-                        targetHeight: 200,
+                        targetWidth: 250,
+                        targetHeight: 250,
                     });
             },
 
             onPhotoDataSuccess : function(imageURI) {
-                var thumb = $('#photo-container')
+                App.ViewInstances.PhotoAssignmentView.thumb = $('#photo-container')
                                     .find("[data-objectiveid='" + App.ViewInstances.PhotoAssignmentView.objectiveid + "']")
                                     .children('.assignment-image');
 
-                thumb.attr('src', imageURI);
+                //set the instance's property(which is actually 'this' in the right context)
                 App.ViewInstances.PhotoAssignmentView.imageURI = imageURI;
 
                 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, App.ViewInstances.PhotoAssignmentView.gotFileSystem, App.ViewInstances.PhotoAssignmentView.failFileSystem);
@@ -73,13 +74,16 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             },
 
             gotFileEntry: function(fileEntry) {
-                fileEntry.moveTo(App.ViewInstances.PhotoAssignmentView.dirEntry, "objective" + App.ViewInstances.PhotoAssignmentView.objectiveid + ".jpg");
-                
                 var settingObjectiveImageDone = function() {
-                    console.log('DONE SAVING OBJETIVEIMAGE TO DB');
+                    console.log(App.ViewInstances.PhotoAssignmentView.fullPath);
+                    App.ViewInstances.PhotoAssignmentView.thumb.attr('src', App.ViewInstances.PhotoAssignmentView.fullPath);
                 };
 
-                App.dbClass.setImagePathForObjective(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid);
+                fileEntry.moveTo(App.ViewInstances.PhotoAssignmentView.dirEntry, "objective" + App.ViewInstances.PhotoAssignmentView.objectiveid + ".jpg", function(fileEntry){
+                    App.ViewInstances.PhotoAssignmentView.fullPath = fileEntry.fullPath;
+                    App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid, fileEntry.fullPath, window.in_radius);
+                }, function(err){ console.log(err);});
+                
             },
 
             failFileSystem: function(error) {
