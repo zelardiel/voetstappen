@@ -2,8 +2,10 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
     function (_, Backbone, FootstepContentViewT) {
       var FootstepContentView = Backbone.View.extend({
          initialize: function() {
+            console.log(this.model);
             App.Vent.on('retrievingFootstepContents:done', this.afterSettingFootstepContents, this);
 
+            this.model.on('change', this.render);
             this.swipeContent();
          },
 
@@ -14,7 +16,8 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          template: Handlebars.compile(FootstepContentViewT),
 
          render: function() {
-            console.log('render');
+            console.log(this.id);
+
             var json = this.model.toJSON();
             var html = this.template(json);
             this.$el.html(html);
@@ -31,17 +34,32 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
          swipeContent: function() {
             var self = this;
-            $('.slide, .content').hammer({prevent_default:true}).bind("swiperight", function(ev) {
+            $('.slide, .content').hammer({prevent_default:true}).bind("dragright", function(ev) {
                ev.gesture.stopDetect();
-               console.log('SWIPE');
+
                var position = $(this).find('article.piece-of-content').data('location');  
+
+               if(position == 1) {
+                  position = 5;
+               } else {
+                  position--;
+               }
+               console.log(position);
+              
                App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);
             });
 
-            $('.slide, .content').hammer({prevent_default:true}).bind("swipeleft", function(ev) {
+            $('.slide, .content').hammer({prevent_default:true}).bind("dragleft", function(ev) {
                ev.gesture.stopDetect();
+
                var position = $(this).find('article.piece-of-content').data('location');
-               console.log('SWIPE');
+
+               if(position == 5) {
+                  position = 1;
+               } else {
+                  position++;
+               }
+               console.log(position);
                App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
             });
          },
@@ -57,11 +75,11 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          setFootstepContents: function(tx, results) {
             window.footstep_content = results.rows.item(0);
 
-            console.log('setfootstepcontents');
             App.Vent.trigger('retrievingFootstepContents:done');
          },
 
          afterSettingFootstepContents: function() {
+            console.log(this.id);
             this.model.set({
                footstep_id: window.footstep_content.footstep_id,
                footstep_content_id: window.footstep_content.footstep_content_id,
@@ -72,8 +90,6 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                is_found: window.footstep_content.is_found
             });
 
-            //render ourselves with the new model
-            this.render();
          },
       });
 
