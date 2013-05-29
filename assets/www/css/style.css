@@ -98,8 +98,8 @@ section.content section article.login {
     margin-top: 1em;
     background: white;
     border-radius: 1px;
-    overflow-x: scroll;/*
-    overflow-y: hidden;*/
+    overflow-x: scroll;
+    overflow-y: scroll;
     position: absolute; 
     /*min-height: 500px;*/
 
@@ -192,7 +192,7 @@ section section.content article {
     background: white;
     border-radius: 1px;
     overflow-y: scroll;
-    overflow-x: hidden;
+    overflow-x: scroll;
     position: absolute; 
 
     -webkit-box-shadow:  2px 2px 3px 0 #666;
@@ -297,7 +297,7 @@ section footer {
     background: white;
     bottom: 0;
     width: 100%;
-    min-height: 4.2em;
+    min-height: 3.2em;
     position: absolute;
 
     -webkit-box-shadow:  2px 2px 3px 0 #666;
@@ -329,7 +329,7 @@ section footer a, #scan, #map {
     font-size: 1em;
     height: 30px;
     line-height: 2;
-    margin: 1.2em 0 .5em 1%;
+    margin: .2em 0 1.5em 1%;
     width: 32%;
     text-align:  center;
     text-decoration: none;
@@ -391,6 +391,7 @@ section footer section p {
 section footer section p img {
     margin: 0 ;
     width: 30%;
+    padding-top: 2em;
     display: block;
 }
 
@@ -518,6 +519,19 @@ footer span img {
     color: #4BBF16;
 }
 
+#menu article button {
+    width: 50%;
+    background: #35619E;
+    color: white;
+    font-family: "Nilland", serif;
+    font-size: 1em;
+    margin-top: 3em;
+    border: none;
+    border-radius: 2px;
+    -webkit-box-shadow:  2px 2px 3px 0 #333;
+    box-shadow:  2px 2px 3px 0 #333;
+}
+
 #menu ul{
     margin:0;
     padding:0;
@@ -562,10 +576,13 @@ footer span img {
 /* photo blocks **/
 
 div#photo-container {
+    background: url(../img/opdrachtbg.jpg) no-repeat center center;
+    background-size: cover;
     margin: 0 auto;
     /*min-height: 300px;*/
-    height: 80%;
+    height: 0;
     width: 80%;
+    padding-bottom: 80%;
 }
 
 img.assignment-image {
@@ -575,10 +592,9 @@ img.assignment-image {
 }
 div.image-block {
     float: left;
-    background-color: red;
-    width: 49%;
+    width: 50%;
     height: 0;
-    padding-bottom: 49%;
+    padding-bottom: 50%;
     position: relative;
     border: 1% solid #333;
 }

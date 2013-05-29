@@ -31,16 +31,18 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
          swipeContent: function() {
             var self = this;
-            console.log('swipecontent');
-            $('.slide, .content').hammer({prevent_default:true}).bind("dragleft", function(ev) {
-               //var position = $(this).find('article.piece-of-content').data('location');  
-               //App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);
+            $('.slide, .content').hammer({prevent_default:true}).bind("swiperight", function(ev) {
+               ev.gesture.stopDetect();
+               console.log('SWIPE');
+               var position = $(this).find('article.piece-of-content').data('location');  
+               App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);
             });
 
-            $('.slide, .content').hammer({prevent_default:true}).bind("dragright", function(ev) {
-               // var position = $(this).find('article.piece-of-content').data('location');
-                console.log('SWIPE');
-               // App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
+            $('.slide, .content').hammer({prevent_default:true}).bind("swipeleft", function(ev) {
+               ev.gesture.stopDetect();
+               var position = $(this).find('article.piece-of-content').data('location');
+               console.log('SWIPE');
+               App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
             });
          },
 

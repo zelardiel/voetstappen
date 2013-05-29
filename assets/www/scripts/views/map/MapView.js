@@ -185,7 +185,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             handleLegenda: function() {
-                $('.legenda, .hide').hammer({prevent_default:true, swipe_max_touches: 1}).on("tap", function(ev) {
+                $('.legenda, .hide').hammer({prevent_default:true}).on("tap", function(ev) {
                     if($('.up').length == 0) {
                        $('.legenda').addClass("legenda-animation");
                        $('.hide').addClass('up');  
@@ -195,14 +195,16 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     } 
                 });
 
-                $('.legenda, .hide').hammer({prevent_default:true, swipe_max_touches: 1}).bind("dragup", function(ev) {
-                    console.log('hello');
+                $('.legenda, .hide').hammer({prevent_default:true}).bind("dragup", function(ev) {
+                    ev.gesture.stopDetect();
+                    console.log('etwas');
                     $('.legenda').addClass("legenda-animation");
                     $('.hide').addClass('up');
                 });
 
                 // once the columns are down, the drag event is triggered on the mask
-                $(".legenda, .hide").hammer({prevent_default:true, swipe_max_touches: 1}).bind("dragdown", function(ev) {
+                $(".legenda, .hide").hammer({prevent_default:true}).bind("dragdown", function(ev) {
+                    ev.gesture.stopDetect();
                     $(".legenda").removeClass("legenda-animation");
                     $('.hide').removeClass("up");
                 });

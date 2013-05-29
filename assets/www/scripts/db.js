@@ -424,7 +424,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT objective_id, img_path FROM objectives',
+		         		tx.executeSql('SELECT objective_id, footstep_id, img_path FROM objectives',
 		         			[], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
