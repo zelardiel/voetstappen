@@ -418,14 +418,14 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				return data().then(callback);
 			},
 
-			getImagePathForObjective: function(callback, objective_id) {
+			getImagePathForObjective: function(callback) {
 				var self = this;
 
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
-		         		tx.executeSql('SELECT img_path FROM objectives WHERE objective_id = ?',
-		         			[objective_id], dfd.resolve, self.errorCB
+		         		tx.executeSql('SELECT objective_id, img_path FROM objectives',
+		         			[], dfd.resolve, self.errorCB
 		         		);
 		        	}, self.errorCB);
 
