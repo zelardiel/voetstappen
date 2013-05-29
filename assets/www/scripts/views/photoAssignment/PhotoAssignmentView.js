@@ -13,9 +13,46 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
             viewIsActive: function() {
                 document.addEventListener("backbutton", this.onBackButton, false);
-                document.addEventListener('contextmenu', this.onBackButton, false); 
+                // document.addEventListener('contextmenu', this.onBackButton, false); 
 
-                //App.dbClass.getImagePathForObjective();
+                var gotObjectives = function(tx, results) {
+                    for (var i = 0; i < results.rows.length; i++) {
+                        console.log(results.rows.item(i).img_path);
+                        var objective_id = results.rows.item(i).objective_id,
+                            img_path = ( results.rows.item(i).img_path ) ? results.rows.item(i).img_path : "",
+                            footstep_id = ( results.rows.item(i).footstep_id ) ? results.rows.item(i).footstep_id : "";
+
+                            console.log(img_path);
+
+                        switch (i) {
+                            case 0 :
+                                $('#block-tl-img').attr('src', img_path);
+                                $('#block-tl').attr('data-objectiveid', objective_id);
+                                $('#block-tl').attr('data-footstepid', footstep_id);
+                                break;
+                            case 1 :
+                                $('#block-tr-img').attr('src', img_path);
+                                $('#block-tr').attr('data-objectiveid', objective_id);
+                                $('#block-tr').data('footstepid', footstep_id);
+
+                                break;
+                            case 2 :
+                                $('#block-bl-img').attr('src', img_path);
+                                $('#block-bl').attr('data-objectiveid', objective_id);
+                                $('#block-bl').data('footstepid', footstep_id);
+
+                                break;
+                            case 3 :
+                                $('#block-br-img').attr('src', img_path);
+                                $('#block-br').attr('data-objectiveid', objective_id);
+                                $('#block-br').data('footstepid', footstep_id);
+
+                                break;
+                        }
+                    }
+                };
+
+                App.dbClass.getImagePathForObjectives(gotObjectives);
             },
 
             viewDeactivated: function() {
@@ -75,13 +112,22 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
             gotFileEntry: function(fileEntry) {
                 var settingObjectiveImageDone = function() {
+                    console.log('inserted thumb');
                     console.log(App.ViewInstances.PhotoAssignmentView.fullPath);
+                    console.log(App.ViewInstances.PhotoAssignmentView.thumb.attr('src'));
+                    console.log(App.ViewInstances.PhotoAssignmentView.thumb.length);
                     App.ViewInstances.PhotoAssignmentView.thumb.attr('src', App.ViewInstances.PhotoAssignmentView.fullPath);
+                    console.log(App.ViewInstances.PhotoAssignmentView.thumb.attr('src'));
                 };
 
                 fileEntry.moveTo(App.ViewInstances.PhotoAssignmentView.dirEntry, "objective" + App.ViewInstances.PhotoAssignmentView.objectiveid + ".jpg", function(fileEntry){
                     App.ViewInstances.PhotoAssignmentView.fullPath = fileEntry.fullPath;
-                    App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid, fileEntry.fullPath, window.in_radius);
+
+                    App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid,  App.ViewInstances.PhotoAssignmentView.fullPath, window.in_radius);
+                    if(App.ViewInstances.PhotoAssignmentView.thumb.attr('src') == null) {
+                        App.dbClass.setPointsForScore(3);    
+                    }
+                    
                 }, function(err){ console.log(err);});
                 
             },

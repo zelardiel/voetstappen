@@ -79,7 +79,6 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          },
 
          afterSettingFootstepContents: function() {
-            console.log(this.id);
             this.model.set({
                footstep_id: window.footstep_content.footstep_id,
                footstep_content_id: window.footstep_content.footstep_content_id,

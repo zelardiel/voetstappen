@@ -38,14 +38,12 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
         },
 
          render: function() {
-          console.log('render colelciton view');
-    
-          
+     
 
           if(this.footstepContentModel != null) {
                   if(App.ViewInstances.footstepContentView == null ) {
-            console.log('etwas');
-            App.ViewInstances.footstepContentView = new FootstepContentView({ model: this.footstepContentModel });
+              console.log('etwas');
+              App.ViewInstances.footstepContentView = new FootstepContentView({ model: this.footstepContentModel });
           } else {
             App.ViewInstances.footstepContentView.model = this.footstepContentModel;
           }
