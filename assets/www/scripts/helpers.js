@@ -28,7 +28,6 @@ define(['views/map/MapView', 'collections/MarkerCollection'],
 
 		    setUserScore: function() {
 		    	var gotUserScore = function(tx, results) {
-		    		console.log(results);
 		    		$('.total-score').html(""+ results.rows.item(0).points +"pt");
 		    	};
 		    	

@@ -25,6 +25,8 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
           window.footstep_content = null;
           this.footstepContentModel = null;
 
+          $('#map').show();
+
           this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
 
           document.addEventListener("backbutton", this.onBackButton, false);
@@ -38,6 +40,8 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             $('#FootstepContentsView').hammer().off("dragright");
             $('#FootstepContentsView').hammer().off("dragleft");
+
+            $('.footstep-content').remove();
 
             delete App.ViewInstances.footstepContentView;
 

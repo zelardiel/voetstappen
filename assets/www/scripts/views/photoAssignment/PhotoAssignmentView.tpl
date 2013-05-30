@@ -1,7 +1,9 @@
 <section>
 	<article>
-		<div>
-		</div><br>
+		<p>De opdrachten bestaan uit een foto maken van gedeelte van een huis of pand op locatie bij de voetsap.
+		  Hierodoor kun je je eigen huis uit de Gouden Eeuw bouwen! Tevens zijn
+		   de opdrachten punten waard.<br><br>
+			Druk op een vakje om een foto te make(TIP: Neem de foto's horizontaal!)</p>
 		<div id="photo-container">
 			<div id="block-tl" class="image-block" data-objectiveid="1" data-footstepid="0">
 				<img src="" id="block-tl-img" class="assignment-image" alt="">
@@ -20,14 +22,4 @@
 			</div>
 		</div>
 	</article>
-	
-<!-- 	<article>
-		<div>
-		    <a id="btnBack" href="#" data-icon="back" data-iconpos="notext">Back</a>
-		    <h1>Photo view</h1>
-		</div>
-
-		
-	</article> -->
-</article>
 </section>

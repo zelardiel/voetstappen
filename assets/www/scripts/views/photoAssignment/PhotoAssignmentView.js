@@ -14,7 +14,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             viewIsActive: function() {
                 document.addEventListener("backbutton", this.onBackButton, false);
                 // document.addEventListener('contextmenu', this.onBackButton, false); 
-
+                $('#map').show();
                 var gotObjectives = function(tx, results) {
                     for (var i = 0; i < results.rows.length; i++) {
                         console.log(results.rows.item(i).img_path);
@@ -75,10 +75,10 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 e.preventDefault();
                 this.objectiveid = $(e.currentTarget).data('objectiveid');
                 
-                var not_allowed = $('#photo-container').find("[data-footstepid='" + window.in_radius + "']");
-                                   
+                var not_allowed = $('#photo-container').find("[data-footstepid='" + window.in_radius + "']");    
 
-                if(not_allowed.lenght != null ) {
+                if(not_allowed.length != 0) {
+
                     alert('Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap');
                     return;
                 }
@@ -120,18 +120,22 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
             gotFileEntry: function(fileEntry) {
                 var settingObjectiveImageDone = function() {
-                    console.log('inserted thumb');
+
+                    App.ViewInstances.PhotoAssignmentView.thumb.attr('src', '');
 
                     App.ViewInstances.PhotoAssignmentView.thumb.attr('src', App.ViewInstances.PhotoAssignmentView.fullPath);
+
+                    App.ViewInstances.PhotoAssignmentView.thumb.parent().attr('data-footstepid', window.in_radius);
 
                 };
 
                 fileEntry.moveTo(App.ViewInstances.PhotoAssignmentView.dirEntry, "objective" + App.ViewInstances.PhotoAssignmentView.objectiveid + ".jpg", function(fileEntry){
                     App.ViewInstances.PhotoAssignmentView.fullPath = fileEntry.fullPath;
 
-                    App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid,  App.ViewInstances.PhotoAssignmentView.fullPath, window.in_radius);
+                    App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid, App.ViewInstances.PhotoAssignmentView.fullPath, window.in_radius);
                     if(App.ViewInstances.PhotoAssignmentView.thumb.attr('src') == null) {
                         App.dbClass.setPointsForScore(3);    
+                        alert('Je hebt 3 punten verdiend!');
                     }
                     
                 }, function(err){ console.log(err);});

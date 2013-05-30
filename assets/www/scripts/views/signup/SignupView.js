@@ -15,9 +15,23 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
     		createUser: function(e) {
           e.preventDefault();
           navigator.notification.activityStop();     
-          navigator.notification.activityStart("Aanmaken", "Uw account wordt aangemaakt");
+        
+          this.form = $(e.currentTarget);
     			this.username = $(e.currentTarget).find('input#username');
     			this.password = $(e.currentTarget).find('input#password');
+
+           if(this.validateUsernameAndPassword(this.username, this.password) == false) {
+                  //check for existing error messages
+                  if(this.form.find('.error').length == 0) {
+                      $(e.currentTarget).append($('<p class=error>Vul een waarde in</p>')); 
+                  } 
+                  return false;
+            } else {
+                this.form.find('p.error').remove();
+            }
+
+           navigator.notification.activityStart("Aanmaken", "Uw account wordt aangemaakt");
+
     			this.hashed_password = Sha1.hash(this.password.val());
 
     			var self = this;
@@ -57,6 +71,18 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
             }
   				});
     		},
+
+           validateUsernameAndPassword: function(username_el, password_el) {
+
+                if(username_el.val().length === 0 || password_el.val().length === 0) {
+                    console.log('break');
+                    return false;
+                } else {
+                    return true;
+                }
+
+                return false;
+            },
 
     		previousView: function() {
           navigator.notification.activityStop(); 

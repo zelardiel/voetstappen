@@ -32,15 +32,16 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
 
          swipeContent: function() {
             var self = this;
+            var position = 0;
             $('#FootstepContentsView').hammer({prevent_default:true}).bind("dragright", function(ev) {
                ev.gesture.stopDetect();
-
+              
                var position = $(this).find('article.piece-of-content').data('location');  
 
                if(position == 1) {
                   position = 5;
                } else {
-                  position--;
+                  position -=1;
                }
                console.log(position);
               
@@ -55,7 +56,7 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                if(position == 5) {
                   position = 1;
                } else {
-                  position++;
+                  position+=1;
                }
                console.log(position);
                App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
@@ -63,9 +64,9 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
          },
 
          navigate: function(e) {
-            console.log('NAVIGATING');
-            e.preventDefault();
+
             var position = $(e.currentTarget).data('location');
+            console.log(position);
    
             App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(this.setFootstepContents, this.model.get('footstep_id'), position);   
          },

@@ -108,12 +108,20 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //check if rendered before.. thus only show buttons and do NOT bind events again
                 if(renderedBefore === true) {
                     $('.button-container').show();
+                    $('#map').hide();
                     $('.showMenu').show();
                     $('.logout').show(); 
                     $('.hide').show();
 
                     return;
                 }
+
+
+                $('#map').on('click', function(){
+                    App.Helpers.renderMapView();
+                });
+
+                $('#map').hide();
 
 
                 $('.button-container').show();
@@ -123,6 +131,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 $('.logout').on('click', function(){
                     self.logout();
+                    $(".legenda").removeClass("legenda-animation");
+                    $('.hide').removeClass("up");
                 });
 
                 $('#assignment').on('click', function(e) {
@@ -518,7 +528,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                              navigator.app.exitApp();
                         }
                     },
-                    'Afsluiten?',
+                    'Afsluiten?[werkt niet]',
                     'Ja, Nee!'
                 );
 
