@@ -524,6 +524,49 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 	        	}, self.errorCB);
 			},
 
+			linkUserToFootstep: function(footstep__id) {
+				var self = this;
+				App.dbInstantion.transaction(function(tx){
+					tx.executeSql('SELECT * FROM footsteps_users WHERE footstep_id = ? AND user_id = ?', [footstep_id, App.userModel.get('user_id')],
+						function(tx, results){
+							if(results.rows.length == 0){
+								tx.executeSql('INSERT INTO footsteps_users(footstep_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_id, App.userModel.get('user_id')] );
+								App.dbClass.setPointsForScore(3);
+								alert('Je hebt 2 punten verdiend!');
+							}
+						}, self.errorCB);
+				
+				}, self.errorCB, function() {
+					if( App.ViewInstances.FootstepContentsViewFromScanner == null ) {
+			    		App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
+			    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewFromScanner);		
+			    	} else {
+			    		App.ViewInstances.FootstepContentsViewFromScanner.options.start_content_id = footstep_contents_id;
+			    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewFromScanner);
+			    	}
+
+					return;
+				});	
+			},
+
+			checkIfFootstepIsLinkedToUser: function(callback, footstep_id) {
+				var self = this;
+
+				var data = function getData(){
+					var dfd = $.Deferred();
+					App.dbInstantion.transaction(function(tx){
+		         		tx.executeSql('SELECT count(*) as is_found FROM footsteps_users WHERE user_id = ? AND footstep_id = ?',
+		         			[App.userModel.get('user_id'), footstep_id], dfd.resolve, self.errorCB
+		         		);
+		        	}, self.errorCB);
+
+		        	return dfd.promise();
+				}
+
+				//return deferred is done(.then) function with the sent callback to this function
+				return data().then(callback);
+			},
+
 		};
 		return db;
 	});
