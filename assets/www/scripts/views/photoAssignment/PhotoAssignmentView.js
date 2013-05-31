@@ -135,7 +135,12 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                     App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid, App.ViewInstances.PhotoAssignmentView.fullPath, window.in_radius);
                     if(App.ViewInstances.PhotoAssignmentView.thumb.attr('src') == null) {
                         App.dbClass.setPointsForScore(3);    
-                        alert('Je hebt 3 punten verdiend!');
+                        navigator.notification.alert(
+                            'Opdracht uitgevoerd!', 
+                            function(){}, 
+                            'Je hebt 3 punten verdiend!', 
+                            'Top!'
+                        );
                     }
                     
                 }, function(err){ console.log(err);});

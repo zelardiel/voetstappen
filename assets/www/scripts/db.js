@@ -524,7 +524,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 	        	}, self.errorCB);
 			},
 
-			linkUserToFootstep: function(footstep__id) {
+			linkUserToFootstep: function(footstep_id) {
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footsteps_users WHERE footstep_id = ? AND user_id = ?', [footstep_id, App.userModel.get('user_id')],
@@ -532,18 +532,29 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 							if(results.rows.length == 0){
 								tx.executeSql('INSERT INTO footsteps_users(footstep_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_id, App.userModel.get('user_id')] );
 								App.dbClass.setPointsForScore(3);
-								alert('Je hebt 2 punten verdiend!');
 							}
 						}, self.errorCB);
 				
 				}, self.errorCB, function() {
-					if( App.ViewInstances.FootstepContentsViewFromScanner == null ) {
-			    		App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
-			    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewFromScanner);		
-			    	} else {
-			    		App.ViewInstances.FootstepContentsViewFromScanner.options.start_content_id = footstep_contents_id;
-			    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewFromScanner);
-			    	}
+					navigator.notification.confirm(
+						'Je hebt het eerste stukje informatie vrij gespeeld van de voetstap in de buurt!',
+						function(button){
+							if(button === 0) {
+								if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
+						    		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_id, location: 1, start_content_id: null});
+						    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
+						    	} else {
+						    		App.ViewInstances.FootstepContentsViewViewFromMap.options.location = 1;
+						    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
+						    	}
+							} else {
+								
+							}
+						}, 
+						'Voetstap gevonden!', 
+						'Op de kaart blijven, Naar de voetstappagina' 
+					);
+					
 
 					return;
 				});	

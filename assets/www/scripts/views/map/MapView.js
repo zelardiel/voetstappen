@@ -18,7 +18,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 window.been_in_circle = [];
 
                 //TEMPORARILY FOR TESTING. THIS SHOULD ONLY BE FILLED IF USER IS IN RANGE OF FOOTSTEP
-                window.in_radius = 4;
+                // window.in_radius = 4;
 
                 //create geolocator watch id
                 this.watchID = 0;
@@ -119,6 +119,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 $('#map').on('click', function(){
                     App.Helpers.renderMapView();
+                });
+
+                $('#deel').on('click', function() {
+                    alert('Hier zou je kunnen delen');
                 });
 
                 $('#map').hide();
@@ -482,8 +486,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                          if (bounds.contains(latlng)){
                             //Redirect
                             if(!$.inArray(val.footstep_id, window.been_in_circle)) {
-                                alert('U bent in de radius van een voetstap!');
                                 window.in_radius = val.footstep_id;
+
                             }
                             window.been_in_circle.push(val.footstep_id);
                         }
