@@ -121,6 +121,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    userCheckingQuerySuccess: function(tx, results) {
+		    	console.log('breaking');
+		    	console.log(results.rows.length);
 			    // if there was a result, continue to Mapview
 			    if(results.rows.length != 0) {
 			    	console.log('User found in local database, to the mapview!');
@@ -199,6 +201,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					App.dbInstantion.transaction(function(tx){
 						tx.executeSql('SELECT updated_at FROM synchronized WHERE id = 1', [] );
 					}, self.errorCB, function(tx, results) { 
+						console.log('ADSSADSADDSASAD');
+						console.log(results.rows.length);
 						if(typeof(results) == 'undefined') {
 							self.timestamp = 0;
 							deferred.resolve();
@@ -212,9 +216,13 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				//sync each table with remote database
 				check_update_time().done(function(){
 					self.syncFootsteps();
+					console.log('1');
 					self.syncFootstepContents();
+					console.log('2');
 					self.syncLocations();
+					console.log('3');
 					self.syncScores();
+					console.log('4');
 
 					//set 4 empty objectives
 					App.dbInstantion.transaction(self.setObjectives, self.errorCB, 
@@ -329,6 +337,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						$.each(results, function(index, val){
 					        if(typeof(val) === 'object') {
 					       		App.dbInstantion.transaction(function(tx){
+
 					         		tx.executeSql('INSERT OR REPLACE INTO scores(score_id, points, user_id, updated_at) VALUES(?, ?, ?, ?)', 
 					          			[val.score_id, val.points, val.user_id, val.updated_at],
 					          			self.syncQuerySuccess, self.errorCB
@@ -341,7 +350,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 			syncQuerySuccess: function(tx, results) {
-				//console.log(results);
+		
 			},
 
 			/***
@@ -520,23 +529,28 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 	         		tx.executeSql('UPDATE scores SET points=points + ? WHERE user_id=?',
-	         			[points, App.userModel.get('user_id')], function(){ App.Helpers.setUserScore();}, self.errorCB );
+	         			[points, App.userModel.get('user_id')], function(){ App.Helpers.setUserScore(); console.log("Score updated, added " + points + " points"); }, self.errorCB );
 	        	}, self.errorCB);
 			},
 
 			linkUserToFootstep: function(footstep_id) {
+				console.log('PRESENT IN FUNCTION WITH ' + footstep_id);
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footsteps_users WHERE footstep_id = ? AND user_id = ?', [footstep_id, App.userModel.get('user_id')],
 						function(tx, results){
+							console.log(results.rows);
 							if(results.rows.length == 0){
+								console.log('PRESENT IN lenght = 0 WITH ' + footstep_id);
 								tx.executeSql('INSERT INTO footsteps_users(footstep_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_id, App.userModel.get('user_id')] );
 								App.dbClass.setPointsForScore(3);
 							}
 						}, self.errorCB);
 				
 				}, self.errorCB, function() {
-					navigator.notification.confirm(
+					var linkedUserToFirstContent = function() {
+
+						navigator.notification.confirm(
 						'Je hebt het eerste stukje informatie vrij gespeeld van de voetstap in de buurt!',
 						function(button){
 							if(button === 0) {
@@ -553,8 +567,10 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						}, 
 						'Voetstap gevonden!', 
 						'Op de kaart blijven, Naar de voetstappagina' 
-					);
-					
+						);
+					};
+
+					App.dbClass.linkUserToFirstContent(linkedUserToFirstContent, footstep_id);			
 
 					return;
 				});	

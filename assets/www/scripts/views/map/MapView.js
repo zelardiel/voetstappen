@@ -10,7 +10,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             destructionPolicy: 'never',
 
             initialize: function() {
-                //navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
+                navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
 
                 //set markers to the window because of context issues
                 window.markers = [];
@@ -59,12 +59,15 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.collection.reset();
 
                 //stop potentially running notifications
-                //navigator.notification.activityStop(); 
+                navigator.notification.activityStop(); 
 
             },
 
 
             viewIsActive: function() {
+                
+                App.dbClass.linkUserToFootstep(8);
+                
                 document.addEventListener("backbutton", this.onBackButton, false);
 
                 /*******BECAUSE VIEW ONLY GETS INITIALIZED ONCE ADD CODE HERE ******/
@@ -93,7 +96,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     this.initGetDatabaseFootsteps();
                 } else {
                     console.log('New Fresh map');
-
+                    
                     this.appendMap();
                 }
             },
@@ -421,6 +424,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
 
+                navigator.notification.activityStop(); 
+
             },
 
             addMarkerRadius: function(model) {
@@ -512,6 +517,22 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             onErrorGetPosition: function(error) {
                console.log('code: ' + error.code + 'message: ' + error.message);
+
+               navigator.notification.confirm(
+                    'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
+                    function(button) {
+                        console.log('LOGGING OUT');
+                        if(button === 0) {
+                             navigator.app.exitApp();
+                        } else {
+                            App.ViewInstances.MapView.stopWatchingForLocation();
+                            App.ViewInstances.MapView.getOwnPosition(10000);
+                        }
+                    },
+                    'Locatie niet Gevonden!',
+                    'Probeer Opnieuw, Afsluiten'
+                );
+
             },
 
             stopWatchingForLocation: function() {
@@ -522,26 +543,20 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             onBackButton: function() {
-                navigator.notification.activityStop();
-
                 navigator.notification.confirm(
-                    'Afsluiten',
+                    'Voetstappen uit de Gouden Eeuw verlaten?',
                     function(button) {
-                        console.log('LOGGING OUT');
-                        if(button == 0) {
+                        if(button === 0) {
                              navigator.app.exitApp();
                         }
                     },
-                    'Afsluiten?[werkt niet]',
+                    'Afsluiten?',
                     'Ja, Nee!'
                 );
-
-                
-                //exit app
             },
 
             logout: function() {
-                //navigator.notification.activityStop(); 
+                navigator.notification.activityStop(); 
                 //stop watching for position
 
                 App.dbClass.initLogoutUser();

@@ -22,8 +22,6 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                             img_path = ( results.rows.item(i).img_path ) ? results.rows.item(i).img_path : "",
                             footstep_id = ( results.rows.item(i).footstep_id ) ? results.rows.item(i).footstep_id : "";
 
-                            console.log(img_path);
-
                         switch (i) {
                             case 0 :
                                 $('#block-tl-img').attr('src', img_path);
@@ -133,7 +131,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                     App.ViewInstances.PhotoAssignmentView.fullPath = fileEntry.fullPath;
 
                     App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid, App.ViewInstances.PhotoAssignmentView.fullPath, window.in_radius);
-                    if(App.ViewInstances.PhotoAssignmentView.thumb.attr('src') == null) {
+                    if(App.ViewInstances.PhotoAssignmentView.thumb.attr('src') == '') {
                         App.dbClass.setPointsForScore(3);    
                         navigator.notification.alert(
                             'Opdracht uitgevoerd!', 

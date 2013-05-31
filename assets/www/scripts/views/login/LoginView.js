@@ -10,14 +10,11 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
     		},
 
             initialize: function() {
-
                 console.log('INIT LOGIN');
-
                 $('.button-container').toggle();
                 $('.showMenu').toggle();
                 $('.logout').toggle();
                 $('.hide').toggle();
-  
             },
 
 
@@ -32,7 +29,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 console.log('PRESSING LOGIN');
                 //stop in case there is a dialog active
-                // navigator.notification.activityStop();          
+                navigator.notification.activityStop();         
 
                 this.form = $(e.currentTarget);
 
@@ -54,7 +51,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 var self = this;
 
-                // navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
+                navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
 
                 $.ajax({
                     type: 'POST',
@@ -66,14 +63,14 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                         if(result.status == Sha1.hash('notfound')) {
 
                             //stop the loading notifiacton
-                            // navigator.notification.activityStop();
+                            navigator.notification.activityStop();
 
-                            // navigator.notification.alert(
-                                // 'Verkeerder gebruikersnaam of wachtwoord',  // message
-                                 // function(){},         // callback
-                                // 'Inloggen mislukt!',            // title
-                                // 'Probeer opnieuw'                  // buttonName
-                            // );
+                            navigator.notification.alert(
+                                'Verkeerder gebruikersnaam of wachtwoord',  // message
+                                 function(){},         // callback
+                                'Inloggen mislukt!',            // title
+                                'Probeer opnieuw'                  // buttonName
+                            );
 
                             return;
                         } else if(result.status == Sha1.hash('success')) {
@@ -86,16 +83,16 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                         console.log(textStatus);
                         console.log(errorThrown);
 
-                        // navigator.notification.activityStop();
+                        navigator.notification.activityStop();
 
-                        // navigator.notification.alert(
-                            // 'We kunnen je niet inloggen. Check je verbinding en probeer opnieuw.',  // message
-                             // function(){},         // callback
-                            // 'Inloggen mislukt!',            // title
-                            // 'Probeer opnieuw'                  // buttonName
-                        // );
+                        navigator.notification.alert(
+                            'We kunnen je niet inloggen. Check je verbinding en probeer opnieuw.',  // message
+                             function(){},         // callback
+                            'Inloggen mislukt!',            // title
+                            'Probeer opnieuw'                  // buttonName
+                        );
 
-                        // navigator.notification.activityStop();  
+                        navigator.notification.activityStop();  
                     }
                 });
             },
@@ -136,7 +133,14 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 }
 
                 App.Helpers.processView(App.ViewInstances.SignupView); 
-            }
+
+                if(App.ViewInstances.SignupView == null) {
+                    App.ViewInstances.SignupView = new SignupView; 
+                    App.Helpers.processView(App.ViewInstances.SignupView);       
+                } else {
+                    App.StackNavigator.replaceView(App.ViewInstances.SignupView);
+                }
+    }
 
 
         });

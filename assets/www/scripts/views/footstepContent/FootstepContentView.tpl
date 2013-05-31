@@ -14,13 +14,5 @@
 			<p>Deze QR-code is nog niet gevonden</p>
 
 		{{/if}}		
-
-		<section>
-			<a href="#">Locatie</a>
-			<section id="pagination-content-container">
-
-			</section>
-		</section>
-
 	</article>
 </section>
