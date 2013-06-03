@@ -201,8 +201,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					App.dbInstantion.transaction(function(tx){
 						tx.executeSql('SELECT updated_at FROM synchronized WHERE id = 1', [] );
 					}, self.errorCB, function(tx, results) { 
-						console.log('ADSSADSADDSASAD');
-						console.log(results.rows.length);
 						if(typeof(results) == 'undefined') {
 							self.timestamp = 0;
 							deferred.resolve();
