@@ -71,6 +71,11 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             // http://stackoverflow.com/questions/9926152/phonegap-android-how-to-save-the-capture-image-from-camera-in-the-sd-card
             initCamera : function(e) {
                 e.preventDefault();
+
+                if(window.in_radius == null) {
+                    alert('Je bent niet in de radius van een voetstap aanwezig.');
+                    return;
+                }
                 this.objectiveid = $(e.currentTarget).data('objectiveid');
                 
                 var not_allowed = $('#photo-container').find("[data-footstepid='" + window.in_radius + "']");    

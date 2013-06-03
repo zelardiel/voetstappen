@@ -532,14 +532,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 			linkUserToFootstep: function(footstep_id) {
-				console.log('PRESENT IN FUNCTION WITH ' + footstep_id);
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footsteps_users WHERE footstep_id = ? AND user_id = ?', [footstep_id, App.userModel.get('user_id')],
 						function(tx, results){
-							console.log(results.rows);
 							if(results.rows.length == 0){
-								console.log('PRESENT IN lenght = 0 WITH ' + footstep_id);
 								tx.executeSql('INSERT INTO footsteps_users(footstep_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_id, App.userModel.get('user_id')] );
 								App.dbClass.setPointsForScore(3);
 							}

@@ -63,6 +63,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
          },
 
          initGetDatabaseFootstepContents: function(footstep_id, location, start_content_id) {
+          console.log(start_content_id, " " + location);
           if(start_content_id !== null) {
              App.dbClass.retrieveFootstepContentsWithContentId(this.setFootstepContents, start_content_id);
            } else {

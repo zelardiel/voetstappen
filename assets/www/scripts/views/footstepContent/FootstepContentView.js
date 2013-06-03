@@ -9,10 +9,6 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
             this.swipeContent();
          },
 
-         // events: {
-         //    'click .content-location' : 'navigate',
-         // },
-
          template: Handlebars.compile(FootstepContentViewT),
 
          render: function() {
@@ -62,14 +58,6 @@ define(['underscore', 'Backbone', 'text!views/footstepContent/FootstepContentVie
                console.log(position);
                App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(self.setFootstepContents, self.model.get('footstep_id'), position);   
             });
-         },
-
-         navigate: function(e) {
-            console.log('NAVIGATING');
-            var position = $(e.currentTarget).data('location');
-            console.log(position);
-   
-            App.dbClass.retrieveFootstepContentWithWithLocationAndFootstepId(this.setFootstepContents, this.model.get('footstep_id'), position);   
          },
 
          setFootstepContents: function(tx, results) {

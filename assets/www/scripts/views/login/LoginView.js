@@ -51,13 +51,13 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 var self = this;
 
-                navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
+                // navigator.notification.activityStart("Inloggen", "Je wordt ingelogd");
 
                 $.ajax({
                     type: 'POST',
                     timeout: 15000,
                     url: 'http://www.pimmeijer.com/voetstappen/api.php',
-                    data: {action: 'login', username: self.username.val(), password: self.hashed_password },
+                    data: {action: 'login', username: self.username.val().toLowerCase(), password: self.hashed_password },
                     success: function(result) {
                         var result = $.parseJSON(result);
                         if(result.status == Sha1.hash('notfound')) {
@@ -115,7 +115,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             loginSuccess: function() {
-                // navigator.notification.activityStop();
+                navigator.notification.activityStop();
                 //create a local user in the local database
                 this.username.val('');
                 this.password.val('');
@@ -128,12 +128,6 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             goToSignup: function() {
-                if(App.ViewInstances.SignupView == null) {
-                    App.ViewInstances.SignupView = new SignupView; 
-                }
-
-                App.Helpers.processView(App.ViewInstances.SignupView); 
-
                 if(App.ViewInstances.SignupView == null) {
                     App.ViewInstances.SignupView = new SignupView; 
                     App.Helpers.processView(App.ViewInstances.SignupView);       

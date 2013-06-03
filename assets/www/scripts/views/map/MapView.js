@@ -10,7 +10,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             destructionPolicy: 'never',
 
             initialize: function() {
-                navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
+                // navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
 
                 //set markers to the window because of context issues
                 window.markers = [];
@@ -59,14 +59,12 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.collection.reset();
 
                 //stop potentially running notifications
-                navigator.notification.activityStop(); 
+                // navigator.notification.activityStop(); 
 
             },
 
 
             viewIsActive: function() {
-                
-                App.dbClass.linkUserToFootstep(8);
                 
                 document.addEventListener("backbutton", this.onBackButton, false);
 
@@ -424,7 +422,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
 
-                navigator.notification.activityStop(); 
+                // navigator.notification.activityStop(); 
 
             },
 
@@ -487,13 +485,16 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     $.each(window.circles, function(index, val){
                         //val is circle
                         var bounds = val.getBounds();
-            
+                        console.log(window.been_in_circle);
                          if (bounds.contains(latlng)){
+                            console.log('in bounds');
                             //Redirect
-                            if(!$.inArray(val.footstep_id, window.been_in_circle)) {
-                                window.in_radius = val.footstep_id;
+                            if($.inArray(val.footstep_id, window.been_in_circle) == -1) {  
+                                App.dbClass.linkUserToFootstep(val.footstep_id);
 
+                                window.in_radius = val.footstep_id;
                             }
+
                             window.been_in_circle.push(val.footstep_id);
                         }
                     });
@@ -518,20 +519,20 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             onErrorGetPosition: function(error) {
                console.log('code: ' + error.code + 'message: ' + error.message);
 
-               navigator.notification.confirm(
-                    'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
-                    function(button) {
-                        console.log('LOGGING OUT');
-                        if(button === 0) {
-                             navigator.app.exitApp();
-                        } else {
-                            App.ViewInstances.MapView.stopWatchingForLocation();
-                            App.ViewInstances.MapView.getOwnPosition(10000);
-                        }
-                    },
-                    'Locatie niet Gevonden!',
-                    'Probeer Opnieuw, Afsluiten'
-                );
+               // navigator.notification.confirm(
+               //      'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
+               //      function(button) {
+               //          console.log('LOGGING OUT');
+               //          if(button === 0) {
+               //               navigator.app.exitApp();
+               //          } else {
+               //              App.ViewInstances.MapView.stopWatchingForLocation();
+               //              App.ViewInstances.MapView.getOwnPosition(10000);
+               //          }
+               //      },
+               //      'Locatie niet Gevonden!',
+               //      'Probeer Opnieuw, Afsluiten'
+               //  );
 
             },
 
@@ -556,7 +557,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             logout: function() {
-                navigator.notification.activityStop(); 
+                // navigator.notification.activityStop(); 
                 //stop watching for position
 
                 App.dbClass.initLogoutUser();
