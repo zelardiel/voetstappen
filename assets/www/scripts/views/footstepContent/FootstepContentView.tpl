@@ -1,5 +1,5 @@
 <section class="slide content footstep-content" data-location="{{location}}">
-	<article class="piece-of-content voetstapcontent" data-location="{{location}}">
+	<article id="contentcontainer" class="piece-of-content voetstapcontent" data-location="{{location}}">
 		<img src="img/blaeu.jpg">
 
 		{{#if is_found}}
@@ -16,3 +16,4 @@
 		{{/if}}		
 	</article>
 </section>
+<script type="text/javascript" src="scripts/libs/touchscroll2.js"></script>
