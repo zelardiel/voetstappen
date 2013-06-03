@@ -1,6 +1,5 @@
 define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views/signup/SignupView', 'views/map/MapView','collections/MarkerCollection', 'libs/encrypter/sha1_encrypter'],
     function (_, Backbone, db, LoginViewTemplate, SignupView, MapView, MarkerCollection, Sha1) {
-
     	var LoginView = Backbone.View.extend({
             id: 'LoginView',
             destructionPolicy:'never',
@@ -29,7 +28,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
                 console.log('PRESSING LOGIN');
                 //stop in case there is a dialog active
-                navigator.notification.activityStop();         
+                // navigator.notification.activityStop();         
 
                 this.form = $(e.currentTarget);
 
@@ -63,14 +62,14 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                         if(result.status == Sha1.hash('notfound')) {
 
                             //stop the loading notifiacton
-                            navigator.notification.activityStop();
+                            // navigator.notification.activityStop();
 
-                            navigator.notification.alert(
-                                'Verkeerder gebruikersnaam of wachtwoord',  // message
-                                 function(){},         // callback
-                                'Inloggen mislukt!',            // title
-                                'Probeer opnieuw'                  // buttonName
-                            );
+                            // navigator.notification.alert(
+                            //     'Verkeerder gebruikersnaam of wachtwoord',  // message
+                            //      function(){},         // callback
+                            //     'Inloggen mislukt!',            // title
+                            //     'Probeer opnieuw'                  // buttonName
+                            // );
 
                             return;
                         } else if(result.status == Sha1.hash('success')) {
@@ -83,16 +82,16 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                         console.log(textStatus);
                         console.log(errorThrown);
 
-                        navigator.notification.activityStop();
+                        // navigator.notification.activityStop();
 
-                        navigator.notification.alert(
-                            'We kunnen je niet inloggen. Check je verbinding en probeer opnieuw.',  // message
-                             function(){},         // callback
-                            'Inloggen mislukt!',            // title
-                            'Probeer opnieuw'                  // buttonName
-                        );
+                        // navigator.notification.alert(
+                        //     'We kunnen je niet inloggen. Check je verbinding en probeer opnieuw.',  // message
+                        //      function(){},         // callback
+                        //     'Inloggen mislukt!',            // title
+                        //     'Probeer opnieuw'                  // buttonName
+                        // );
 
-                        navigator.notification.activityStop();  
+                        // navigator.notification.activityStop();  
                     }
                 });
             },
@@ -115,7 +114,7 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             loginSuccess: function() {
-                navigator.notification.activityStop();
+                // navigator.notification.activityStop();
                 //create a local user in the local database
                 this.username.val('');
                 this.password.val('');

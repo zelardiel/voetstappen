@@ -30,6 +30,8 @@ define(['views/map/MapView', 'collections/MarkerCollection'],
 		    	var gotUserScore = function(tx, results) {
 		    		$('.total-score').html(""+ results.rows.item(0).points +"pt");
 		    	};
+
+		    	$('h1#username').html(""+ App.userModel.get('username') +"");
 		    	
 
 		    	App.dbClass.getUserScore(gotUserScore);

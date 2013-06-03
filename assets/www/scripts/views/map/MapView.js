@@ -422,7 +422,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
 
-                // navigator.notification.activityStop(); 
+                 // navigator.notification.activityStop(); 
 
             },
 
@@ -459,7 +459,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             //OWN POSITION FUNCTIONS
 
             getOwnPosition: function(timeoutInSeconds) {
-                console.log('HOW MANY TIMES AM I EXECUTED?');
+                console.log('TRYING TO GET POSITION');
                 //magic context swap trick
                 var options = { timeout: timeoutInSeconds, enableHighAccuracy: true  };
                 this.watchID = navigator.geolocation.watchPosition(this.onSuccesGetOwnPosition, this.onErrorGetPosition, options);
@@ -519,20 +519,28 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             onErrorGetPosition: function(error) {
                console.log('code: ' + error.code + 'message: ' + error.message);
 
-               // navigator.notification.confirm(
-               //      'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
-               //      function(button) {
-               //          console.log('LOGGING OUT');
-               //          if(button === 0) {
-               //               navigator.app.exitApp();
-               //          } else {
-               //              App.ViewInstances.MapView.stopWatchingForLocation();
-               //              App.ViewInstances.MapView.getOwnPosition(10000);
-               //          }
-               //      },
-               //      'Locatie niet Gevonden!',
-               //      'Probeer Opnieuw, Afsluiten'
-               //  );
+               navigator.notification.confirm(
+                    'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
+                    function(button) {
+                        switch(button) {
+                            case 1:
+                                App.ViewInstances.MapView.stopWatchingForLocation();
+                                break;
+                            case 2:
+                                App.ViewInstances.MapView.stopWatchingForLocation();
+                                App.ViewInstances.MapView.getOwnPosition(10000);
+                                break;
+                            case 3:
+                                navigator.app.exitApp();
+                                break;
+
+                            default:
+                                App.ViewInstances.MapView.stopWatchingForLocation();
+                        }
+                    },
+                    'Locatie niet Gevonden!',
+                    'Annuleren, Probeer Opnieuw, Afsluiten en naar instellingen'
+                );
 
             },
 
@@ -544,16 +552,18 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             onBackButton: function() {
-                navigator.notification.confirm(
-                    'Voetstappen uit de Gouden Eeuw verlaten?',
-                    function(button) {
-                        if(button === 0) {
-                             navigator.app.exitApp();
-                        }
-                    },
-                    'Afsluiten?',
-                    'Ja, Nee!'
-                );
+                // navigator.notification.confirm(
+                //     'Voetstappen uit de Gouden Eeuw verlaten?',
+                //     function(button) {
+                //          console.log(button);
+                //         if(button === 2) {
+
+                //              navigator.app.exitApp();
+                //         }
+                //     },
+                //     'Afsluiten?',
+                //     'Nee!, Ja'
+                // );
             },
 
             logout: function() {

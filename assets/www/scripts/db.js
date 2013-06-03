@@ -545,24 +545,24 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				}, self.errorCB, function() {
 					var linkedUserToFirstContent = function() {
 
-						navigator.notification.confirm(
-						'Je hebt het eerste stukje informatie vrij gespeeld van de voetstap in de buurt!',
-						function(button){
-							if(button === 0) {
-								if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
-						    		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_id, location: 1, start_content_id: null});
-						    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
-						    	} else {
-						    		App.ViewInstances.FootstepContentsViewViewFromMap.options.location = 1;
-						    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
-						    	}
-							} else {
+						// navigator.notification.confirm(
+						// 'Je hebt het eerste stukje informatie vrij gespeeld van de voetstap in de buurt!',
+						// function(button){
+						// 	if(button === 0) {
+						// 		if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
+						//     		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_id, location: 1, start_content_id: null});
+						//     		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
+						//     	} else {
+						//     		App.ViewInstances.FootstepContentsViewViewFromMap.options.location = 1;
+						//     		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
+						//     	}
+						// 	} else {
 								
-							}
-						}, 
-						'Voetstap gevonden!', 
-						'Op de kaart blijven, Naar de voetstappagina' 
-						);
+						// 	}
+						// }, 
+						// 'Voetstap gevonden!', 
+						// 'Op de kaart blijven, Naar de voetstappagina' 
+						// );
 					};
 
 					App.dbClass.linkUserToFirstContent(linkedUserToFirstContent, footstep_id);			

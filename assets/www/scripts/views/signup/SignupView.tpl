@@ -11,7 +11,7 @@
 					<input type="password" id="password" name="password">
 				</li>
 
-				<li><input type="submit">Maak aan</input></li>
+				<li><button>Aanmaken</button></li>
 			</ul>
 		</form>
 

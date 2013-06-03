@@ -14,7 +14,7 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
 
     		createUser: function(e) {
           e.preventDefault();
-          navigator.notification.activityStop();     
+          // navigator.notification.activityStop();     
         
           this.form = $(e.currentTarget);
     			this.username = $(e.currentTarget).find('input#username');
@@ -30,7 +30,7 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
                 this.form.find('p.error').remove();
             }
 
-           navigator.notification.activityStart("Aanmaken", "Uw account wordt aangemaakt");
+          // navigator.notification.activityStart("Aanmaken", "Uw account wordt aangemaakt");
 
     			this.hashed_password = Sha1.hash(this.password.val());
 
@@ -42,22 +42,22 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
   					data: {action: 'signup', username: self.username.val(), password: self.hashed_password },
   					success: function(result) {
   						if(result == Sha1.hash('exists')) {
-  							navigator.notification.activityStop(); 
-                navigator.notification.alert(
-                    'Gebruikersnaam bestaat al',  // message
-                     self.previousView,         // callback
-                    'De gekozen gebruikersnaam bestaat al',            // title
-                    'Probeer opnieuw'                  // buttonName
-                );
+  							// navigator.notification.activityStop(); 
+         //        navigator.notification.alert(
+         //            'Gebruikersnaam bestaat al',  // message
+         //             self.previousView,         // callback
+         //            'De gekozen gebruikersnaam bestaat al',            // title
+         //            'Probeer opnieuw'                  // buttonName
+         //        );
   						} else if(result == Sha1.hash('success')) {
-  							navigator.notification.activityStop(); 
+  							// navigator.notification.activityStop(); 
 
-                navigator.notification.alert(
-                    'Registratie succesvol',  // message
-                     self.previousView,         // callback
-                    'Uw account is geregistreerd.',            // title
-                    'Naar het inloggen'                  // buttonName
-                );
+         //        navigator.notification.alert(
+         //            'Registratie succesvol',  // message
+         //             self.previousView,         // callback
+         //            'Uw account is geregistreerd.',            // title
+         //            'Naar het inloggen'                  // buttonName
+         //        );
   							self.username.val('');
   							self.password.val('');
   						}
@@ -66,8 +66,8 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
               console.log(xhr);
               console.log(message);
               console.log(errorThrown);
-              navigator.notification.activityStop(); 
-              navigator.notification.activityStart("Fout", "Er ging iets mis! probeer opnieuw");
+              // navigator.notification.activityStop(); 
+              // navigator.notification.activityStart("Fout", "Er ging iets mis! probeer opnieuw");
             }
   				});
     		},
@@ -85,15 +85,17 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
             },
 
     		previousView: function() {
-          navigator.notification.activityStop(); 
+          // navigator.notification.activityStop(); 
           //pop the view from the stack array so the previous one appears
-            if(App.ViewInstances.LoginView == null ) {
+            if(App.ViewInstances.LoginViejw == null ) {
                   App.ViewInstances.LoginView = new LoginView; 
                   App.Helpers.processView(App.ViewInstances.LoginView);       
               } else {
                   App.StackNavigator.replaceView(App.ViewInstances.LoginView);
               }
-    	}
+    	 }
+
+      });
 
     	return SignupView;
     });
