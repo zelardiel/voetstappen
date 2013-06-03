@@ -14,39 +14,54 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                 $('.showMenu').toggle();
                 $('.logout').toggle();
                 $('.hide').toggle();
+
+                if(this.options.isDemo == null) {
+                    this.isDemo = true;
+                    this.loginUser();
+                }
+                
+                
             },
 
-
     		render: function() {
-                console.log('RENDER LOGINVIEW');
-    			this.$el.html(_.template(LoginViewTemplate));
-                return this;
+                if(typeof(this.options.render_login_view) != 'undefined') {
+                    console.log('RENDER LOGINVIEW');
+                    this.$el.html(_.template(LoginViewTemplate));
+                    return this;
+                } else {
+                    return;
+                }
+                
     		},
 
             loginUser: function(e) {
-                e.preventDefault();  
-
                 console.log('PRESSING LOGIN');
                 //stop in case there is a dialog active
                 // navigator.notification.activityStop();         
 
-                this.form = $(e.currentTarget);
+                if(this.isDemo == false) {
+                    e.preventDefault();  
+                    this.form = $(e.currentTarget);
+                    this.username = this.form.find('input#username');
+                    this.password = this.form.find('input#password');
+               
+                    //validate locally
+                    if(this.validateUsernameAndPassword(this.username, this.password) == false) {
+                        //check for existing error messages
+                        if(this.form.find('.error').length == 0) {
+                            $(e.currentTarget).append($('<p class=error>Vul een waarde in</p>')); 
+                        } 
+                        return false;
+                    } else {
+                        this.form.find('p.error').remove();
+                    }
 
-                this.username = this.form.find('input#username');
-                this.password = this.form.find('input#password');
-
-                //validate locally
-                if(this.validateUsernameAndPassword(this.username, this.password) == false) {
-                    //check for existing error messages
-                    if(this.form.find('.error').length == 0) {
-                        $(e.currentTarget).append($('<p class=error>Vul een waarde in</p>')); 
-                    } 
-                    return false;
+                    this.username_val = this.username.val().toLowerCase()
+                    this.hashed_password = Sha1.hash(this.password.val());
                 } else {
-                    this.form.find('p.error').remove();
+                    this.username_val = 'Spoorzoeker'
+                    this.hashed_password = Sha1.hash('baas');
                 }
-
-                this.hashed_password = Sha1.hash(this.password.val());
 
                 var self = this;
 
@@ -56,11 +71,11 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
                     type: 'POST',
                     timeout: 15000,
                     url: 'http://www.pimmeijer.com/voetstappen/api.php',
-                    data: {action: 'login', username: self.username.val().toLowerCase(), password: self.hashed_password },
+                    data: {action: 'login', username: self.username_val, password: self.hashed_password },
                     success: function(result) {
                         var result = $.parseJSON(result);
                         if(result.status == Sha1.hash('notfound')) {
-
+                            console.log('LOL');
                             //stop the loading notifiacton
                             // navigator.notification.activityStop();
 
@@ -116,8 +131,10 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             loginSuccess: function() {
                 // navigator.notification.activityStop();
                 //create a local user in the local database
-                this.username.val('');
-                this.password.val('');
+                if(this.isDemo == false) {
+                    this.username.val('');
+                    this.password.val('');
+                }
                 
                 App.dbClass.initLocalUserCreating();
 

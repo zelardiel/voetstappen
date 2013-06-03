@@ -126,7 +126,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     alert('Hier zou je kunnen delen');
                 });
 
-                $('#map').hide();
+                $('#map').css('')
 
 
                 $('.button-container').show();
@@ -422,7 +422,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
 
-                 // navigator.notification.activityStop(); 
+                // navigator.notification.activityStop(); 
 
             },
 
@@ -518,30 +518,29 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             onErrorGetPosition: function(error) {
                console.log('code: ' + error.code + 'message: ' + error.message);
+               
+               // navigator.notification.confirm(
+               //      'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
+               //      function(button) {
+               //          switch(button) {
+               //              case 1:
+               //                  App.ViewInstances.MapView.stopWatchingForLocation();
+               //                  break;
+               //              case 2:
+               //                  App.ViewInstances.MapView.stopWatchingForLocation();
+               //                  App.ViewInstances.MapView.getOwnPosition(10000);
+               //                  break;
+               //              case 3:
+               //                  navigator.app.exitApp();
+               //                  break;
 
-               navigator.notification.confirm(
-                    'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
-                    function(button) {
-                        switch(button) {
-                            case 1:
-                                App.ViewInstances.MapView.stopWatchingForLocation();
-                                break;
-                            case 2:
-                                App.ViewInstances.MapView.stopWatchingForLocation();
-                                App.ViewInstances.MapView.getOwnPosition(10000);
-                                break;
-                            case 3:
-                                navigator.app.exitApp();
-                                break;
-
-                            default:
-                                App.ViewInstances.MapView.stopWatchingForLocation();
-                        }
-                    },
-                    'Locatie niet Gevonden!',
-                    'Annuleren, Probeer Opnieuw, Afsluiten en naar instellingen'
-                );
-
+               //              default:
+               //                  App.ViewInstances.MapView.stopWatchingForLocation();
+               //          }
+               //      },
+               //      'Locatie niet Gevonden!',
+               //      'Annuleren, Probeer Opnieuw, Afsluiten en naar instellingen'
+               //  );
             },
 
             stopWatchingForLocation: function() {
