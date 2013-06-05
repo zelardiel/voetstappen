@@ -212,13 +212,9 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				//sync each table with remote database
 				check_update_time().done(function(){
 					self.syncFootsteps();
-					console.log('1');
 					self.syncFootstepContents();
-					console.log('2');
 					self.syncLocations();
-					console.log('3');
 					self.syncScores();
-					console.log('4');
 
 					//set 4 empty objectives
 					App.dbInstantion.transaction(self.setObjectives, self.errorCB, 
@@ -408,7 +404,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 			setObjectivePathAndFootstep: function(callback, objective_id, img_path, footstep_id) {
 				var self = this;
-				console.log(objective_id + " " + img_path + " "  + footstep_id);
 				var data = function getData(){
 					var dfd = $.Deferred();
 					App.dbInstantion.transaction(function(tx){
