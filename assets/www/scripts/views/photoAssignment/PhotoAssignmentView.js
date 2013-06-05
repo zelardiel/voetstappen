@@ -17,7 +17,6 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 $('#map').show();
                 var gotObjectives = function(tx, results) {
                     for (var i = 0; i < results.rows.length; i++) {
-                        console.log(results.rows.item(i).img_path);
                         var objective_id = results.rows.item(i).objective_id,
                             img_path = ( results.rows.item(i).img_path ) ? results.rows.item(i).img_path : "",
                             footstep_id = ( results.rows.item(i).footstep_id ) ? results.rows.item(i).footstep_id : "";
@@ -73,7 +72,13 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 e.preventDefault();
 
                 if(window.in_radius == null) {
-                    alert('Je bent niet in de radius van een voetstap aanwezig.');
+                    //alert('Je bent niet in de radius van een voetstap aanwezig.');
+                    navigator.notification.alert(
+                        'Je bent niet in de radius van een voetstap aanwezig.',  // message
+                        function(){},         // callback
+                        'Let op!',            // title
+                        'Ok'                  // buttonName
+                    );
                     return;
                 }
                 this.objectiveid = $(e.currentTarget).data('objectiveid');
@@ -82,11 +87,15 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
                 if(not_allowed.length != 0) {
 
-                    alert('Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap');
+                    //alert('Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap');
+                     navigator.notification.alert(
+                        'Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap.',  // message
+                        function(){},         // callback
+                        'Let op!',            // title
+                        'Ok'                  // buttonName
+                    );
                     return;
                 }
-
-                console.log('objectiveid: ' + this.objectiveid + ' footstep_id_in_range ' + window.in_radius);
 
                 var destinationType = navigator.camera.DestinationType;
  
@@ -142,7 +151,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                             'Opdracht uitgevoerd!', 
                             function(){}, 
                             'Je hebt 3 punten verdiend!', 
-                            'Top!'
+                            'Ok'
                         );
                     }
                     
@@ -156,6 +165,13 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
             onFailTakingPicture : function(message) {
                 alert('Failed because: ' + message);
+                 navigator.notification.alert(
+                            'Mislukt door: ' + message, 
+                            function(){}, 
+                            'Mislukt!', 
+                            'Ok'
+                );
+
             },
 
             //pop the last actice view from the stack array and show the previous one

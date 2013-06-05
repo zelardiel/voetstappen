@@ -121,8 +121,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    userCheckingQuerySuccess: function(tx, results) {
-		    	console.log('breaking');
-		    	console.log(results.rows.length);
 			    // if there was a result, continue to Mapview
 			    if(results.rows.length != 0) {
 			    	console.log('User found in local database, to the mapview!');
@@ -452,7 +450,13 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 							if(results.rows.length == 0){
 								tx.executeSql('INSERT INTO footstep_contents_users(footstep_content_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_contents_id, App.userModel.get('user_id')] );
 								App.dbClass.setPointsForScore(2);
-								alert('Je hebt 2 punten verdiend!');
+
+								navigator.notification.alert(
+								    'Je hebt 2 punten verdiend!',  // message
+								    function(){},         // callback
+								    'Scan is succesvol!',            // title
+								    'Ok'                  // buttonName
+								);
 							}
 						}, self.errorCB);
 				
@@ -527,7 +531,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 	         		tx.executeSql('UPDATE scores SET points=points + ? WHERE user_id=?',
-	         			[points, App.userModel.get('user_id')], function(){ App.Helpers.setUserScore(); console.log("Score updated, added " + points + " points"); }, self.errorCB );
+	         			[points, App.userModel.get('user_id')], function(){ App.Helpers.setUserScore(); }, self.errorCB );
 	        	}, self.errorCB);
 			},
 

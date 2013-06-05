@@ -123,7 +123,13 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 });
 
                 $('#deel').on('click', function() {
-                    alert('Hier zou je kunnen delen');
+                    //alert('Hier zou je kunnen delen');
+                    navigator.notification.alert(
+                        'Hier zou je je score kunnen delen',  // message
+                        function(){},         // callback
+                        'Delen',            // title
+                        'Ok'                  // buttonName
+                    );
                 });
 
                 $('#map').css('')
@@ -218,7 +224,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 $('.legenda, .hide').hammer({prevent_default:true}).bind("dragup", function(ev) {
                     ev.gesture.stopDetect();
-                    console.log('etwas');
                     $('.legenda').addClass("legenda-animation");
                     $('.hide').addClass('up');
                 });
@@ -324,7 +329,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 }
 
                 //trigger backbone custom event to deal with async problems
-                console.log('IK TRIGGER JE');
                 App.Vent.trigger('retrievingFootsteps:done');
             },
 
@@ -414,13 +418,17 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         }
 
                     } else if(footstep_marker.footstep_id == 0){
-                        alert('Dit ben jij!');
+                        //alert('Dit ben jij!');
+                        navigator.notification.alert(
+                            'Dit ben jij',  // message
+                            function(){},         // callback
+                            'GPS icoon',            // title
+                            'Ok'                  // buttonName
+                        );
                     }
                 });
 
                 window.markers.push(footstep_marker);
-
-                console.log('ADDING MARKER WITH ID ' + model.get('footstep_id'));
 
                 // navigator.notification.activityStop(); 
 
