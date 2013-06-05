@@ -1,5 +1,5 @@
 <section>
-	<article class="login">
+	<article class="login" id="logincontainer">
 		<p>Je kunt hier inloggen. Dit is alleen benodigd bij het eerste gebruik van de app!</p>
 		<form id="login" action="">
 			<ul>
@@ -19,3 +19,5 @@
 		<button id="to-signup">Maak een account aan</button>
 	</article>
 </section>
+
+<script type="text/javascript">touchScroll('logincontainer');</script>

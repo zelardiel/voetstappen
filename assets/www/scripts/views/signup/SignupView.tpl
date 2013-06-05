@@ -1,5 +1,5 @@
 <section>
-	<article class="login">
+	<article class="login" id="signupcontainer">
 		<form id="signup" action="">
 			<ul>
 				<li>
@@ -18,3 +18,5 @@
 		<button id="previous-view">terug</button>
 	</article>
 </section>
+
+<script type="text/javascript">touchScroll('signupcontainer');</script>

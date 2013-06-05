@@ -1,5 +1,5 @@
 <section>
-	<article>
+	<article id="assignment">
 		<p>De opdrachten bestaan uit een foto maken van gedeelte van een huis of pand op locatie bij de voetsap.
 		  Hierodoor kun je je eigen huis uit de Gouden Eeuw bouwen! Tevens zijn
 		   de opdrachten punten waard.<br><br>
@@ -23,3 +23,5 @@
 		</div>
 	</article>
 </section>
+
+<script type="text/javascript">touchScroll('assignment');</script>

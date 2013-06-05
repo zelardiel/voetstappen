@@ -22,7 +22,6 @@
 		
 	</span> -->
 	</article>
-<script type="text/javascript" src="scripts/libs/touchscroll2.js"></script>
-
-
 </section>
+
+<script type="text/javascript">touchScroll('contentcontainer');</script>

@@ -45,6 +45,3 @@ function touchScroll(id){
 		},false);
 	}
 }
-
-touchScroll('loginview');
-
