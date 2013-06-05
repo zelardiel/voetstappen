@@ -2,7 +2,9 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
     function (_, Backbone, db, LoginViewTemplate, SignupView, MapView, MarkerCollection, Sha1) {
     	var LoginView = Backbone.View.extend({
             id: 'LoginView',
+
             destructionPolicy:'never',
+
     		events: {
     			'submit form#login' : 'loginUser',
                 'click #to-signup' : 'goToSignup'
@@ -10,16 +12,17 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
 
             initialize: function() {
                 console.log('INIT LOGIN');
-                $('.button-container').toggle();
-                $('.showMenu').toggle();
-                $('.logout').toggle();
-                $('.hide').toggle();
+                window.clicked = 0;
 
                 if(this.options.isDemo == null) {
                     this.isDemo = true;
                     this.loginUser();
-                }
-                
+                } else if(this.isDemo == false){
+                    $('.button-container').toggle();
+                    $('.showMenu').toggle();
+                    $('.logout').toggle();
+                    $('.hide').toggle();
+                }            
                 
             },
 
@@ -144,12 +147,18 @@ define(['underscore', 'Backbone', 'db', 'text!views/login/LoginView.tpl', 'views
             },
 
             goToSignup: function() {
-                if(App.ViewInstances.SignupView == null) {
-                    App.ViewInstances.SignupView = new SignupView; 
-                    App.Helpers.processView(App.ViewInstances.SignupView);       
-                } else {
-                    App.StackNavigator.replaceView(App.ViewInstances.SignupView);
+                window.clicked++;
+
+                if(window.clicked == 1) {
+                    if(App.ViewInstances.SignupView == null) {
+                        App.ViewInstances.SignupView = new SignupView; 
+                        App.Helpers.processView(App.ViewInstances.SignupView);       
+                    } else {
+                        App.StackNavigator.replaceView(App.ViewInstances.SignupView);
+                    }
+                    window.clicked = 0;
                 }
+               
     }
 
 

@@ -9,6 +9,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             window.footstep_content = null;
             this.footstepContentModel = null;
+            window.clicked = 0;
        
             App.Vent.on('readyToRenderSubiews:done', this.render, this);
 
@@ -24,8 +25,6 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
         viewIsActive: function() {
           window.footstep_content = null;
           this.footstepContentModel = null;
-
-          $('#map').show();
 
           this.initGetDatabaseFootstepContents(this.options.footstep_id, this.options.location, this.options.start_content_id);
 
@@ -45,13 +44,14 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             delete App.ViewInstances.footstepContentView;
 
+            window.clicked = 0;
+
         },
 
          render: function() {
           if(this.footstepContentModel != null) {
               if(App.ViewInstances.footstepContentView == null ) {
-              console.log('etwas');
-              App.ViewInstances.footstepContentView = new FootstepContentView({ model: this.footstepContentModel });
+                App.ViewInstances.footstepContentView = new FootstepContentView({ model: this.footstepContentModel });
               } else {
                 App.ViewInstances.footstepContentView.model = this.footstepContentModel;
               }
@@ -101,7 +101,11 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
          },
 
         onBackButton: function(e) {
-            App.Helpers.renderMapView();
+              window.clicked++;
+
+              if(window.clicked == 1) {
+                  App.Helpers.renderMapView(); 
+              }  
          },
       });
       return FootstepContentsView;

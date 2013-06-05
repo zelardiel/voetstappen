@@ -7,6 +7,13 @@ define(['jquery', 'underscore', 'Backbone'],
             initialize: function() {
 				//if view is active start scanstuffs
                 this.on('viewActivate', this.viewIsActive, this);
+                this.on('viewDeactivate', this.viewDeactivated, this);
+            },
+
+            viewDeactivated: function() {
+                $('#scan').removeClass('active-button');
+                $('#scan').siblings().removeClass('active-button');
+                window.clicked = 0;
             },
 
             viewIsActive: function() {

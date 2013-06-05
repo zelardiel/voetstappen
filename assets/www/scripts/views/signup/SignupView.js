@@ -87,7 +87,7 @@ define(['underscore', 'Backbone', 'text!views/signup/SignupView.tpl', 'views/log
     		previousView: function() {
           // navigator.notification.activityStop(); 
           //pop the view from the stack array so the previous one appears
-            if(App.ViewInstances.LoginViejw == null ) {
+            if(App.ViewInstances.LoginView == null ) {
                   App.ViewInstances.LoginView = new LoginView; 
                   App.Helpers.processView(App.ViewInstances.LoginView);       
               } else {

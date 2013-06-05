@@ -552,7 +552,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						// navigator.notification.confirm(
 						// 'Je hebt het eerste stukje informatie vrij gespeeld van de voetstap in de buurt!',
 						// function(button){
-						// 	if(button === 0) {
+						// 	if(button === 2) {
+								//$('#map').removeClass('active-button');
 						// 		if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
 						//     		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_id, location: 1, start_content_id: null});
 						//     		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		

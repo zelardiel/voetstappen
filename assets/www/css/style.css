@@ -366,6 +366,11 @@ section footer a, #scan, #map {
     margin: 0 auto;
 }
 
+.button-container .active-button {
+    background-color: red !important;
+    color: white !important;
+}
+
 section footer a:hover {
     opacity: .8;
 }

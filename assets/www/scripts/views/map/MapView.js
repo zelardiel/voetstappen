@@ -16,6 +16,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 window.markers = [];
                 window.circles = [];
                 window.been_in_circle = [];
+                window.clicked = 0;
 
                 //TEMPORARILY FOR TESTING. THIS SHOULD ONLY BE FILLED IF USER IS IN RANGE OF FOOTSTEP
                 // window.in_radius = 4;
@@ -67,7 +68,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             viewIsActive: function() {
                 
                 document.addEventListener("backbutton", this.onBackButton, false);
-
+                $('#map').addClass('active-button');
                 /*******BECAUSE VIEW ONLY GETS INITIALIZED ONCE ADD CODE HERE ******/
                 //decide if map is loaded from a early instantion
                 if(this.map != null) {
@@ -109,7 +110,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 //check if rendered before.. thus only show buttons and do NOT bind events again
                 if(renderedBefore === true) {
                     $('.button-container').show();
-                    $('#map').hide();
                     $('.showMenu').show();
                     $('.logout').show(); 
                     $('.hide').show();
@@ -119,7 +119,19 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
 
                 $('#map').on('click', function(){
-                    App.Helpers.renderMapView();
+                    window.clicked++;
+
+                    if(App.StackNavigator.activeView.id === 'MapView') {
+                        return;
+                    } else if(window.clicked == 1) {
+                        App.Helpers.renderMapView();
+
+                        $(this).addClass('active-button');
+                        $(this).siblings().removeClass('active-button');
+                        window.clicked = 0;
+                    }
+
+
                 });
 
                 $('#deel').on('click', function() {
@@ -132,8 +144,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     );
                 });
 
-                $('#map').css('')
-
 
                 $('.button-container').show();
                 $('.showMenu').show();
@@ -141,36 +151,56 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 $('.hide').show();
 
                 $('.logout').on('click', function(){
-                    self.logout();
-                    $(".legenda").removeClass("legenda-animation");
-                    $('.hide').removeClass("up");
+                    window.clicked++;
+
+                    if(window.clicked == 1) {
+                        self.logout();
+                        $(".legenda").removeClass("legenda-animation");
+                        $('.hide').removeClass("up");
+                        window.clicked = 0;
+                    }
                 });
 
                 $('#assignment').on('click', function(e) {
                     e.preventDefault();
+                    window.clicked++;
 
                     if(App.StackNavigator.activeView.id === 'PhotoAssignmentView') {
                         return;
-                    }
-                   
-                    if(App.ViewInstances.PhotoAssignmentView == null ) {
-                        App.ViewInstances.PhotoAssignmentView = new PhotoAssignmentView; 
-                        App.Helpers.processView(App.ViewInstances.PhotoAssignmentView);       
-                    } else {
-                        App.StackNavigator.replaceView(App.ViewInstances.PhotoAssignmentView);
+                    } else if(window.clicked == 1) {
+                        if(App.ViewInstances.PhotoAssignmentView == null ) {
+                            App.ViewInstances.PhotoAssignmentView = new PhotoAssignmentView; 
+                            App.Helpers.processView(App.ViewInstances.PhotoAssignmentView);       
+                        } else {
+                            App.StackNavigator.replaceView(App.ViewInstances.PhotoAssignmentView);
+                        }
+
+                        $(this).addClass('active-button');
+                        $(this).siblings().removeClass('active-button');
+
+                        window.clicked = 0;
                     }
                 });
 
 
                 $("#scan").on('click', function() {
                     //TODO ADD LOADER TO PREVENT MULTIUPLE CLICKS!!
+                    window.clicked++;
 
-                    if(App.ViewInstances.ScannerView == null ) {
-                        App.ViewInstances.ScannerView = new ScannerView; 
-                        App.Helpers.processView(App.ViewInstances.ScannerView);       
-                    } else {
-                        App.StackNavigator.replaceView(App.ViewInstances.ScannerView);
+                    if(window.clicked == 1) {
+                        if(App.ViewInstances.ScannerView == null ) {
+                            App.ViewInstances.ScannerView = new ScannerView; 
+                            App.Helpers.processView(App.ViewInstances.ScannerView);       
+                        } else {
+                            App.StackNavigator.replaceView(App.ViewInstances.ScannerView);
+                        }
+
+                        $(this).addClass('active-button');
+                        $(this).siblings().removeClass('active-button');
+
+                        window.clicked = 0;
                     }
+                   
                 });
             },
 
@@ -305,9 +335,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     //after map is loaded start loading markers from database
                     google.maps.event.addListenerOnce(this.map, 'idle', function(){
                         self.initGetDatabaseFootsteps();
-
                         self.getOwnPosition(10000); 
-                });
+                    });
                  
                 }
             },
@@ -407,7 +436,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
 
                 google.maps.event.addListener(footstep_marker, 'click', function() {
-
+                    $('#map').removeClass('active-button');
                     if(footstep_marker.footstep_id != 0 ) { 
                         
                         if( App.ViewInstances.FootstepContentsViewFromMap == null ) {
@@ -559,25 +588,34 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             onBackButton: function() {
+                window.clicked++;
+
+                if(window.clicked == 1) {
                 // navigator.notification.confirm(
                 //     'Voetstappen uit de Gouden Eeuw verlaten?',
                 //     function(button) {
                 //          console.log(button);
                 //         if(button === 2) {
-
+                                //App.dbClass.initLogoutUser();
                 //              navigator.app.exitApp();
                 //         }
                 //     },
                 //     'Afsluiten?',
                 //     'Nee!, Ja'
                 // );
+                    window.clicked = 0;
+                }
             },
 
             logout: function() {
                 // navigator.notification.activityStop(); 
                 //stop watching for position
+                window.clicked++;
 
-                App.dbClass.initLogoutUser();
+                if(window.clicked == 1) {
+                    App.dbClass.initLogoutUser(); 
+                    window.clicked = 0;
+                }  
             },
 
         });

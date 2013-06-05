@@ -6,6 +6,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             destructionPolicy: 'never',
 
             initialize : function() {
+                window.clicked = 0;
                 this.on('viewActivate', this.viewIsActive, this);
                 this.on('viewDeactivate', this.viewDeactivated, this);
             },
@@ -14,7 +15,6 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             viewIsActive: function() {
                 document.addEventListener("backbutton", this.onBackButton, false);
                 // document.addEventListener('contextmenu', this.onBackButton, false); 
-                $('#map').show();
                 var gotObjectives = function(tx, results) {
                     for (var i = 0; i < results.rows.length; i++) {
                         var objective_id = results.rows.item(i).objective_id,
@@ -56,6 +56,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 this.on('viewDeactivate', this.viewDeactivated, this);
                 document.removeEventListener("backbutton", this.onBackButton, false);
                 document.removeEventListener("contextmenu", this.onBackButton, false);
+                window.clicked = 0;
             },
 
             events : {
@@ -148,7 +149,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                     if(App.ViewInstances.PhotoAssignmentView.thumb.attr('src') == '') {
                         App.dbClass.setPointsForScore(3);    
                         navigator.notification.alert(
-                            'Opdracht uitgevoerd!', 
+                            'Opdracht uitgevoerd!',
                             function(){}, 
                             'Je hebt 3 punten verdiend!', 
                             'Ok'
@@ -177,7 +178,14 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             //pop the last actice view from the stack array and show the previous one
 
             onBackButton : function(e) {
-                App.Helpers.renderMapView();
+                window.clicked++;
+
+                if(window.clicked == 1) {
+                    App.Helpers.renderMapView();  
+                    $('#scan').addClass('active-button');
+                    $('#scan').siblings().removeClass('active-button');
+                }
+                
             }
         });
 
