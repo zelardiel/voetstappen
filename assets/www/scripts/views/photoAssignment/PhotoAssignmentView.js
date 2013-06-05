@@ -86,17 +86,17 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 
                 var not_allowed = $('#photo-container').find("[data-footstepid='" + window.in_radius + "']");    
 
-                if(not_allowed.length != 0) {
+                // if(not_allowed.length == 0 /*&& $(e.currentTarget).data('')*/) {
 
-                    //alert('Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap');
-                     navigator.notification.alert(
-                        'Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap.',  // message
-                        function(){},         // callback
-                        'Let op!',            // title
-                        'Ok'                  // buttonName
-                    );
-                    return;
-                }
+                //     //alert('Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap');
+                //      navigator.notification.alert(
+                //         'Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap.',  // message
+                //         function(){},         // callback
+                //         'Let op!',            // title
+                //         'Ok'                  // buttonName
+                //     );
+                //     return;
+                // }
 
                 var destinationType = navigator.camera.DestinationType;
  
@@ -133,11 +133,14 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
             gotFileEntry: function(fileEntry) {
                 var settingObjectiveImageDone = function() {
-
+                    console.log("1 " + App.ViewInstances.PhotoAssignmentView.thumb.attr('src'));
                     App.ViewInstances.PhotoAssignmentView.thumb.attr('src', '');
+
+                    console.log("2 " +App.ViewInstances.PhotoAssignmentView.thumb.attr('src'));
 
                     App.ViewInstances.PhotoAssignmentView.thumb.attr('src', App.ViewInstances.PhotoAssignmentView.fullPath);
 
+                    console.log("3 " +App.ViewInstances.PhotoAssignmentView.thumb.attr('src'));
                     App.ViewInstances.PhotoAssignmentView.thumb.parent().attr('data-footstepid', window.in_radius);
 
                 };

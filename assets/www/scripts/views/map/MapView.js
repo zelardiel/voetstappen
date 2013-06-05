@@ -124,6 +124,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         App.Helpers.renderMapView();
 
                         $(this).addClass('active-button');
+                        //CHECK THIS LATER
                         $(this).siblings().removeClass('active-button');
                         
                     }
