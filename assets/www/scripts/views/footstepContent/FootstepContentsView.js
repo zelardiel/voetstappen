@@ -9,7 +9,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
 
             window.footstep_content = null;
             this.footstepContentModel = null;
-            window.clicked = 0;
+            
        
             App.Vent.on('readyToRenderSubiews:done', this.render, this);
 
@@ -23,6 +23,7 @@ define(['underscore', 'Backbone', 'views/footstepContent/FootstepContentView', '
         },
 
         viewIsActive: function() {
+          window.clicked = 0;
           window.footstep_content = null;
           this.footstepContentModel = null;
 

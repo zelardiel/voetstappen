@@ -17,6 +17,7 @@ define(['jquery', 'underscore', 'Backbone'],
             },
 
             viewIsActive: function() {
+                window.clicked = 0;
                 window.plugins.barcodeScanner.scan(this.scanningSuccess, this.scanningError);
             },
 

@@ -18,6 +18,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 window.been_in_circle = [];
                 window.clicked = 0;
 
+
                 //TEMPORARILY FOR TESTING. THIS SHOULD ONLY BE FILLED IF USER IS IN RANGE OF FOOTSTEP
                 // window.in_radius = 4;
 
@@ -29,8 +30,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 //legenda functionalities
                 this.handleLegenda();
-
-                this.setUserScore();
 
                 //score menu
                 this.handleScoreMenu();
@@ -69,6 +68,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 
                 document.addEventListener("backbutton", this.onBackButton, false);
                 $('#map').addClass('active-button');
+                window.centered_position = false;
+
                 /*******BECAUSE VIEW ONLY GETS INITIALIZED ONCE ADD CODE HERE ******/
                 //decide if map is loaded from a early instantion
                 if(this.map != null) {
@@ -100,10 +101,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 }
             },
 
-            setUserScore: function() {
-                App.Helpers.setUserScore();
-            },
-
             jqueryEvents: function(renderedBefore) {
                 var self = this;
 
@@ -128,7 +125,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                         $(this).addClass('active-button');
                         $(this).siblings().removeClass('active-button');
-                        window.clicked = 0;
+                        
                     }
 
 
@@ -151,6 +148,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 $('.hide').show();
 
                 $('.logout').on('click', function(){
+
                     window.clicked++;
 
                     if(window.clicked == 1) {
@@ -197,8 +195,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                         $(this).addClass('active-button');
                         $(this).siblings().removeClass('active-button');
-
-                        window.clicked = 0;
                     }
                    
                 });
@@ -507,6 +503,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 var lat = position.coords.latitude,
                     lng = position.coords.longitude;
 
+                if(window.centered_position == false) {
+                    App.ViewInstances.MapView.map.setCenter(new google.maps.LatLng(lat, lng));
+                    window.centered_position = true;  
+                }
+               
                 $.each(window.markers, function(index, val){
                     //if the id is 0 (the id of own position marker)
                     if(val.footstep_id === 0) {
@@ -526,7 +527,10 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                          if (bounds.contains(latlng)){
                             console.log('in bounds');
                             //Redirect
-                            if($.inArray(val.footstep_id, window.been_in_circle) == -1) {  
+                            console.log('INN ARRAY??? ' + $.inArray(val.footstep_id, window.been_in_circle));
+                            if($.inArray(val.footstep_id, window.been_in_circle) == -1) { 
+                                console.log('not in array of shit');
+                                // navigator.notification.activityStop(); 
                                 App.dbClass.linkUserToFootstep(val.footstep_id);
 
                                 window.in_radius = val.footstep_id;
@@ -556,28 +560,28 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             onErrorGetPosition: function(error) {
                console.log('code: ' + error.code + 'message: ' + error.message);
                
-               // navigator.notification.confirm(
-               //      'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
-               //      function(button) {
-               //          switch(button) {
-               //              case 1:
-               //                  App.ViewInstances.MapView.stopWatchingForLocation();
-               //                  break;
-               //              case 2:
-               //                  App.ViewInstances.MapView.stopWatchingForLocation();
-               //                  App.ViewInstances.MapView.getOwnPosition(10000);
-               //                  break;
-               //              case 3:
-               //                  navigator.app.exitApp();
-               //                  break;
+               navigator.notification.confirm(
+                    'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
+                    function(button) {
+                        switch(button) {
+                            case 1:
+                                App.ViewInstances.MapView.stopWatchingForLocation();
+                                break;
+                            case 2:
+                                App.ViewInstances.MapView.stopWatchingForLocation();
+                                App.ViewInstances.MapView.getOwnPosition(10000);
+                                break;
+                            case 3:
+                                navigator.app.exitApp();
+                                break;
 
-               //              default:
-               //                  App.ViewInstances.MapView.stopWatchingForLocation();
-               //          }
-               //      },
-               //      'Locatie niet Gevonden!',
-               //      'Annuleren, Probeer Opnieuw, Afsluiten en naar instellingen'
-               //  );
+                            default:
+                                App.ViewInstances.MapView.stopWatchingForLocation();
+                        }
+                    },
+                    'Locatie niet Gevonden!',
+                    'Annuleren, Probeer Opnieuw, Afsluiten en naar instellingen'
+                );
             },
 
             stopWatchingForLocation: function() {

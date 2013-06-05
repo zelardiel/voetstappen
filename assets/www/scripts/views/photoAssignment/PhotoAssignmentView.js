@@ -182,8 +182,8 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
                 if(window.clicked == 1) {
                     App.Helpers.renderMapView();  
-                    $('#scan').addClass('active-button');
-                    $('#scan').siblings().removeClass('active-button');
+                    $('#assignment').removeClass('active-button');
+                    $('#assignment').siblings().removeClass('active-button');
                 }
                 
             }

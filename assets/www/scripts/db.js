@@ -329,12 +329,13 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						$.each(results, function(index, val){
 					        if(typeof(val) === 'object') {
 					       		App.dbInstantion.transaction(function(tx){
-
 					         		tx.executeSql('INSERT OR REPLACE INTO scores(score_id, points, user_id, updated_at) VALUES(?, ?, ?, ?)', 
 					          			[val.score_id, val.points, val.user_id, val.updated_at],
 					          			self.syncQuerySuccess, self.errorCB
 					         		);
-					        	}, self.errorCB);
+					        	}, self.errorCB, function() {
+					        		App.Helpers.setUserScore();
+					        	});
 					        } 
       					});
 					},
@@ -342,7 +343,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 			syncQuerySuccess: function(tx, results) {
-		
+				
 			},
 
 			/***
@@ -456,12 +457,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						}, self.errorCB);
 				
 				}, self.errorCB, function() {
-					if( App.ViewInstances.FootstepContentsViewFromScanner == null ) {
-			    		App.ViewInstances.FootstepContentsViewFromScanner = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
-			    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewFromScanner);		
+					if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
+			    		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
+			    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
 			    	} else {
-			    		App.ViewInstances.FootstepContentsViewFromScanner.options.start_content_id = footstep_contents_id;
-			    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewFromScanner);
+			    		App.ViewInstances.FootstepContentsViewViewFromMap.options.start_content_id = footstep_contents_id;
+			    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
 			    	}
 
 					return;
@@ -536,39 +537,37 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					tx.executeSql('SELECT * FROM footsteps_users WHERE footstep_id = ? AND user_id = ?', [footstep_id, App.userModel.get('user_id')],
 						function(tx, results){
 							if(results.rows.length == 0){
+
 								tx.executeSql('INSERT INTO footsteps_users(footstep_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_id, App.userModel.get('user_id')] );
 								App.dbClass.setPointsForScore(3);
-							}
+									var linkedUserToFirstContent = function() {
+
+										navigator.notification.confirm(
+										'Je hebt het eerste stukje informatie vrij gespeeld van de voetstap in de buurt!',
+										function(button){
+											if(button === 2) {
+												$('#map').removeClass('active-button');
+												if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
+										    		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_id, location: 1, start_content_id: null});
+										    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
+										    	} else {
+										    		App.ViewInstances.FootstepContentsViewViewFromMap.options.location = 1;
+										    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
+										    	}
+											} else {
+												
+											}
+										}, 
+										'Voetstap gevonden!', 
+										'Op de kaart blijven, Naar de voetstappagina' 
+										);
+									};
+
+									App.dbClass.linkUserToFirstContent(linkedUserToFirstContent, footstep_id);			
+								}
 						}, self.errorCB);
 				
-				}, self.errorCB, function() {
-					var linkedUserToFirstContent = function() {
-
-						// navigator.notification.confirm(
-						// 'Je hebt het eerste stukje informatie vrij gespeeld van de voetstap in de buurt!',
-						// function(button){
-						// 	if(button === 2) {
-								//$('#map').removeClass('active-button');
-						// 		if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
-						//     		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_id, location: 1, start_content_id: null});
-						//     		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
-						//     	} else {
-						//     		App.ViewInstances.FootstepContentsViewViewFromMap.options.location = 1;
-						//     		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
-						//     	}
-						// 	} else {
-								
-						// 	}
-						// }, 
-						// 'Voetstap gevonden!', 
-						// 'Op de kaart blijven, Naar de voetstappagina' 
-						// );
-					};
-
-					App.dbClass.linkUserToFirstContent(linkedUserToFirstContent, footstep_id);			
-
-					return;
-				});	
+				}, self.errorCB);	
 			},
 
 			checkIfFootstepIsLinkedToUser: function(callback, footstep_id) {
