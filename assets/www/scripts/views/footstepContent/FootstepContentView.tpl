@@ -14,13 +14,11 @@
 			<p>Dit stukje informatie is nog vergrendeld. Zoek in de buurt van de huidige voetstap naar QR-codes</p>
 
 		{{/if}}		
-<!-- 			<span id="prev-arr">
-		
-	</span>
+ 		<b id="prev-arr">
+		</b>
 
-	<span id="next-arr">
-		
-	</span> -->
+		<b id="next-arr">
+		</b>
 	</article>
 </section>
 
