@@ -14,11 +14,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 				if(window.localStorage.getItem('dbExists') == null) {
 					App.dbInstantion.transaction(this.populateDB, db.errorCB, function(result){ self.initUserChecking(); window.localStorage.setItem('dbExists', 1) });
-				} else { 
+				} else {
 					console.log('Not creating');
 					self.initUserChecking();
 				}
-				
+
 			},
 
 			populateDB : function(tx) {
@@ -93,7 +93,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    /***
 			* USER DB FUNCTIONS
 			***/
-	   
+
 			//creating user
 			initLocalUserCreating: function() {
 				// make use of the global databaseinstation
@@ -111,7 +111,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    },
 
 		    initUserChecking: function() {
-		    	console.log('init user checking');	
+		    	console.log('init user checking');
 		    	App.dbInstantion.transaction(this.checkForActiveUser, this.errorCB);
 		    },
 
@@ -128,25 +128,23 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 	               	if( App.ViewInstances.MapView == null ) {
 	               		App.ViewInstances.MapView = new MapView({ collection: new MarkerCollection });
-	               		App.Helpers.processView(App.ViewInstances.MapView);	
-	               	} else { 
+	               		App.Helpers.processView(App.ViewInstances.MapView);
+	               	} else {
 	               		App.StackNavigator.replaceView(App.ViewInstances.MapView);
 	               	}
 
 	                db.initSynchronizing();
-	               
-	            //else, the app 
+
+	            //else, the app
 			    } else {
 			    	console.log('No local user found');
 			    	//set timeout because splashscreen will be too short otherwise
 			    	if( App.ViewInstances.LoginView == null ) {
-			    		App.ViewInstances.LoginView = new LoginView;	
-			    		App.Helpers.processView(App.ViewInstances.LoginView);	
+			    		App.ViewInstances.LoginView = new LoginView;
+			    		App.Helpers.processView(App.ViewInstances.LoginView);
 			    	} else {
 			    		App.StackNavigator.replaceView(App.ViewInstances.LoginView);
 			    	}
-
-	               
 			    }
 		    },
 
@@ -154,7 +152,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    initLogoutUser: function() {
 		    	window.circles = [];
                 window.footsteps = [];
-		    	App.dbInstantion.transaction(this.logoutUser, this.errorCB);	
+		    	App.dbInstantion.transaction(this.logoutUser, this.errorCB);
 		    },
 
 		    logoutUser: function(tx) {
@@ -167,11 +165,11 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 		    	if( App.ViewInstances.LoginView == null ) {
 		    		App.ViewInstances.LoginView = new LoginView;
 
-		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);	
-		    	} else {	
+		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);
+		    	} else {
 		    		App.StackNavigator.replaceAll(App.ViewInstances.LoginView);
 		    	}
-		    	
+
 		    },
 
 		    /***
@@ -198,17 +196,17 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 					App.dbInstantion.transaction(function(tx){
 						tx.executeSql('SELECT updated_at FROM synchronized WHERE id = 1', [] );
-					}, self.errorCB, function(tx, results) { 
+					}, self.errorCB, function(tx, results) {
 						if(typeof(results) == 'undefined') {
 							self.timestamp = 0;
 							deferred.resolve();
 						}
-					});	
+					});
 
 					//im done, after this the .done gets triggered
 					return deferred.promise();
 				};
-				
+
 				//sync each table with remote database
 				check_update_time().done(function(){
 					self.syncFootsteps();
@@ -217,24 +215,24 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					self.syncScores();
 
 					//set 4 empty objectives
-					App.dbInstantion.transaction(self.setObjectives, self.errorCB, 
-						function(tx, results) { 
+					App.dbInstantion.transaction(self.setObjectives, self.errorCB,
+						function(tx, results) {
 							console.log('UPDATed objectives TIME');
-					});	
+					});
 
 					self.timestamp = self.getTimeStamp();
 
-					//set new global last-updated time in the local database 
+					//set new global last-updated time in the local database
 					// TODO PREVENT SETTING NEW UPDATE TIME AT
 					App.dbInstantion.transaction(function(tx){
 						tx.executeSql('INSERT OR REPLACE INTO synchronized(id, updated_at) VALUES(1, ?)', [self.timestamp] );
-					}, self.errorCB, function(tx, results) { 
+					}, self.errorCB, function(tx, results) {
 						console.log('UPDATED UPDATE TIME');
-					});	
+					});
 				});
 			},
 
-			
+
 
 			syncFootsteps: function() {
 				var self = this;
@@ -247,12 +245,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						$.each(results, function(index, val){
 							if(typeof(val) === 'object') {
 								App.dbInstantion.transaction(function(tx){
-									tx.executeSql('INSERT OR REPLACE INTO footsteps(footstep_id, title, image_id, latitude, longitude, updated_at) VALUES(?, ?, ?, ?, ?, ?)', 
+									tx.executeSql('INSERT OR REPLACE INTO footsteps(footstep_id, title, image_id, latitude, longitude, updated_at) VALUES(?, ?, ?, ?, ?, ?)',
 										[val.footstep_id, val.title, val.image_id, val.latitude, val.longitude, val.updated_at],
 										self.syncQuerySuccess, self.errorCB
 									);
 								});
-							} 
+							}
 						});
 					},
 				});
@@ -268,12 +266,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						$.each(results, function(index, val){
 							if(typeof(val) === 'object') {
 								App.dbInstantion.transaction(function(tx){
-									tx.executeSql('INSERT OR REPLACE INTO footstep_contents(footstep_content_id, image_id, footstep_id, content, location_id, updated_at) VALUES(?, ?, ?, ?, ?, ?)', 
+									tx.executeSql('INSERT OR REPLACE INTO footstep_contents(footstep_content_id, image_id, footstep_id, content, location_id, updated_at) VALUES(?, ?, ?, ?, ?, ?)',
 										[val.footstep_content_id, val.image_id, val.footstep_id, val.content, val.location_id, val.updated_at],
 										self.syncQuerySuccess, self.errorCB
 									);
 								}, self.errorCB);
-							} 
+							}
 						});
 					},
 				});
@@ -290,12 +288,12 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						$.each(results, function(index, val){
 							if(typeof(val) === 'object') {
 								App.dbInstantion.transaction(function(tx){
-									tx.executeSql('INSERT OR REPLACE INTO locations(location_id, footstep_id, type, location, other_id, updated_at) VALUES(?, ?, ?, ?, ?, ?)', 
+									tx.executeSql('INSERT OR REPLACE INTO locations(location_id, footstep_id, type, location, other_id, updated_at) VALUES(?, ?, ?, ?, ?, ?)',
 										[val.location_id, val.footstep_id, val.type, val.location, val.other_id, val.updated_at],
 										self.syncQuerySuccess, self.errorCB
 									);
 								}, self.errorCB );
-							} 
+							}
 						});
 					},
 				});
@@ -329,21 +327,21 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 						$.each(results, function(index, val){
 					        if(typeof(val) === 'object') {
 					       		App.dbInstantion.transaction(function(tx){
-					         		tx.executeSql('INSERT OR REPLACE INTO scores(score_id, points, user_id, updated_at) VALUES(?, ?, ?, ?)', 
+					         		tx.executeSql('INSERT OR REPLACE INTO scores(score_id, points, user_id, updated_at) VALUES(?, ?, ?, ?)',
 					          			[val.score_id, val.points, val.user_id, val.updated_at],
 					          			self.syncQuerySuccess, self.errorCB
 					         		);
 					        	}, self.errorCB, function() {
 					        		App.Helpers.setUserScore();
 					        	});
-					        } 
+					        }
       					});
 					},
 				});
 			},
 
 			syncQuerySuccess: function(tx, results) {
-				
+
 			},
 
 			/***
@@ -455,18 +453,18 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 								);
 							}
 						}, self.errorCB);
-				
+
 				}, self.errorCB, function() {
 					if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
 			    		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: null, start_content_id: footstep_contents_id });
-			    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
+			    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);
 			    	} else {
 			    		App.ViewInstances.FootstepContentsViewViewFromMap.options.start_content_id = footstep_contents_id;
 			    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
 			    	}
 
 					return;
-				});	
+				});
 			},
 
 			checkIfContentIsLinkedToUser: function(callback, user_id, footstep_content_id) {
@@ -537,7 +535,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 					tx.executeSql('SELECT * FROM footsteps_users WHERE footstep_id = ? AND user_id = ?', [footstep_id, App.userModel.get('user_id')],
 						function(tx, results){
 							if(results.rows.length == 0){
-
 								tx.executeSql('INSERT INTO footsteps_users(footstep_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_id, App.userModel.get('user_id')] );
 								App.dbClass.setPointsForScore(3);
 									var linkedUserToFirstContent = function() {
@@ -549,25 +546,25 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 												$('#map').removeClass('active-button');
 												if( App.ViewInstances.FootstepContentsViewViewFromMap == null ) {
 										    		App.ViewInstances.FootstepContentsViewViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_id, location: 1, start_content_id: null});
-										    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);		
+										    		App.Helpers.processView(App.ViewInstances.FootstepContentsViewViewFromMap);
 										    	} else {
 										    		App.ViewInstances.FootstepContentsViewViewFromMap.options.location = 1;
 										    		App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewViewFromMap);
 										    	}
 											} else {
-												
+
 											}
-										}, 
-										'Voetstap gevonden!', 
-										'Op de kaart blijven, Naar de voetstappagina' 
+										},
+										'Voetstap gevonden!',
+										'Op de kaart blijven, Naar de voetstappagina'
 										);
 									};
 
-									App.dbClass.linkUserToFirstContent(linkedUserToFirstContent, footstep_id);			
+									App.dbClass.linkUserToFirstContent(linkedUserToFirstContent, footstep_id);
 								}
 						}, self.errorCB);
-				
-				}, self.errorCB);	
+
+				}, self.errorCB);
 			},
 
 			checkIfFootstepIsLinkedToUser: function(callback, footstep_id) {

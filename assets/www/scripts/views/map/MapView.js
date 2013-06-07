@@ -35,9 +35,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.handleScoreMenu();
 
                 App.Vent.on('retrievingFootsteps:done', this.afterSettingFootsteps, this);
-                
+
                 //listen for if a model is added to the markercollection do this..
-                this.collection.bind('add', this.initAddMarker, this);  
+                this.collection.bind('add', this.initAddMarker, this);
                 this.collection.bind('add', this.addMarkerRadius, this);
 
                 //if view is active start adding map
@@ -59,22 +59,25 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.collection.reset();
 
                 //stop potentially running notifications
-                // navigator.notification.activityStop(); 
+                // navigator.notification.activityStop();
 
             },
 
 
             viewIsActive: function() {
-                
+
                 document.addEventListener("backbutton", this.onBackButton, false);
                 $('#map').addClass('active-button');
+                $('#map').siblings().removeClass('active-button');
                 window.centered_position = false;
 
                 /*******BECAUSE VIEW ONLY GETS INITIALIZED ONCE ADD CODE HERE ******/
                 //decide if map is loaded from a early instantion
                 if(this.map != null) {
-                    //fix for gray area 
+                    //fix for gray area
                     google.maps.event.trigger(this.map, 'resize');
+                    window.clicked = 0;
+                    console.log(window.clicked + 'WINDOW CLICKED');
 
                     console.log('Existing map, get new footsteps');
 
@@ -87,7 +90,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     this.watchID = 0;
 
                     //AFTER GETTING DATABASE MARKERS GET OWN MARKER
-                    this.getOwnPosition(10000); 
+                    this.getOwnPosition(10000);
 
                     //call jquery events
                     this.jqueryEvents(true);
@@ -96,7 +99,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     this.initGetDatabaseFootsteps();
                 } else {
                     console.log('New Fresh map');
-                    
+
                     this.appendMap();
                 }
             },
@@ -108,7 +111,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 if(renderedBefore === true) {
                     $('.button-container').show();
                     $('.showMenu').show();
-                    $('.logout').show(); 
+                    $('.logout').show();
                     $('.hide').show();
 
                     return;
@@ -116,17 +119,22 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
 
                 $('#map').on('click', function(){
-                    window.clicked++;
 
                     if(App.StackNavigator.activeView.id === 'MapView') {
                         return;
-                    } else if(window.clicked == 1) {
+                    } else{
+                        window.clicked++;
+                    }
+
+                    if(window.clicked == 1) {
+                        console.log('WINDOW PLUS PLUS');
+
                         App.Helpers.renderMapView();
 
                         $(this).addClass('active-button');
                         //CHECK THIS LATER
                         $(this).siblings().removeClass('active-button');
-                        
+
                     }
 
 
@@ -149,7 +157,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 $('.hide').show();
 
                 $('.logout').on('click', function(){
-
+                    console.log('WINDOW PLUS PLUS');
                     window.clicked++;
 
                     if(window.clicked == 1) {
@@ -168,28 +176,27 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         return;
                     } else if(window.clicked == 1) {
                         if(App.ViewInstances.PhotoAssignmentView == null ) {
-                            App.ViewInstances.PhotoAssignmentView = new PhotoAssignmentView; 
-                            App.Helpers.processView(App.ViewInstances.PhotoAssignmentView);       
+                            App.ViewInstances.PhotoAssignmentView = new PhotoAssignmentView;
+                            App.Helpers.processView(App.ViewInstances.PhotoAssignmentView);
                         } else {
                             App.StackNavigator.replaceView(App.ViewInstances.PhotoAssignmentView);
                         }
 
                         $(this).addClass('active-button');
                         $(this).siblings().removeClass('active-button');
-
-                        window.clicked = 0;
                     }
                 });
-
 
                 $("#scan").on('click', function() {
                     //TODO ADD LOADER TO PREVENT MULTIUPLE CLICKS!!
                     window.clicked++;
 
+                    console.log('WINDOW PLUS PLUS');
+
                     if(window.clicked == 1) {
                         if(App.ViewInstances.ScannerView == null ) {
-                            App.ViewInstances.ScannerView = new ScannerView; 
-                            App.Helpers.processView(App.ViewInstances.ScannerView);       
+                            App.ViewInstances.ScannerView = new ScannerView;
+                            App.Helpers.processView(App.ViewInstances.ScannerView);
                         } else {
                             App.StackNavigator.replaceView(App.ViewInstances.ScannerView);
                         }
@@ -197,7 +204,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         $(this).addClass('active-button');
                         $(this).siblings().removeClass('active-button');
                     }
-                   
+
                 });
             },
 
@@ -209,7 +216,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
 
                 var menuStatus;
-             
+
                 $("a.showMenu").click(function(){
                     if(menuStatus != true){
                         $(".slide").animate({
@@ -221,12 +228,12 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         $(".slide").animate({
                             marginLeft: "0px",
                         }, 100, function(){menuStatus = false});
-                        
+
                         return false;
                     }
                 });
 
-             
+
                 $("#menu li a").click(function(){
                     var p = $(this).parent();
                     if($(p).hasClass('active')){
@@ -242,11 +249,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 $('.legenda, .hide').hammer({prevent_default:true}).on("tap", function(ev) {
                     if($('.up').length == 0) {
                        $('.legenda').addClass("legenda-animation");
-                       $('.hide').addClass('up');  
+                       $('.hide').addClass('up');
                     } else {
                         $(".legenda").removeClass("legenda-animation");
                         $('.hide').removeClass("up");
-                    } 
+                    }
                 });
 
                 $('.legenda, .hide').hammer({prevent_default:true}).bind("dragup", function(ev) {
@@ -283,7 +290,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     navigationControl: false,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
-                
+
                 if(window.markers.length == 0) {
 
                     // this.map = new google.maps.Map(document.getElementById("map"), this.mapOptions);
@@ -332,9 +339,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     //after map is loaded start loading markers from database
                     google.maps.event.addListenerOnce(this.map, 'idle', function(){
                         self.initGetDatabaseFootsteps();
-                        self.getOwnPosition(10000); 
+                        self.getOwnPosition(10000);
                     });
-                 
+
                 }
             },
 
@@ -343,7 +350,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 var self = this;
 
                 //call function out of the db.js object
-                App.dbClass.retrieveLocalFootsteps(self.setFootsteps);   
+                App.dbClass.retrieveLocalFootsteps(self.setFootsteps);
             },
 
             //this is the callback of the retrieveLocalFootsteps function
@@ -372,7 +379,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             //can set markers with the model it's attributes
             fillModelsWithMarkers: function() {
                 var self = this;
-              
+
                 $.each(self.footsteps, function(index, val){
                     //instantiate model which is gonna be pushed into the collection
                     var modelMarker = new MarkerModel();
@@ -404,7 +411,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     }
 
                      self.placeMarkerOnMap(model, footstep_image);
-                };  
+                };
 
                 if(model.get('footstep_id') == 0 ) {
                     var footstep_image = './img/eigenlocatie.png';
@@ -414,8 +421,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     return;
                 } else {
                     App.dbClass.getAmountOfScannedEachFootstep(ifDone, model.get('footstep_id'));
-                    
-                }       
+
+                }
             },
 
             placeMarkerOnMap: function(model, footstep_image) {
@@ -425,8 +432,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 // Drop Voetstap1 marker with image from image variable
                 var footstep_marker = new google.maps.Marker({
                     footstep_id: model.get('footstep_id'),
-                    position: latlng, 
-                    map: self.map, 
+                    position: latlng,
+                    map: self.map,
                     title: model.get('title'),
                     icon: footstep_image
                 });
@@ -434,11 +441,11 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 google.maps.event.addListener(footstep_marker, 'click', function() {
                     $('#map').removeClass('active-button');
-                    if(footstep_marker.footstep_id != 0 ) { 
-                        
+                    if(footstep_marker.footstep_id != 0 ) {
+
                         if( App.ViewInstances.FootstepContentsViewFromMap == null ) {
                             App.ViewInstances.FootstepContentsViewFromMap = new FootstepContentsView({collection: new FootstepContentCollection, footstep_id: footstep_marker.footstep_id, location: 1, start_content_id: null });
-                            App.Helpers.processView(App.ViewInstances.FootstepContentsViewFromMap);       
+                            App.Helpers.processView(App.ViewInstances.FootstepContentsViewFromMap);
                         } else {
                             App.StackNavigator.replaceView(App.ViewInstances.FootstepContentsViewFromMap);
                         }
@@ -456,7 +463,8 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 window.markers.push(footstep_marker);
 
-                // navigator.notification.activityStop(); 
+                alert(window.markers.length + " after adding markers");
+                // navigator.notification.activityStop();
 
             },
 
@@ -495,7 +503,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             getOwnPosition: function(timeoutInSeconds) {
                 console.log('TRYING TO GET POSITION');
                 //magic context swap trick
-                var options = { timeout: timeoutInSeconds, enableHighAccuracy: true  };
+                var options = { maximumAge: 3000, timeout: timeoutInSeconds, enableHighAccuracy: true  };
                 this.watchID = navigator.geolocation.watchPosition(this.onSuccesGetOwnPosition, this.onErrorGetPosition, options);
             },
 
@@ -504,19 +512,24 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 var lat = position.coords.latitude,
                     lng = position.coords.longitude;
 
+                
                 if(window.centered_position == false) {
                     App.ViewInstances.MapView.map.setCenter(new google.maps.LatLng(lat, lng));
-                    window.centered_position = true;  
+                    window.centered_position = true;
                 }
-               
-                $.each(window.markers, function(index, val){
+
+                $.grep(window.markers, function(index, val){
                     //if the id is 0 (the id of own position marker)
-                    if(val.footstep_id === 0) {
+                    if(val.footstep_id == 0) {
                         //delete it so it wont duplicate
                         val.setMap(null);
-                        delete val;
+                        return false;
+                    } else {
+                        return true;
                     }
                 });
+
+                alert(window.markers.length + " FROM SUCCESS");
 
                 //check if current position is in range of footstep, defined here because of fucking context issues-.-
                 if(window.circles != '[]') {
@@ -529,9 +542,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                             console.log('in bounds');
                             //Redirect
                             console.log('INN ARRAY??? ' + $.inArray(val.footstep_id, window.been_in_circle));
-                            if($.inArray(val.footstep_id, window.been_in_circle) == -1) { 
+                            if($.inArray(val.footstep_id, window.been_in_circle) == -1) {
                                 console.log('not in array of shit');
-                                // navigator.notification.activityStop(); 
+                                // navigator.notification.activityStop();
                                 App.dbClass.linkUserToFootstep(val.footstep_id);
 
                                 window.in_radius = val.footstep_id;
@@ -541,7 +554,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         }
                     });
                 }
-               
+
                 //create model with our own location..
                 var modelMarker = new MarkerModel();
 
@@ -560,7 +573,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             onErrorGetPosition: function(error) {
                console.log('code: ' + error.code + 'message: ' + error.message);
-               
+
                navigator.notification.confirm(
                     'Je locatie is niet gevonden. Zet je GPS aan of probeer opnieuw.',
                     function(button) {
@@ -589,7 +602,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 navigator.geolocation.clearWatch(this.watchID);
 
                 this.watchID == null;
-    
+
             },
 
             onBackButton: function() {
@@ -613,18 +626,18 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             },
 
             logout: function() {
-                // navigator.notification.activityStop(); 
+                // navigator.notification.activityStop();
                 //stop watching for position
                 window.clicked++;
 
                 if(window.clicked == 1) {
-                    App.dbClass.initLogoutUser(); 
+                    App.dbClass.initLogoutUser();
                     window.clicked = 0;
-                }  
+                }
             },
 
         });
-        
-        
+
+
         return MapView;
     });

@@ -13,8 +13,9 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
 
             viewIsActive: function() {
+                window.clicked = 0;
                 document.addEventListener("backbutton", this.onBackButton, false);
-                // document.addEventListener('contextmenu', this.onBackButton, false); 
+                document.addEventListener('contextmenu', this.onBackButton, false);
                 var gotObjectives = function(tx, results) {
                     for (var i = 0; i < results.rows.length; i++) {
                         var objective_id = results.rows.item(i).objective_id,
@@ -56,6 +57,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 this.on('viewDeactivate', this.viewDeactivated, this);
                 document.removeEventListener("backbutton", this.onBackButton, false);
                 document.removeEventListener("contextmenu", this.onBackButton, false);
+
                 window.clicked = 0;
             },
 
@@ -83,13 +85,13 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                     return;
                 }
                 this.objectiveid = $(e.currentTarget).data('objectiveid');
-                
-                var not_allowed = $('#photo-container').find("[data-footstepid='" + window.in_radius + "']");    
+
+                var not_allowed = $('#photo-container').find("[data-footstepid='" + window.in_radius + "']");
 
                 if(not_allowed.length == 0) {
 
                 }else if(not_allowed.length == 1 && $(e.currentTarget).attr('data-footstepid') == window.in_radius){
-                    
+
                 }else{
                      //alert('Er is al een opdracht uitgevoerd voor de in huidig aanwezige radius van de voetstap');
                      navigator.notification.alert(
@@ -102,8 +104,8 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 }
 
                 var destinationType = navigator.camera.DestinationType;
- 
-                navigator.camera.getPicture(this.onPhotoDataSuccess, this.onFailTakingPicture, 
+
+                navigator.camera.getPicture(this.onPhotoDataSuccess, this.onFailTakingPicture,
                     {
                         quality: 80,
                         destinationType: destinationType.FILE_URI,
@@ -126,7 +128,7 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             },
 
             gotFileSystem: function(fileSystem) {
-                fileSystem.root.getDirectory("voetstappen_opdrachten", {create: true, exclusive: false}, App.ViewInstances.PhotoAssignmentView.gotDirEntry, App.ViewInstances.PhotoAssignmentView.failFileSystem) 
+                fileSystem.root.getDirectory("voetstappen_opdrachten", {create: true, exclusive: false}, App.ViewInstances.PhotoAssignmentView.gotDirEntry, App.ViewInstances.PhotoAssignmentView.failFileSystem)
             },
 
             gotDirEntry: function (dirEntry) {
@@ -150,17 +152,17 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
 
                     App.dbClass.setObjectivePathAndFootstep(settingObjectiveImageDone, App.ViewInstances.PhotoAssignmentView.objectiveid, App.ViewInstances.PhotoAssignmentView.fullPath, window.in_radius);
                     if(App.ViewInstances.PhotoAssignmentView.thumb.attr('src') == '') {
-                        App.dbClass.setPointsForScore(3);    
+                        App.dbClass.setPointsForScore(3);
                         navigator.notification.alert(
                             'Opdracht uitgevoerd!',
-                            function(){}, 
-                            'Je hebt 3 punten verdiend!', 
+                            function(){},
+                            'Je hebt 3 punten verdiend!',
                             'Ok'
                         );
                     }
-                    
+
                 }, function(err){ console.log(err);});
-                
+
             },
 
             failFileSystem: function(error) {
@@ -170,9 +172,9 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
             onFailTakingPicture : function(message) {
                 alert('Failed because: ' + message);
                  navigator.notification.alert(
-                            'Mislukt door: ' + message, 
-                            function(){}, 
-                            'Mislukt!', 
+                            'Mislukt door: ' + message,
+                            function(){},
+                            'Mislukt!',
                             'Ok'
                 );
 
@@ -184,11 +186,10 @@ define(['underscore', 'Backbone', 'text!views/photoAssignment/PhotoAssignmentVie
                 window.clicked++;
 
                 if(window.clicked == 1) {
-                    App.Helpers.renderMapView();  
-                    $('#assignment').removeClass('active-button');
-                    $('#assignment').siblings().removeClass('active-button');
+                    App.Helpers.renderMapView();
+                    console.log('removing class');
                 }
-                
+
             }
         });
 

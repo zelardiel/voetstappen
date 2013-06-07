@@ -12,7 +12,6 @@ define(['jquery', 'underscore', 'Backbone'],
 
             viewDeactivated: function() {
                 $('#scan').removeClass('active-button');
-                $('#scan').siblings().removeClass('active-button');
                 window.clicked = 0;
             },
 
@@ -28,7 +27,7 @@ define(['jquery', 'underscore', 'Backbone'],
 
             scanningSuccess: function(result) {
                 if (result.cancelled) {
-                    App.Helpers.renderMapView(); 
+                    App.Helpers.renderMapView();
                 } else {
                     App.dbClass.linkUserToContent(result.text);
                 }
