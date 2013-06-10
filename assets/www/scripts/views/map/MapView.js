@@ -10,7 +10,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
             destructionPolicy: 'never',
 
             initialize: function() {
-                // navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
+                navigator.notification.activityStart("Map laden", "De map en voetstappen worden geladen");
 
                 //set markers to the window because of context issues
                 window.markers = [];
@@ -59,7 +59,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 this.collection.reset();
 
                 //stop potentially running notifications
-                // navigator.notification.activityStop();
+                 navigator.notification.activityStop();
 
             },
 
@@ -463,8 +463,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 window.markers.push(footstep_marker);
 
-                alert(window.markers.length + " after adding markers");
-                // navigator.notification.activityStop();
+                navigator.notification.activityStop();
 
             },
 
@@ -544,7 +543,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                             console.log('INN ARRAY??? ' + $.inArray(val.footstep_id, window.been_in_circle));
                             if($.inArray(val.footstep_id, window.been_in_circle) == -1) {
                                 console.log('not in array of shit');
-                                // navigator.notification.activityStop();
+                                navigator.notification.activityStop();
                                 App.dbClass.linkUserToFootstep(val.footstep_id);
 
                                 window.in_radius = val.footstep_id;
@@ -609,24 +608,24 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 window.clicked++;
 
                 if(window.clicked == 1) {
-                // navigator.notification.confirm(
-                //     'Voetstappen uit de Gouden Eeuw verlaten?',
-                //     function(button) {
-                //          console.log(button);
-                //         if(button === 2) {
-                                //App.dbClass.initLogoutUser();
-                //              navigator.app.exitApp();
-                //         }
-                //     },
-                //     'Afsluiten?',
-                //     'Nee!, Ja'
-                // );
+                navigator.notification.confirm(
+                  'Voetstappen uit de Gouden Eeuw verlaten?',
+                   function(button) {
+                     console.log(button);
+                     if(button === 2) {
+                       App.dbClass.initLogoutUser();
+                       navigator.app.exitApp();
+                     }
+                   },
+                'Afsluiten?',
+                'Nee!, Ja'
+                );
                     window.clicked = 0;
                 }
             },
 
             logout: function() {
-                // navigator.notification.activityStop();
+                navigator.notification.activityStop();
                 //stop watching for position
                 window.clicked++;
 
