@@ -437,6 +437,8 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 			linkUserToContent: function(footstep_contents_id) {
+
+				navigator.notification.activityStop();
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footstep_contents_users WHERE footstep_content_id = ? AND user_id = ?', [footstep_contents_id, App.userModel.get('user_id')],
@@ -530,6 +532,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 			},
 
 			linkUserToFootstep: function(footstep_id) {
+				navigator.notification.activityStop();
 				var self = this;
 				App.dbInstantion.transaction(function(tx){
 					tx.executeSql('SELECT * FROM footsteps_users WHERE footstep_id = ? AND user_id = ?', [footstep_id, App.userModel.get('user_id')],
@@ -537,6 +540,14 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 							if(results.rows.length == 0){
 								tx.executeSql('INSERT INTO footsteps_users(footstep_id, user_id, updated_at) VALUES(?, ?, 0)', [footstep_id, App.userModel.get('user_id')] );
 								App.dbClass.setPointsForScore(3);
+
+								navigator.notification.alert(
+								    'Je hebt 3 punten verdiend!',  // message
+								    function(){},         // callback
+								    'Voetstap ontdekt!',            // title
+								    'Top!'                  // buttonName
+									);
+
 									var linkedUserToFirstContent = function() {
 
 										navigator.notification.confirm(

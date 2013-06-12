@@ -7,6 +7,17 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
             },
 
+
+            // app start
+            // proces a locatie verkrijgen start
+            // marker wordt geplaatst
+
+            //content wordt geopend dus weg van map
+
+            // terug naar map
+            // proces b wordt gestart
+            // marker van proces a blijft nog staan
+
             destructionPolicy: 'never',
 
             initialize: function() {
@@ -50,6 +61,18 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 window.footstep_content = null;
 
+                console.log('START VOOR VERWIJDER');
+                console.log(window.markers.length);
+                    $.each(window.markers, function(index, val){
+                        if(val.footstep_id == 0) {
+                            console.log('HALLO VERWIJDERD!~!!!!+++++');
+                            val.setMap(null);
+                        }
+                    });
+                console.log(window.markers.length);
+                console.log('BA VERWUHDER');
+
+
                 window.markers = [];
                 window.circles = [];
                 window.been_in_circle = [];
@@ -80,8 +103,9 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     console.log(window.clicked + 'WINDOW CLICKED');
 
                     console.log('Existing map, get new footsteps');
-
                     window.markers = [];
+
+                  
                     window.circles = [];
                     window.been_in_circle = [];
 
@@ -527,7 +551,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         val.setMap(null);
 
                         delete val;
-                        // alert('setting null');
                         return false;
                     } else {
                         return true;
@@ -599,7 +622,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                         }
                     },
                     'Locatie niet Gevonden!',
-                    'Annuleren, Probeer Opnieuw, Afsluiten en naar instellingen'
+                    'Annuleren, Probeer Opnieuw, App Afsluiten'
                 );
             },
 
