@@ -572,7 +572,6 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                             console.log('INN ARRAY??? ' + $.inArray(val.footstep_id, window.been_in_circle));
                             if($.inArray(val.footstep_id, window.been_in_circle) == -1) {
                                 console.log('not in array of shit');
-                                navigator.notification.activityStop();
                                 App.dbClass.linkUserToFootstep(val.footstep_id);
 
                                 window.in_radius = val.footstep_id;
