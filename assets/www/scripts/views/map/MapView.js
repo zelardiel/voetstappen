@@ -433,6 +433,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                 var footstep_marker = new google.maps.Marker({
                     footstep_id: model.get('footstep_id'),
                     position: latlng,
+                    optimized: false, 
                     map: self.map,
                     title: model.get('title'),
                     icon: footstep_image
@@ -513,22 +514,27 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
 
                 
                 if(window.centered_position == false) {
+                    navigator.notification.activityStop();
                     App.ViewInstances.MapView.map.setCenter(new google.maps.LatLng(lat, lng));
                     window.centered_position = true;
                 }
 
-                $.grep(window.markers, function(index, val){
+                $.grep(window.markers, function(val, index){
                     //if the id is 0 (the id of own position marker)
-                    if(val.footstep_id == 0) {
+                    console.log(val.footstep_id);
+                    if(val.footstep_id == '0' || val.footstep_id == 0) {
                         //delete it so it wont duplicate
                         val.setMap(null);
+
+                        delete val;
+                        // alert('setting null');
                         return false;
                     } else {
                         return true;
                     }
                 });
 
-                alert(window.markers.length + " FROM SUCCESS");
+                console.log(window.markers.length + " FROM SUCCESS");
 
                 //check if current position is in range of footstep, defined here because of fucking context issues-.-
                 if(window.circles != '[]') {
@@ -536,7 +542,7 @@ define(['underscore', 'Backbone', 'text!views/map/MapView.tpl', 'models/MarkerMo
                     $.each(window.circles, function(index, val){
                         //val is circle
                         var bounds = val.getBounds();
-                        console.log(window.been_in_circle);
+
                          if (bounds.contains(latlng)){
                             console.log('in bounds');
                             //Redirect
