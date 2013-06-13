@@ -209,6 +209,7 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 
 				//sync each table with remote database
 				check_update_time().done(function(){
+					self.timestamp = self.getTimeStamp();
 					self.syncFootsteps();
 					self.syncFootstepContents();
 					self.syncLocations();
@@ -220,7 +221,6 @@ define(['views/login/LoginView', 'views/map/MapView', 'collections/MarkerCollect
 							console.log('UPDATed objectives TIME');
 					});
 
-					self.timestamp = self.getTimeStamp();
 
 					//set new global last-updated time in the local database
 					// TODO PREVENT SETTING NEW UPDATE TIME AT
