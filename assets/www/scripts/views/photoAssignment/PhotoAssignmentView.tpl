@@ -1,16 +1,20 @@
 <section>
 	<article id="assignment">
-		<p>De opdrachten bestaan uit een foto maken van gedeelte van een huis of pand op locatie bij de voetsap.
-		  Hierodoor kun je je eigen huis uit de Gouden Eeuw bouwen! Tevens zijn
-		   de opdrachten punten waard.<br><br>
-			Druk op een vakje om een foto te make(TIP: Neem de foto's horizontaal!)</p>
+		<p>Maak jouw Gouden Eeuw gebouw en verdien extra punten.
+		<br><br>
+		Per voetstap kan je een foto maken van het gebouw waar je bij staat. Deze foto's samen vormen jouw Gouden Eeuw 
+		gebouw. Druk op een vakje om een foto te maken.
+		<br><br>
+		Is jouw gebouw klaar dan kan je hem op een groot scherm in Het Scheepvaartmuseum bekijken.
+		<br><br>
+		TIP: neem de foto horizontaal. </p>
 		<div id="photo-container">
 			<div id="block-tl" class="image-block" data-objectiveid="1" data-footstepid="0">
 				<img src="" id="block-tl-img" class="assignment-image" alt="">
 			</div>
 
 			<div id="block-tr" class="image-block" data-objectiveid="2" data-footstepid="0">
-				<img src="" id="block-tr-img" class="assignment-image" alt="">			
+				<img src="" id="block-tr-img" class="assignment-image" alt="">
 			</div>
 
 			<div id="block-bl" class="image-block" data-objectiveid="3" data-footstepid="0">

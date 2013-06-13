@@ -29,7 +29,20 @@ define(['jquery', 'underscore', 'Backbone'],
                 if (result.cancelled) {
                     App.Helpers.renderMapView();
                 } else {
-                    App.dbClass.linkUserToContent(result.text);
+                    var allowed_numbers = ['1', '2', '3', '4', '5', 1, 2, 3, 4, 5];
+
+                    console.log($.inArray(result.text, allowed_numbers) == 0);
+                    console.log(result.text + ' result');
+                    if($.inArray(result.text, allowed_numbers) != -1) {
+                        App.dbClass.linkUserToContent(result.text);
+                    } else {
+                        navigator.notification.alert(
+                            'Geen geldige QR-code gescand',// message
+                            function(){ App.Helpers.renderMapView(); },// callback
+                            'Ongeldige QR-code!',  // title
+                            'Oke'                  // buttonName
+                        );
+                    }
                 }
             },
 
